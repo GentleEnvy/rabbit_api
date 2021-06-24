@@ -1,3 +1,9 @@
+### custom
+.mypy_cache
+.pytest_cache
+.idea/
+
+
 ### python_gitignore template
 # Created by .ignore support plugin (hsz.mobi)
 ### VirtualEnv template
