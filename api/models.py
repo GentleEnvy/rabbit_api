@@ -1,17 +1,28 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+from multiselectfield import MultiSelectField
 
 
 class Cage(models.Model):
-    farm_number = models.IntegerField()
+    farm_number = models.IntegerField(
+        validators=[MinValueValidator(2), MaxValueValidator(4)]
+    )
     number = models.IntegerField()
-    letter = models.CharField(max_length=1, null=False, blank=False)
+    letter = models.CharField(max_length=1, blank=True, default='')
+    status = MultiSelectField(
+        choices=(
+            (NEED_CLEAN := 'C', 'NEED_CLEAN'),
+            (NEED_REPAIR := 'R', 'NEED_REPAIR')
+        ),
+        blank=True, default='', max_choices=2
+    )
 
     class Meta:
         unique_together = ('farm_number', 'number', 'letter')
 
 
 class FatteningCage(Cage):
-    max_capacity = models.IntegerField(default=1)
+    max_capacity = models.PositiveIntegerField(default=1)
 
 
 class MotherCage(Cage):
@@ -20,29 +31,33 @@ class MotherCage(Cage):
 
 class Rabbit(models.Model):
     birthdate = models.DateTimeField(auto_now_add=True)
-    mother = models.ForeignKey('MotherRabbit', on_delete=models.SET_NULL, null=True)
-    father = models.ForeignKey('FatherRabbit', on_delete=models.SET_NULL, null=True)
+    mother = models.ForeignKey(
+        'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
+    )
+    father = models.ForeignKey(
+        'FatherRabbit', on_delete=models.SET_NULL, null=True, blank=True
+    )
 
 
 class FatteningRabbit(Rabbit):
-    is_male = models.BooleanField(null=True)
+    is_male = models.BooleanField(null=True, blank=True)
     cage = models.ForeignKey(FatteningCage, on_delete=models.PROTECT)
 
 
 class Bunny(Rabbit):
-    need_jigging = models.BooleanField(default=False, null=True)
+    need_jigging = models.BooleanField(default=False)
     cage = models.ForeignKey(MotherCage, on_delete=models.PROTECT)
 
 
 class MotherRabbit(Rabbit):
-    mother_status = models.CharField(
+    status = MultiSelectField(
         choices=(
             (PREGNANT := 'P', 'PREGNANT'),
             (FEEDS := 'F', 'FEEDS')
         ),
-        max_length=1, null=True, blank=False
+        blank=True, default='', max_choices=2
     )
-    last_childbirth = models.DateField(null=True, blank=False)
+    last_childbirth = models.DateField(null=True, blank=True)
     cage = models.ForeignKey(MotherCage, on_delete=models.PROTECT)
 
 
