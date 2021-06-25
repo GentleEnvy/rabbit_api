@@ -49,6 +49,9 @@ class Rabbit(models.Model):
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
 
+    def get_absolute_url_(self) -> str:
+        pass
+
 
 class DeathRabbit(Rabbit):
     death_date = models.DateField(auto_now_add=True)

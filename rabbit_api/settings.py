@@ -5,9 +5,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
-DEBUG = bool(os.environ.get('DJANGO_DEBUG'))
+DEBUG = None if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
