@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django.shortcuts import redirect
 from django.core.exceptions import FieldDoesNotExist, MultipleObjectsReturned
 from rest_framework.response import Response
@@ -26,7 +28,8 @@ class RabbitView(APIView):
             rabbit = Rabbit.objects.get(id=id)
         except (FieldDoesNotExist, MultipleObjectsReturned, APIException) as e:
             return exception_handler(e, {'request', request})
-        print(request.query_params)
+        if query_params := request.query_params:
+            return redirect(f'{rabbit.get_absolute_url()}?{urlencode(query_params)}')
         return redirect(rabbit.get_absolute_url())
 
 
