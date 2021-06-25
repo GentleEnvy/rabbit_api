@@ -9,7 +9,7 @@ from multiselectfield import MultiSelectField
 from api.models._cages import Cage, FatteningCage, MotherCage
 
 __all__ = [
-    'Rabbit', 'DeathRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
+    'Rabbit', 'DeadRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
 ]
 
 _is_valid_cage = {'status': []}
@@ -27,7 +27,7 @@ class Rabbit(models.Model):
     is_ill = models.BooleanField(default=False)
     current_type = models.CharField(
         choices=(
-            (TYPE_DIED := 'D', 'TYPE_DIED'),
+            (TYPE_DIED := 'D', 'TYPE_DEAD'),
             (TYPE_BUNNY := 'B', 'TYPE_BUNNY'),
             (TYPE_FATTENING := 'F', 'TYPE_FATTENING'),
             (TYPE_FATHER := 'P', 'TYPE_FATHER'),
@@ -53,7 +53,7 @@ class Rabbit(models.Model):
         pass
 
 
-class DeathRabbit(Rabbit):
+class DeadRabbit(Rabbit):
     death_date = models.DateField(auto_now_add=True)
     death_cause = models.CharField(
         choices=(
@@ -71,7 +71,7 @@ class DeathRabbit(Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
 
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> DeathRabbit:
+    def cast_to(cls, rabbit: Rabbit) -> DeadRabbit:
         return super().cast_to(rabbit)
 
 
