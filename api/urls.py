@@ -12,16 +12,22 @@ urlpatterns = [
         name='dead_rabbit_url'
     ),
 
-    path('rabbit/bunny/<int:id>/', views.BunnyView.as_view(),
-         name='bunny_url'),
+    path(
+        'rabbit/bunny/<int:id>/', views.BunnyView.as_view(),
+        name='bunny_url'
+    ),
     path(
         'rabbit/bunny/create/', views.BunnyCreateView.as_view(),
         name='bunny_create_url'
     ),
 
     path(
-        'rabbit/fattening/<int:id>/', views.FatherRabbitView.as_view(),
+        'rabbit/fattening/<int:id>/', views.FatteningRabbitView.as_view(),
         name='fattening_rabbit_url'
+    ),
+    path(
+        'rabbit/fattening/create/', views.FatteningRabbitCreateView.as_view(),
+        name='fattening_create_url'
     ),
 
     path(
@@ -36,5 +42,9 @@ urlpatterns = [
     path(
         'rabbit/father/<int:id>/', views.FatherRabbitView.as_view(),
         name='father_rabbit_url'
+    ),
+    path(
+        'rabbit/father/create/', views.FatherRabbitCreateView.as_view(),
+        name='father_create_url'
     )
 ]

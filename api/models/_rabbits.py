@@ -18,7 +18,7 @@ _is_valid_cage = {'status': []}
 
 
 class Rabbit(BaseModel):
-    birthdate = models.DateTimeField(auto_now_add=True)
+    birthdate = models.DateTimeField(auto_now_add=True, blank=True)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )

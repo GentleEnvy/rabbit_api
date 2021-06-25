@@ -1,10 +1,16 @@
 from django.shortcuts import redirect
+from django.core.exceptions import FieldDoesNotExist, MultipleObjectsReturned
 from rest_framework.response import Response
 from rest_framework.views import APIView, exception_handler
-from rest_framework.generics import CreateAPIView
+from rest_framework.exceptions import APIException
 
 from api.models import *
-from api.serializers import *
+from api.serializers.rabbit.view import *
+
+__all__ = [
+    'RabbitView', 'DeadRabbitView', 'FatteningRabbitView', 'BunnyView',
+    'MotherRabbitView', 'FatherRabbitView'
+]
 
 
 def _get_by_id(rabbit_class, rabbit_serializer, request, id):
@@ -18,8 +24,9 @@ class RabbitView(APIView):
     def get(self, request, id):
         try:
             rabbit = Rabbit.objects.get(id=id)
-        except Exception as e:
+        except (FieldDoesNotExist, MultipleObjectsReturned, APIException) as e:
             return exception_handler(e, {'request', request})
+        print(request.query_params)
         return redirect(rabbit.get_absolute_url())
 
 
@@ -41,18 +48,10 @@ class BunnyView(APIView):
         return _get_by_id(Bunny, BunnySerializer, request, id)
 
 
-class BunnyCreateView(CreateAPIView):
-    serializer_class = BunnySerializer
-
-
 # noinspection PyMethodMayBeStatic
 class MotherRabbitView(APIView):
     def get(self, request, id):
         return _get_by_id(MotherRabbit, MotherRabbitSerializer, request, id)
-
-
-class MotherRabbitCreateView(CreateAPIView):
-    serializer_class = MotherRabbitSerializer
 
 
 # noinspection PyMethodMayBeStatic

@@ -34,7 +34,7 @@ class BunnySerializer(BaseModelSerializer):
 class MotherRabbitSerializer(BaseModelSerializer):
     class Meta:
         model = MotherRabbit
-        fields = ('is_ill', 'status')
+        fields = '__all__'
 
 
 class FatherRabbitSerializer(BaseModelSerializer):
