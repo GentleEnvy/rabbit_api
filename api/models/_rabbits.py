@@ -4,6 +4,7 @@ from typing import Final, Any
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from multiselectfield import MultiSelectField
 
 from api.models._cages import Cage, FatteningCage, MotherCage
@@ -49,8 +50,22 @@ class Rabbit(models.Model):
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
 
-    def get_absolute_url_(self) -> str:
-        pass
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:
+        if self.current_type == self.TYPE_DIED:
+            return reverse('dead_rabbit_url', kwargs={'id': self.id})
+        elif self.current_type == self.TYPE_BUNNY:
+            return reverse('bunny_url', kwargs={'id': self.id})
+        elif self.current_type == self.TYPE_FATTENING:
+            return reverse('fattening_rabbit_url', kwargs={'id': self.id})
+        elif self.current_type == self.TYPE_FATHER:
+            return reverse('father_rabbit_url', kwargs={'id': self.id})
+        elif self.current_type == self.TYPE_MOTHER:
+            return reverse('mother_rabbit_url', kwargs={'id': self.id})
+        raise ValidationError('Incorrect current_type')
 
 
 class DeadRabbit(Rabbit):
