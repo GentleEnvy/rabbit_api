@@ -7,6 +7,7 @@ from django.db import models
 from django.urls import reverse
 from multiselectfield import MultiSelectField
 
+from api.models._base import BaseModel
 from api.models._cages import Cage, FatteningCage, MotherCage
 
 __all__ = [
@@ -16,7 +17,7 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(models.Model):
+class Rabbit(BaseModel):
     birthdate = models.DateTimeField(auto_now_add=True)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
@@ -49,10 +50,6 @@ class Rabbit(models.Model):
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
         if self.current_type == self.TYPE_DIED:

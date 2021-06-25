@@ -2,10 +2,12 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from multiselectfield import MultiSelectField
 
+from api.models._base import BaseModel
+
 __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 
 
-class Cage(models.Model):
+class Cage(BaseModel):
     farm_number = models.IntegerField(
         validators=[MinValueValidator(2), MaxValueValidator(4)]
     )
