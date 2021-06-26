@@ -3,14 +3,8 @@ from urllib.parse import urlencode
 from django.core.exceptions import MultipleObjectsReturned, FieldDoesNotExist
 from django.shortcuts import redirect
 from rest_framework.generics import CreateAPIView
-from rest_framework import filters
 
-from api.serializers.rabbit.create import *
-
-__all__ = [
-    'FatteningRabbitCreateView', 'BunnyCreateView', 'MotherRabbitCreateView',
-    'FatherRabbitCreateView'
-]
+__all__ = []
 
 
 class _RedirectCreateView(CreateAPIView):
@@ -30,19 +24,3 @@ class _RedirectCreateView(CreateAPIView):
                         return redirect(f'{url}?{urlencode(query_params)}')
                     return redirect(url)
         return response
-
-
-class FatteningRabbitCreateView(_RedirectCreateView):
-    serializer_class = FatteningRabbitCreateSerializer
-
-
-class BunnyCreateView(_RedirectCreateView):
-    serializer_class = BunnyCreateSerializer
-
-
-class MotherRabbitCreateView(_RedirectCreateView):
-    serializer_class = MotherRabbitCreateSerializer
-
-
-class FatherRabbitCreateView(_RedirectCreateView):
-    serializer_class = FatherRabbitCreateSerializer

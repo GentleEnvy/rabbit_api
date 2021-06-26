@@ -1,53 +1,44 @@
 from django.urls import path
 
 from api import views
+from api.views import *
 
 urlpatterns = [
-    # rabbit
+    # model_views
+    *[
+        # rabbit
+        *[
+            # general
+            *[
+                path(
+                    'rabbit/dead/', DeadRabbitGeneralView.as_view(),
+                    name='dead_rabbit__general__url'
+                ),
+                path(
+                    'rabbit/fattening/', FatteningRabbitGeneralView.as_view(),
+                    name='fattening_rabbit__general__url'
+                ),
+                path(
+                    'rabbit/bunny/', BunnyGeneralView.as_view(),
+                    name='bunny__general__url'
+                ),
+                path(
+                    'rabbit/mother/', MotherRabbitGeneralView.as_view(),
+                    name='mother_rabbit__general__url'
+                ),
+                path(
+                    'rabbit/father/', FatherRabbitGeneralView.as_view(),
+                    name='father_rabbit__general__url'
+                ),
+            ],
+        ]
+    ],
 
     # view
     path(
         'rabbit/<int:id>/', views.RabbitView.as_view(),
         name='rabbit_url'
-    ),
-    path(
-        'rabbit/dead/<int:id>/', views.DeadRabbitView.as_view(),
-        name='dead_rabbit_url'
-    ),
-    path(
-        'rabbit/bunny/<int:id>/', views.BunnyView.as_view(),
-        name='bunny_url'
-    ),
-    path(
-        'rabbit/fattening/<int:id>/', views.FatteningRabbitView.as_view(),
-        name='fattening_rabbit_url'
-    ),
-    path(
-        'rabbit/mother/<int:id>/', views.MotherRabbitView.as_view(),
-        name='mother_rabbit_url'
-    ),
-    path(
-        'rabbit/father/<int:id>/', views.FatherRabbitView.as_view(),
-        name='father_rabbit_url'
-    ),
-
-    # create
-    path(
-        'rabbit/bunny/create/', views.BunnyCreateView.as_view(),
-        name='bunny_create_url'
-    ),
-    path(
-        'rabbit/fattening/create/', views.FatteningRabbitCreateView.as_view(),
-        name='fattening_create_url'
-    ),
-    path(
-        'rabbit/mother/create/', views.MotherRabbitCreateView.as_view(),
-        name='mother_create_url'
-    ),
-    path(
-        'rabbit/father/create/', views.FatherRabbitCreateView.as_view(),
-        name='father_create_url'
-    ),
+    )
 
     # TODO: cast_to
     # path(
