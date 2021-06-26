@@ -5,6 +5,7 @@ from typing import Final, Any
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils.timezone import now
 from multiselectfield import MultiSelectField
 
 from api.models._base import BaseModel
@@ -18,7 +19,7 @@ _is_valid_cage = {'status': []}
 
 
 class Rabbit(BaseModel):
-    birthdate = models.DateTimeField(auto_now_add=True, blank=True)
+    birthdate = models.DateField(default=now)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )

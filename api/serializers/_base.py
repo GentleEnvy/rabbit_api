@@ -23,3 +23,13 @@ class BaseModelSerializer(serializers.ModelSerializer):
                     elif param_field in field_names:
                         field_names.remove(param_field)
         return field_names
+
+    def to_representation(self, instance):
+        return super().to_representation(instance) | {'pk': instance.pk}
+
+    @property
+    def data(self):
+        data = super().data
+        if 'id' in data:
+            data.pop('pk', None)
+        return data
