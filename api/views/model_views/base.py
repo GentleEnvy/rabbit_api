@@ -1,4 +1,4 @@
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import *
 from rest_framework.serializers import ModelSerializer
 
 from api.views.base import *

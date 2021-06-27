@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
@@ -18,4 +19,6 @@ class BaseView(GenericAPIView):
             except APIException.SUPPORT_TO_CAST_EXCEPTIONS as exception_to_cast:
                 return APIException.cast_exception(exception_to_cast).to_response()
         except Exception as e:
+            if settings.DEBUG:
+                raise e
             return Response(status=400, data=str(e))

@@ -10,6 +10,10 @@ __all__ = [
 ]
 
 
+class RabbitGeneralView(BaseRabbitGeneralView):
+    pass
+
+
 class DeadRabbitGeneralView(BaseRabbitGeneralView):
     class __ListSerializer(BaseModelSerializer):
         class Meta:
@@ -32,6 +36,7 @@ class FatteningRabbitGeneralView(BaseRabbitGeneralView):
         class Meta:
             model = FatteningRabbit
             exclude = ['current_type']
+            depth = 1
 
     model = FatteningRabbit
     create_serializer = __CreateSerializer
@@ -50,6 +55,7 @@ class BunnyGeneralView(BaseRabbitGeneralView):
         class Meta:
             model = Bunny
             exclude = ['current_type']
+            depth = 1
 
     model = Bunny
     create_serializer = __CreateSerializer
@@ -69,6 +75,7 @@ class MotherRabbitGeneralView(BaseRabbitGeneralView):
         class Meta:
             model = MotherRabbit
             exclude = ['current_type']
+            depth = 1
 
     model = MotherRabbit
     create_serializer = __CreateSerializer
@@ -88,6 +95,7 @@ class FatherRabbitGeneralView(BaseRabbitGeneralView):
         class Meta:
             model = FatherRabbit
             exclude = ['current_type']
+            depth = 1
 
     model = FatherRabbit
     create_serializer = __CreateSerializer
