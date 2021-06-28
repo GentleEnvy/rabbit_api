@@ -1,6 +1,5 @@
 from django.urls import path
 
-from api import views
 from api.views import *
 
 urlpatterns = [
@@ -10,6 +9,10 @@ urlpatterns = [
         *[
             # general
             *[
+                path(
+                    'rabbit/', RabbitGeneralView.as_view(),
+                    name='rabbit__general__url'
+                ),
                 path(
                     'rabbit/dead/', DeadRabbitGeneralView.as_view(),
                     name='dead_rabbit__general__url'
@@ -31,14 +34,35 @@ urlpatterns = [
                     name='father_rabbit__general__url'
                 ),
             ],
+            # detail
+            *[
+                path(
+                    'rabbit/<int:id>/', RabbitDetailView.as_view(),
+                    name='rabbit__detail__url'
+                ),
+                path(
+                    'rabbit/dead/<int:id>/', DeadRabbitDetailView.as_view(),
+                    name='dead_rabbit__detail__url'
+                ),
+                path(
+                    'rabbit/fattening/<int:id>/', FatteningRabbitDetailView.as_view(),
+                    name='fattening_rabbit__detail__url'
+                ),
+                path(
+                    'rabbit/bunny/<int:id>/', BunnyDetailView.as_view(),
+                    name='bunny__detail__url'
+                ),
+                path(
+                    'rabbit/mother/<int:id>/', MotherRabbitDetailView.as_view(),
+                    name='mother_rabbit__detail__url'
+                ),
+                path(
+                    'rabbit/father/<int:id>/', FatherRabbitDetailView.as_view(),
+                    name='father_rabbit__detail__url'
+                ),
+            ]
         ]
     ],
-
-    # view
-    path(
-        'rabbit/<int:id>/', views.RabbitView.as_view(),
-        name='rabbit_url'
-    )
 
     # TODO: cast_to
     # path(
