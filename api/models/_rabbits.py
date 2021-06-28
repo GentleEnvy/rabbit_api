@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, Any
+from typing import Final, Any, Union
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.timezone import now
 from multiselectfield import MultiSelectField
 
-from api.models._base import BaseModel
+from api.models.base import BaseModel
 from api.models._cages import Cage, FatteningCage, MotherCage
 
 __all__ = [
@@ -44,7 +44,7 @@ class Rabbit(BaseModel):
     @classmethod
     def cast_to(cls, rabbit):
         if cls is Rabbit:
-            raise NotImplementedError("rabbit can't be cast to Rabbit (base class)")
+            raise NotImplementedError("instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
             raise NotImplementedError('CHAR_TYPE must be determined')
         casted_rabbit: Any = cls(rabbit_ptr=rabbit)
@@ -52,18 +52,17 @@ class Rabbit(BaseModel):
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
 
+    @property
+    def cast(self) -> Union[DeadRabbit, _RabbitInCage]:
+        for rabbit_class in (
+                DeadRabbit, FatteningRabbit, Bunny, MotherRabbit, FatherRabbit
+        ):
+            if self.current_type == rabbit_class.CHAR_TYPE:
+                return rabbit_class.objects.get(id=self.id)
+        raise AttributeError('Incorrect current_type')
+
     def get_absolute_url(self) -> str:
-        if self.current_type == self.TYPE_DIED:
-            return reverse('dead_rabbit__detail__url', kwargs={'id': self.id})
-        elif self.current_type == self.TYPE_BUNNY:
-            return reverse('bunny__detail__url', kwargs={'id': self.id})
-        elif self.current_type == self.TYPE_FATTENING:
-            return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
-        elif self.current_type == self.TYPE_FATHER:
-            return reverse('father_rabbit__detail__url', kwargs={'id': self.id})
-        elif self.current_type == self.TYPE_MOTHER:
-            return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
-        raise ValidationError('Incorrect current_type')
+        raise NotImplementedError
 
 
 class DeadRabbit(Rabbit):
@@ -87,13 +86,39 @@ class DeadRabbit(Rabbit):
     def cast_to(cls, rabbit: Rabbit) -> DeadRabbit:
         return super().cast_to(rabbit)
 
+    def get_absolute_url(self):
+        return reverse('dead_rabbit__detail__url', kwargs={'id': self.id})
 
-class FatteningRabbit(Rabbit):
+
+class _RabbitInCage(Rabbit):
+    class Meta:
+        abstract = True
+
+    cage: Cage
+
+    def get_absolute_url(self):
+        raise NotImplementedError
+
+    def clean(self):
+        super().clean()
+        neighbours = self.cage.cast.rabbits
+        if self.current_type in (MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE):
+            if len(neighbours) > 0:
+                raise ValidationError('The parent must be alone in the cell')
+        if len(neighbours) >= 2:
+            raise ValidationError('There are already 2 rabbits in this cage')
+        for neighbour in neighbours:
+            if neighbour.mother != self.mother or neighbour.father != self.father:
+                raise ValidationError('Only brothers and sisters can sit in one cage')
+
+
+class FatteningRabbit(_RabbitInCage):
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
 
     def clean(self):
+        super().clean()
         if self.is_male is None:
             raise ValidationError('The sex of the FatteningRabbit must be determined')
 
@@ -103,8 +128,11 @@ class FatteningRabbit(Rabbit):
     def cast_to(cls, rabbit: Rabbit) -> FatteningRabbit:
         return super().cast_to(rabbit)
 
+    def get_absolute_url(self):
+        return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
 
-class Bunny(Rabbit):
+
+class Bunny(_RabbitInCage):
     need_jigging = models.BooleanField(default=False)
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
@@ -116,8 +144,11 @@ class Bunny(Rabbit):
     def cast_to(cls, rabbit: Rabbit) -> Bunny:
         return super().cast_to(rabbit)
 
+    def get_absolute_url(self):
+        return reverse('bunny__detail__url', kwargs={'id': self.id})
 
-class MotherRabbit(Rabbit):
+
+class MotherRabbit(_RabbitInCage):
     status = MultiSelectField(
         choices=(
             (STATUS_PREGNANT := 'P', 'STATUS_PREGNANT'),
@@ -136,14 +167,18 @@ class MotherRabbit(Rabbit):
     def cast_to(cls, rabbit: Rabbit) -> MotherRabbit:
         return super().cast_to(rabbit)
 
+    def get_absolute_url(self):
+        return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
+
     def clean(self):
+        super().clean()
         if self.is_male is None:
             raise ValidationError('The sex of the MotherRabbit must be determined')
         if self.is_male:
             raise ValidationError('MotherRabbit must be a female')
 
 
-class FatherRabbit(Rabbit):
+class FatherRabbit(_RabbitInCage):
     is_resting = models.BooleanField(default=True)
     cage = models.ForeignKey(
         Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
@@ -155,7 +190,11 @@ class FatherRabbit(Rabbit):
     def cast_to(cls, rabbit: Rabbit) -> FatherRabbit:
         return super().cast_to(rabbit)
 
+    def get_absolute_url(self):
+        return reverse('father_rabbit__detail__url', kwargs={'id': self.id})
+
     def clean(self):
+        super().clean()
         if self.is_male is None:
             raise ValidationError('The sex of the MotherRabbit must be determined')
         if not self.is_male:

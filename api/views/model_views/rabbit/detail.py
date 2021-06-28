@@ -26,8 +26,8 @@ class RabbitDetailView(BaseView):
         except (FieldDoesNotExist, MultipleObjectsReturned, APIException) as e:
             return exception_handler(e, {'request', request})
         if query_params := request.query_params:
-            return redirect(f'{rabbit.get_absolute_url()}?{urlencode(query_params)}')
-        return redirect(rabbit.get_absolute_url())
+            return redirect(f'{rabbit.cast.get_absolute_url()}?{urlencode(query_params)}')
+        return redirect(rabbit.cast.get_absolute_url())
 
 
 class DeadRabbitDetailView(BaseDetailView):

@@ -1,13 +1,20 @@
+from __future__ import annotations
+
+from typing import Union
+
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from multiselectfield import MultiSelectField
 
-from api.models._base import BaseModel
+from api.models.base import BaseModel
 
 __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 
 
 class Cage(BaseModel):
+    class Meta:
+        unique_together = ('farm_number', 'number', 'letter')
+
     farm_number = models.IntegerField(
         validators=[MinValueValidator(2), MaxValueValidator(4)]
     )
@@ -29,13 +36,40 @@ class Cage(BaseModel):
         blank=True, default='', max_choices=2
     )
 
-    class Meta:
-        unique_together = ('farm_number', 'number', 'letter')
+    # noinspection PyUnresolvedReferences
+    @property
+    def cast(self) -> Union[FatteningCage, MotherCage]:
+        if isinstance(self, FatteningCage) or isinstance(self, MotherCage):
+            return self
+        try:
+            return self.fatteningcage
+        except Cage.fatteningcage.RelatedObjectDoesNotExist:
+            pass
+        try:
+            return self.mothercage
+        except Cage.mothercage.RelatedObjectDoesNotExist:
+            pass
+        raise TypeError('The cell type is not defined')
+
+    @property
+    def rabbits(self) -> set['import api.models.Rabbit']:
+        raise NotImplementedError
 
 
 class FatteningCage(Cage):
-    pass
+    @property
+    def rabbits(self):
+        rabbit_set = self.fatteningrabbit_set.all()
+        rabbit_set.update(self.fatherrabbit_set)
+        return rabbit_set
 
 
 class MotherCage(Cage):
     is_parallel = models.BooleanField(default=False)
+
+    @property
+    def rabbits(self):
+        rabbit_set = self.motherrabbit_set.all()
+        rabbit_set.update(self.fatherrabbit_set)
+        rabbit_set.update(self.bunny_set)
+        return rabbit_set
