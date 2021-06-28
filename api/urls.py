@@ -14,6 +14,10 @@ urlpatterns = [
                     name='rabbit__general__url'
                 ),
                 path(
+                    'rabbit/live/', RabbitLiveGeneralView.as_view(),
+                    name='rabbit_live__general__url'
+                ),
+                path(
                     'rabbit/dead/', DeadRabbitGeneralView.as_view(),
                     name='dead_rabbit__general__url'
                 ),

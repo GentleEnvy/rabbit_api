@@ -26,7 +26,8 @@ class BaseView(GenericAPIView):
                 raise e
             return Response(status=400, data=str(e))
 
-    def get_queryset(self):
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         limit_from = params.get('__limit_from__')
         limit_to = params.get('__limit_to__')
@@ -37,9 +38,9 @@ class BaseView(GenericAPIView):
             if not key.startswith('__') and not key.endswith('__')
         }
         if order_by is None:
-            ordered_queryset = self.model.objects
+            ordered_queryset = queryset
         else:
-            ordered_queryset = self.model.objects.order_by(order_by)
+            ordered_queryset = queryset.order_by(order_by)
         filtered_queryset = ordered_queryset.filter(**query_params)
         if limit_from is not None:
             if limit_to is not None:
