@@ -150,10 +150,10 @@ class Bunny(_RabbitInCage):
 
 class MotherRabbit(_RabbitInCage):
     status = MultiSelectField(
-        choices=(
+        choices=(STATUS_CHOICES := (
             (STATUS_PREGNANT := 'P', 'STATUS_PREGNANT'),
             (STATUS_FEEDS := 'F', 'STATUS_FEEDS')
-        ),
+        )),
         blank=True, default='', max_choices=2
     )
     last_childbirth = models.DateField(null=True, blank=True)

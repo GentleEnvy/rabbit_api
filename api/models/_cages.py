@@ -4,6 +4,7 @@ from typing import Union
 
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.urls import reverse
 from multiselectfield import MultiSelectField
 
 from api.models.base import BaseModel
@@ -29,10 +30,10 @@ class Cage(BaseModel):
         max_length=1, default=LETTER_A
     )
     status = MultiSelectField(
-        choices=(
+        choices=(STATUS_CHOICES := (
             (NEED_CLEAN := 'C', 'NEED_CLEAN'),
             (NEED_REPAIR := 'R', 'NEED_REPAIR')
-        ),
+        )),
         blank=True, default='', max_choices=2
     )
 
@@ -55,6 +56,9 @@ class Cage(BaseModel):
     def rabbits(self) -> set['import api.models.Rabbit']:
         raise NotImplementedError
 
+    def get_absolute_url(self):
+        raise NotImplementedError
+
 
 class FatteningCage(Cage):
     @property
@@ -62,6 +66,9 @@ class FatteningCage(Cage):
         rabbit_set = self.fatteningrabbit_set.all()
         rabbit_set.update(self.fatherrabbit_set)
         return rabbit_set
+
+    def get_absolute_url(self):
+        return reverse('fattening_cage__detail__url', kwargs={'id': self.id})
 
 
 class MotherCage(Cage):
@@ -73,3 +80,6 @@ class MotherCage(Cage):
         rabbit_set.update(self.fatherrabbit_set)
         rabbit_set.update(self.bunny_set)
         return rabbit_set
+
+    def get_absolute_url(self):
+        return reverse('mother_cage__detail__url', kwargs={'id': self.id})

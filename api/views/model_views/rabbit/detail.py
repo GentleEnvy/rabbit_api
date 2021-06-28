@@ -1,12 +1,6 @@
-from urllib.parse import urlencode
-
-from django.core.exceptions import FieldDoesNotExist, MultipleObjectsReturned
-from django.shortcuts import redirect
-from rest_framework.exceptions import APIException
-from rest_framework.views import exception_handler
-
 from api.models import *
 from api.views.base import BaseView
+from api.views.model_views._utils import redirect_by_id
 from api.views.model_views.base import BaseDetailView
 from api.views.model_views.rabbit._default_serializers import \
     create_default_retrieve_serializer
@@ -20,14 +14,7 @@ __all__ = [
 class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
     def get(self, request, *args, **kwargs):
-        id = kwargs.get('id')
-        try:
-            rabbit = Rabbit.objects.get(id=id)
-        except (FieldDoesNotExist, MultipleObjectsReturned, APIException) as e:
-            return exception_handler(e, {'request', request})
-        if query_params := request.query_params:
-            return redirect(f'{rabbit.cast.get_absolute_url()}?{urlencode(query_params)}')
-        return redirect(rabbit.cast.get_absolute_url())
+        return redirect_by_id(Rabbit, request, kwargs.get('id'))
 
 
 class DeadRabbitDetailView(BaseDetailView):
@@ -35,6 +22,7 @@ class DeadRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = create_default_retrieve_serializer(model)
     update_serializer = create_default_retrieve_serializer(model)
+    queryset = model.objects.all()
 
 
 class FatteningRabbitDetailView(BaseDetailView):
@@ -42,6 +30,7 @@ class FatteningRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = create_default_retrieve_serializer(model, 1)
     update_serializer = create_default_retrieve_serializer(model)
+    queryset = model.objects.all()
 
 
 class BunnyDetailView(BaseDetailView):
@@ -49,6 +38,7 @@ class BunnyDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = create_default_retrieve_serializer(model, 1)
     update_serializer = create_default_retrieve_serializer(model)
+    queryset = model.objects.all()
 
 
 class MotherRabbitDetailView(BaseDetailView):
@@ -56,6 +46,7 @@ class MotherRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = create_default_retrieve_serializer(model, 1)
     update_serializer = create_default_retrieve_serializer(model)
+    queryset = model.objects.all()
 
 
 class FatherRabbitDetailView(BaseDetailView):
@@ -63,3 +54,4 @@ class FatherRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = create_default_retrieve_serializer(model, 1)
     update_serializer = create_default_retrieve_serializer(model)
+    queryset = model.objects.all()

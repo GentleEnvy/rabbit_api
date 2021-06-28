@@ -1,7 +1,6 @@
-from django.db.models import QuerySet, Q
+from django.db.models import Q
 from django.forms import model_to_dict
 from rest_framework.fields import HiddenField
-from rest_framework.response import Response
 
 from api.models import *
 from api.serializers.base import BaseModelSerializer
@@ -65,7 +64,9 @@ class RabbitLiveGeneralView(BaseGeneralView):
         cages = {c.id: c for c in mother_cages} | {c.id: c for c in fattening_cages}
         for rabbit_info in super_list.data:
             if cage := cages.get(rabbit_info['id']):
-                rabbit_info['cage'] = model_to_dict(cage)
+                cage_info = model_to_dict(cage)
+                cage_info.pop('cage_ptr')
+                rabbit_info['cage'] = cage_info
         return super_list
 
 
