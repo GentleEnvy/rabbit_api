@@ -54,15 +54,15 @@ class Rabbit(BaseModel):
 
     def get_absolute_url(self) -> str:
         if self.current_type == self.TYPE_DIED:
-            return reverse('dead_rabbit_url', kwargs={'id': self.id})
+            return reverse('dead_rabbit__detail__url', kwargs={'id': self.id})
         elif self.current_type == self.TYPE_BUNNY:
-            return reverse('bunny_url', kwargs={'id': self.id})
+            return reverse('bunny__detail__url', kwargs={'id': self.id})
         elif self.current_type == self.TYPE_FATTENING:
-            return reverse('fattening_rabbit_url', kwargs={'id': self.id})
+            return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
         elif self.current_type == self.TYPE_FATHER:
-            return reverse('father_rabbit_url', kwargs={'id': self.id})
+            return reverse('father_rabbit__detail__url', kwargs={'id': self.id})
         elif self.current_type == self.TYPE_MOTHER:
-            return reverse('mother_rabbit_url', kwargs={'id': self.id})
+            return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
         raise ValidationError('Incorrect current_type')
 
 

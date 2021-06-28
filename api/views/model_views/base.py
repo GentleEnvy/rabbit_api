@@ -12,7 +12,8 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
         request = self.request
         if request.method.upper() == 'POST':
             if self.create_serializer is None:
-                raise NotImplementedError(f"{self.__class__} doesn't support create")
+                return self.list_serializer
+                # raise NotImplementedError(f"{self.__class__} doesn't support create")
             return self.create_serializer
         elif request.method.upper() == 'GET':
             if self.list_serializer is None:
@@ -21,5 +22,18 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
         self.http_method_not_allowed(request)
 
 
-class BaseDetailView(RetrieveUpdateDestroyAPIView, BaseView):
-    pass
+class BaseDetailView(RetrieveUpdateAPIView, BaseView):
+    retrieve_serializer: ModelSerializer = None
+    update_serializer: ModelSerializer = None
+
+    def get_serializer_class(self):
+        request = self.request
+        if request.method.upper() == 'GET':
+            if self.retrieve_serializer is None:
+                raise NotImplementedError(f"{self.__class__} doesn't support retrieve")
+            return self.retrieve_serializer
+        elif request.method.upper() in ('PUT', 'PATCH'):
+            if self.update_serializer is None:
+                raise NotImplementedError(f"{self.__class__} doesn't support update")
+            return self.update_serializer
+        self.http_method_not_allowed(request)
