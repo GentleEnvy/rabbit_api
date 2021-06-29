@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.timezone import now
 from multiselectfield import MultiSelectField
 
-from api.models.base import BaseModel
+from api.models.base import BaseHistoricalModel
 from api.models._cages import Cage, FatteningCage, MotherCage
 
 __all__ = [
@@ -18,7 +18,7 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(BaseModel):
+class Rabbit(BaseHistoricalModel):
     birthdate = models.DateField(default=now)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
@@ -27,6 +27,7 @@ class Rabbit(BaseModel):
         'FatherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )
     is_male = models.BooleanField(null=True, blank=True)
+    is_vaccinated = models.BooleanField(default=False)
     is_ill = models.BooleanField(default=False)
     current_type = models.CharField(
         choices=(
