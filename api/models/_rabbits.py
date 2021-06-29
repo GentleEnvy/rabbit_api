@@ -102,13 +102,11 @@ class _RabbitInCage(Rabbit):
     def clean(self):
         super().clean()
         neighbours = self.cage.cast.rabbits
-        if self.current_type in (MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE):
-            if len(neighbours) > 0:
-                raise ValidationError('The parent must be alone in the cell')
         if len(neighbours) >= 2:
             raise ValidationError('There are already 2 rabbits in this cage')
         for neighbour in neighbours:
-            if neighbour.mother != self.mother or neighbour.father != self.father:
+            if neighbour.mother is not None and neighbour.mother != self.mother or \
+                    neighbour.father is not None and neighbour.father != self.father:
                 raise ValidationError('Only brothers and sisters can sit in one cage')
 
 
