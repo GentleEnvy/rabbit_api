@@ -102,13 +102,11 @@ class _RabbitInCage(Rabbit):
     def clean(self):
         super().clean()
         neighbours = self.cage.cast.rabbits
-        if self.current_type in (MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE):
-            if len(neighbours) > 0:
-                raise ValidationError('The parent must be alone in the cell')
         if len(neighbours) >= 2:
             raise ValidationError('There are already 2 rabbits in this cage')
         for neighbour in neighbours:
-            if neighbour.mother != self.mother or neighbour.father != self.father:
+            if neighbour.mother is not None and neighbour.mother != self.mother or \
+                    neighbour.father is not None and neighbour.father != self.father:
                 raise ValidationError('Only brothers and sisters can sit in one cage')
 
 
@@ -196,6 +194,6 @@ class FatherRabbit(_RabbitInCage):
     def clean(self):
         super().clean()
         if self.is_male is None:
-            raise ValidationError('The sex of the MotherRabbit must be determined')
+            raise ValidationError('The sex of the FatherRabbit must be determined')
         if not self.is_male:
-            raise ValidationError('MotherRabbit must be a male')
+            raise ValidationError('FatherRabbit must be a male')

@@ -63,8 +63,8 @@ class Cage(BaseModel):
 class FatteningCage(Cage):
     @property
     def rabbits(self):
-        rabbit_set = self.fatteningrabbit_set.all()
-        rabbit_set.update(self.fatherrabbit_set)
+        rabbit_set = set(self.fatteningrabbit_set.all())
+        rabbit_set.update(self.fatherrabbit_set.all())
         return rabbit_set
 
     def get_absolute_url(self):
@@ -76,9 +76,9 @@ class MotherCage(Cage):
 
     @property
     def rabbits(self):
-        rabbit_set = self.motherrabbit_set.all()
-        rabbit_set.update(self.fatherrabbit_set)
-        rabbit_set.update(self.bunny_set)
+        rabbit_set = set(self.motherrabbit_set.all())
+        rabbit_set.update(self.fatherrabbit_set.all())
+        rabbit_set.update(self.bunny_set.all())
         return rabbit_set
 
     def get_absolute_url(self):
