@@ -1,6 +1,6 @@
 from django.db import models
 
-__all__ = ['BaseModel']
+__all__ = ['BaseModel', 'BaseHistoryModel', 'BaseHistoricalModel']
 
 from django.forms import model_to_dict
 
@@ -18,7 +18,7 @@ class ListenDiffModel(BaseModel):
     class Meta:
         abstract = True
 
-    listening_fields: tuple[str] = '__all__'
+    listening_fields: tuple[str, ...] = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,21 +51,38 @@ class ListenDiffModel(BaseModel):
 
 
 class BaseHistoryModel(models.Model):
+    class Meta:
+        abstract = True
 
+    historical_name: str
 
 
 class BaseHistoricalModel(ListenDiffModel):
     class Meta:
         abstract = True
 
-    history_model: BaseModel
+    history_model: BaseHistoryModel
+
+    @property
+    def listening_fields(self) -> tuple[str, ...]:
+        history_fields = {field.name for field in self.history_model._meta.fields}
+        if 'id' in history_fields:
+            history_fields.remove('id')
+        if self.history_model.historical_name in history_fields:
+            history_fields.remove(self.history_model.historical_name)
+        return tuple(history_fields)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if self.diff:
-            history_fields = [field.name for field in self.history_model._meta.fields]
-            new_dict.pop('id', None)
-            new_dict = model_to_dict(
-                self, fields=[field.name for field in self._meta.fields]
-            )
-            new_dict.pop('id', None)
+        if diff := self.diff:
+            history_fields = {field.name for field in self.history_model._meta.fields}
+            try:
+                history_fields.remove('id')
+            except KeyError:
+                pass
+            new_dict = {
+                field: new_value
+                for field, new_value in diff.items()
+                if field in history_fields
+            } | {self.history_model.historical_name: self}
+            self.history_model.objects.create(**new_dict)
