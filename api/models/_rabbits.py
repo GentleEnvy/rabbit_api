@@ -196,6 +196,6 @@ class FatherRabbit(_RabbitInCage):
     def clean(self):
         super().clean()
         if self.is_male is None:
-            raise ValidationError('The sex of the MotherRabbit must be determined')
+            raise ValidationError('The sex of the FatherRabbit must be determined')
         if not self.is_male:
-            raise ValidationError('MotherRabbit must be a male')
+            raise ValidationError('FatherRabbit must be a male')

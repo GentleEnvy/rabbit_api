@@ -22,29 +22,50 @@ class ListenDiffModel(BaseModel):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__real = self.__listening_dict
+        self._real = self._changes_dict
 
     @property
     def diff(self):
-        real_dict = self.__real
-        listening_dict = self.__listening_dict
+        real_dict = self._real
+        changes_dict = self._changes_dict
         diffs = {
             field: new_value
-            for field, new_value in listening_dict.items()
+            for field, new_value in changes_dict.items()
             if new_value != real_dict[field]
         }
         return diffs
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.__real = self.__listening_dict
+        self._real = self._changes_dict
 
     @property
-    def __listening_fields(self) -> tuple[str]:
+    def __listening_fields(self) -> tuple[str, ...]:
         if self.listening_fields == '__all__':
-            return tuple(self._meta.fields)
+            return tuple(field.name for field in self._meta.fields)
         return self.listening_fields
 
     @property
-    def __listening_dict(self):
+    def _changes_dict(self):
         return model_to_dict(self, fields=self.__listening_fields)
+
+
+class BaseHistoryModel(models.Model):
+
+
+
+class BaseHistoricalModel(ListenDiffModel):
+    class Meta:
+        abstract = True
+
+    history_model: BaseModel
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.diff:
+            history_fields = [field.name for field in self.history_model._meta.fields]
+            new_dict.pop('id', None)
+            new_dict = model_to_dict(
+                self, fields=[field.name for field in self._meta.fields]
+            )
+            new_dict.pop('id', None)
