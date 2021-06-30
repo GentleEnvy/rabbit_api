@@ -22,20 +22,16 @@ class ListenDiffModel(BaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._real = self._changes_dict
-        print(f'{self._real = }')
 
     @property
     def diff(self):
         real_dict = self._real
-        print(f'{real_dict = }')
         changes_dict = self._changes_dict
-        print(f'{changes_dict = }')
         diffs = {
             field: new_value
             for field, new_value in changes_dict.items()
-            if new_value != real_dict[field]
+            if real_dict.get(field) is None or new_value != real_dict.get(field)
         }
-        print(f'{diffs = }')
         return diffs
 
     def save(self, *args, **kwargs):
@@ -44,7 +40,6 @@ class ListenDiffModel(BaseModel):
 
     @property
     def __listening_fields(self) -> tuple[str, ...]:
-        print(f'{self.listening_fields = }')
         if self.listening_fields == '__all__':
             return tuple(field.name for field in self._meta.fields)
         return self.listening_fields
