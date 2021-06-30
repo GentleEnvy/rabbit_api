@@ -46,10 +46,21 @@ def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
     max_d = 0
     max_id = rabbit.id
     partners = males if not is_male else females
+    # удалить из partners мертвых и маленьких кроликов
+    # брать сразу всех максимально отдаленных для нахождения лучшего среди них
+    best_breeding_potential = 0
     for partner_id, partner_d in d.items():
-        if partner_d > max_d and partners.__contains__(partner_id):
+        if max_d == float('inf'):
+            break
+        if partner_d > max_d and partner_id in partners:
             max_d = partner_d
-            max_id = partner_id
+            # max_id = partner_id
+
+    for dist in d.items():
+        # and best_breeding_potential < min_rabbit.breeding_potential:
+        if dist == max_d:
+            pass
+            # max_id =
 
     if max_id == rabbit.id:
         raise Exception('No suitable rabbits found')
