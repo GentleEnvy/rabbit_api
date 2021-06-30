@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from api.serializers.base import BaseModelSerializer
 from api.views.model_views.base import BaseGeneralView
 from api.models import *
-from api.views.model_views.cage._default_serializers import \
-    create_default_retrieve_serializer
+from api.views.model_views.cage._default_serializers import *
 
 __all__ = ['CageGeneralView', 'MotherCageGeneralView', 'FatteningCageGeneralView']
 
