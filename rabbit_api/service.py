@@ -1,7 +1,7 @@
 from api.models import *
 
 
-def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
+def find_optimal_partner(rabbit: Rabbit) -> tuple[Rabbit, int]:
     if not rabbit.is_male and MotherRabbit(rabbit).status == 'P':
         raise ValueError('This rabbit is pregnant, no partner should be found')
     if rabbit.is_ill:
