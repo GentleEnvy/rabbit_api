@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.timezone import now
 from multiselectfield import MultiSelectField
 
-from api.models._history import RabbitHistory
+from api.models._history import *
 from api.models.base import BaseHistoricalModel
 from api.models._cages import Cage, FatteningCage, MotherCage
 
@@ -116,6 +116,8 @@ class _RabbitInCage(Rabbit):
 
 
 class FatteningRabbit(_RabbitInCage):
+    history_model = FatteningRabbitHistory
+
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
@@ -136,6 +138,8 @@ class FatteningRabbit(_RabbitInCage):
 
 
 class Bunny(_RabbitInCage):
+    history_model = BunnyHistory
+
     need_jigging = models.BooleanField(default=False)
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
@@ -152,6 +156,8 @@ class Bunny(_RabbitInCage):
 
 
 class MotherRabbit(_RabbitInCage):
+    history_model = MotherRabbitHistory
+
     status = MultiSelectField(
         choices=(STATUS_CHOICES := (
             (STATUS_PREGNANT := 'P', 'STATUS_PREGNANT'),
@@ -182,6 +188,8 @@ class MotherRabbit(_RabbitInCage):
 
 
 class FatherRabbit(_RabbitInCage):
+    history_model = FatherRabbitHistory
+
     is_resting = models.BooleanField(default=True)
     cage = models.ForeignKey(
         Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
