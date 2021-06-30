@@ -101,13 +101,14 @@ class _RabbitInCage(Rabbit):
 
     def clean(self):
         super().clean()
-        neighbours = self.cage.cast.rabbits
-        if len(neighbours) >= 2:
-            raise ValidationError('There are already 2 rabbits in this cage')
-        for neighbour in neighbours:
-            if neighbour.mother is not None and neighbour.mother != self.mother or \
-                    neighbour.father is not None and neighbour.father != self.father:
-                raise ValidationError('Only brothers and sisters can sit in one cage')
+        # TODO: fix cage clean
+        # neighbours = self.cage.cast.rabbits
+        # if len(neighbours) >= 2:
+        #     raise ValidationError('There are already 2 rabbits in this cage')
+        # for neighbour in neighbours:
+        #     if neighbour.mother is not None and neighbour.mother != self.mother or \
+        #             neighbour.father is not None and neighbour.father != self.father:
+        #         raise ValidationError('Only brothers and sisters can sit in one cage')
 
 
 class FatteningRabbit(_RabbitInCage):
