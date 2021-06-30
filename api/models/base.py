@@ -89,7 +89,6 @@ class BaseHistoricalModel(ListenDiffModel):
             }
         else:
             try:
-                print(self.__class__.objects.get(pk=self.pk))
                 return
             except self.DoesNotExist:
                 new_dict = {
@@ -98,7 +97,6 @@ class BaseHistoricalModel(ListenDiffModel):
                     if field in history_fields
                 }
         super().save(*args, **kwargs)
-        print(new_dict)
         self.history_model.objects.create(
             **(new_dict | {self.history_model.historical_name: self})
         )
