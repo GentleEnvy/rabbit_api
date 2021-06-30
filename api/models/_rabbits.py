@@ -104,8 +104,8 @@ class _RabbitInCage(Rabbit):
         raise NotImplementedError
 
     def clean(self):
-        # TODO: fix validators
-        # super().clean()
+        super().clean()
+        # TODO: fix cage clean
         # neighbours = self.cage.cast.rabbits
         # if len(neighbours) >= 2:
         #     raise ValidationError('There are already 2 rabbits in this cage')
@@ -113,7 +113,6 @@ class _RabbitInCage(Rabbit):
         #     if neighbour.mother is not None and neighbour.mother != self.mother or \
         #             neighbour.father is not None and neighbour.father != self.father:
         #         raise ValidationError('Only brothers and sisters can sit in one cage')
-        pass
 
 
 class FatteningRabbit(_RabbitInCage):
