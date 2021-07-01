@@ -1,4 +1,6 @@
 from api.models import *
+from datetime import date, timedelta
+import random
 
 
 def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
@@ -66,3 +68,57 @@ def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
         raise Exception('No suitable rabbits found')
 
     return Rabbit.objects.get(id=max_id), max_d
+
+
+def get_next_random_rabbit(mother: MotherRabbit, father: FatherRabbit, cage: Cage) -> Rabbit:
+    if MotherCage.objects.filter(pk=cage.id).exists():
+        rnd = random.choice([
+            FatherRabbit(
+                is_resting=random.choice([True, False]),
+                is_male=True,
+                is_ill=random.choices([True, False], weights=[0.05, 0.95], k=1)[0],
+                current_type='P',
+                cage_id=cage.id
+            ),
+            MotherRabbit(
+                status=random.choices(['F', 'P', ''], weights=[0.4, 0.4, 0.2], k=1)[0],
+                last_childbirth=date.today()-timedelta(days=random.randint(3, 180)),
+                is_male=False,
+                current_type='M',
+                cage_id=cage.id,
+            ),
+        ])
+    elif FatteningCage.objects.filter(pk=cage.id).exists():
+        rnd = random.choice([
+            FatherRabbit(
+                is_resting=random.choice([True, False]),
+                is_male=True,
+                is_ill=random.choices([True, False], weights=[0.05, 0.95], k=1)[0],
+                current_type='P'
+            ),
+            FatteningRabbit(
+                is_male=random.choice([True, False]),
+                current_type='F',
+            ),
+        ])
+    else:
+        rnd = DeadRabbit(
+                death_date=date.today()-timedelta(days=random.randint(1, 150)),
+                death_cause=random.choice(['S', 'M', 'I', 'D', 'H', 'C', 'E']),
+                is_male=random.choice([True, False]),
+                current_type='D'
+        )
+    rnd.father = father
+    rnd.mother = mother
+    rnd.birthdate = date.today()-timedelta(days=random.randint(3, 180))
+    return rnd
+
+
+def random_rabbits_generator(generations_amount: int):
+    average_breeding_potential = 4
+    total_rabbits = 2 * (1 - average_breeding_potential ** generations_amount) / (1 - average_breeding_potential)
+    total_cages = total_rabbits / 2
+    current_generation_list = []
+    next_generation_list = []
+    for generation in range(generations_amount - 1):
+        pass
