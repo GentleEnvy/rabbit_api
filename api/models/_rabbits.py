@@ -11,6 +11,7 @@ from multiselectfield import MultiSelectField
 from api.models._history import *
 from api.models.base import BaseHistoricalModel
 from api.models._cages import Cage, FatteningCage, MotherCage
+from api.managers import *
 
 __all__ = [
     'Rabbit', 'DeadRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
@@ -19,7 +20,7 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(BaseHistoricalModel):
+class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
     history_model = RabbitHistory
 
     birthdate = models.DateField(default=now)
@@ -140,7 +141,6 @@ class FatteningRabbit(_RabbitInCage):
 class Bunny(_RabbitInCage):
     history_model = BunnyHistory
 
-    need_jigging = models.BooleanField(default=False)
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
@@ -159,13 +159,12 @@ class MotherRabbit(_RabbitInCage):
     history_model = MotherRabbitHistory
 
     status = MultiSelectField(
-        choices=(STATUS_CHOICES := (
+        choices=(CHOICES_STATUS := (
             (STATUS_PREGNANT := 'P', 'STATUS_PREGNANT'),
             (STATUS_FEEDS := 'F', 'STATUS_FEEDS')
         )),
         blank=True, default='', max_choices=2
     )
-    last_childbirth = models.DateField(null=True, blank=True)
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
@@ -190,7 +189,6 @@ class MotherRabbit(_RabbitInCage):
 class FatherRabbit(_RabbitInCage):
     history_model = FatherRabbitHistory
 
-    is_resting = models.BooleanField(default=True)
     cage = models.ForeignKey(
         Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
