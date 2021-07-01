@@ -7,6 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
 from multiselectfield import MultiSelectField
 
+import api.models as api_models
 from api.models.base import BaseModel
 
 __all__ = ['Cage', 'FatteningCage', 'MotherCage']
@@ -53,7 +54,7 @@ class Cage(BaseModel):
         raise TypeError('The cell type is not defined')
 
     @property
-    def rabbits(self) -> set['import api.models.Rabbit']:
+    def rabbits(self) -> set['api_models.Rabbit']:
         raise NotImplementedError
 
     def get_absolute_url(self):

@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils.timezone import now
 from multiselectfield import MultiSelectField
 
+from api.managers.mixins import *
 from api.models._history import *
 from api.models.base import BaseHistoricalModel
 from api.models._cages import Cage, FatteningCage, MotherCage
-from api.managers import *
 
 __all__ = [
     'Rabbit', 'DeadRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
@@ -116,7 +116,7 @@ class _RabbitInCage(Rabbit):
         raise NotImplementedError
 
 
-class FatteningRabbit(_RabbitInCage):
+class FatteningRabbit(_RabbitInCage, FatteningRabbitTimeManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
 
     history_model = FatteningRabbitHistory
@@ -138,7 +138,7 @@ class FatteningRabbit(_RabbitInCage):
             raise ValidationError('The sex of the FatteningRabbit must be determined')
 
 
-class Bunny(_RabbitInCage):
+class Bunny(_RabbitInCage, BunnyTimeManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
 
     history_model = BunnyHistory
@@ -155,7 +155,7 @@ class Bunny(_RabbitInCage):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
 
 
-class MotherRabbit(_RabbitInCage):
+class MotherRabbit(_RabbitInCage, MotherRabbitTimeManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
 
     history_model = MotherRabbitHistory
@@ -186,7 +186,7 @@ class MotherRabbit(_RabbitInCage):
             raise ValidationError('MotherRabbit must be a female')
 
 
-class FatherRabbit(_RabbitInCage):
+class FatherRabbit(_RabbitInCage, FatherRabbitTimeManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
 
     history_model = FatherRabbitHistory
