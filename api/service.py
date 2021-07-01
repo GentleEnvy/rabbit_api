@@ -94,11 +94,14 @@ def get_next_random_rabbit(mother: MotherRabbit, father: FatherRabbit, cage: Cag
                 is_resting=random.choice([True, False]),
                 is_male=True,
                 is_ill=random.choices([True, False], weights=[0.05, 0.95], k=1)[0],
-                current_type='P'
+                current_type='P',
+                cage_id=cage.id
             ),
             FatteningRabbit(
                 is_male=random.choice([True, False]),
+                is_ill=random.choices([True, False], weights=[0.05, 0.95], k=1)[0],
                 current_type='F',
+                cage_id=cage.id,
             ),
         ])
     else:
@@ -118,7 +121,27 @@ def random_rabbits_generator(generations_amount: int):
     average_breeding_potential = 4
     total_rabbits = 2 * (1 - average_breeding_potential ** generations_amount) / (1 - average_breeding_potential)
     total_cages = total_rabbits / 2
+    cage_list = set()
     current_generation_list = []
     next_generation_list = []
+    for cage_number in range(total_cages):
+        cage_letter = {0: 'а', 1: 'б', 2: 'в', 3: 'г'}
+        cage_list.add(random.choices([
+            MotherCage(
+                is_parallel=random.choice([True, False]),
+                farm_number=random.randint(2, 4),
+                number=cage_number // 4,
+                letter=cage_letter.get(cage_number % 4),
+                status=random.choices(['', 'R', 'C'], weights=[0.8, 0.1, 0.1])[0]
+            ),
+            FatteningCage(
+                farm_number=random.randint(2, 4),
+                number=cage_number // 4,
+                letter=cage_letter.get(cage_number % 4),
+                status=random.choices(['', 'R', 'C'], weights=[0.8, 0.1, 0.1])[0]
+            )
+        ], [0.25, 0.75]
+        ))
     for generation in range(generations_amount - 1):
         pass
+
