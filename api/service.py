@@ -117,31 +117,37 @@ def get_next_random_rabbit(mother: MotherRabbit, father: FatherRabbit, cage: Cag
     return rnd
 
 
-def random_rabbits_generator(generations_amount: int):
-    average_breeding_potential = 4
-    total_rabbits = 2 * (1 - average_breeding_potential ** generations_amount) / (1 - average_breeding_potential)
-    total_cages = total_rabbits / 2
+def generate_cages(total_cages: int) -> set:
     cage_list = set()
-    current_generation_list = []
-    next_generation_list = []
+    farm_capacity = total_cages // 3
     for cage_number in range(total_cages):
         cage_letter = {0: 'а', 1: 'б', 2: 'в', 3: 'г'}
         cage_list.add(random.choices([
             MotherCage(
                 is_parallel=random.choice([True, False]),
-                farm_number=random.randint(2, 4),
+                farm_number=cage_number // farm_capacity + 2,
                 number=cage_number // 4,
                 letter=cage_letter.get(cage_number % 4),
                 status=random.choices(['', 'R', 'C'], weights=[0.8, 0.1, 0.1])[0]
             ),
             FatteningCage(
-                farm_number=random.randint(2, 4),
+                farm_number=cage_number // farm_capacity + 2,
                 number=cage_number // 4,
                 letter=cage_letter.get(cage_number % 4),
                 status=random.choices(['', 'R', 'C'], weights=[0.8, 0.1, 0.1])[0]
             )
         ], [0.25, 0.75]
         ))
+    return cage_list
+
+
+def random_rabbits_generator(generations_amount: int):
+    average_breeding_potential = 4
+    total_rabbits = 2 * (1 - average_breeding_potential ** generations_amount) / (1 - average_breeding_potential)
+    total_cages = total_rabbits / 2
+    cage_list = generate_cages(total_cages)
+    current_generation_list = []
+    next_generation_list = []
     for generation in range(generations_amount - 1):
         pass
 
