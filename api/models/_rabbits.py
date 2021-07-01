@@ -21,6 +21,8 @@ _is_valid_cage = {'status': []}
 
 
 class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
+    CHAR_TYPE: str = None
+
     history_model = RabbitHistory
 
     birthdate = models.DateField(default=now)
@@ -44,10 +46,8 @@ class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
         max_length=1, default=TYPE_BUNNY
     )
 
-    CHAR_TYPE: str = None
-
     @classmethod
-    def cast_to(cls, rabbit):
+    def cast_to(cls, rabbit: Rabbit):
         if cls is Rabbit:
             raise NotImplementedError("instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
@@ -63,7 +63,7 @@ class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
                 DeadRabbit, FatteningRabbit, Bunny, MotherRabbit, FatherRabbit
         ):
             if self.current_type == rabbit_class.CHAR_TYPE:
-                return rabbit_class.objects.get(id=self.id)
+                return getattr(self, rabbit_class.__name__.lower())
         raise AttributeError('Incorrect current_type')
 
     def get_absolute_url(self) -> str:
@@ -71,6 +71,8 @@ class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
 
 
 class DeadRabbit(Rabbit):
+    CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
+
     death_date = models.DateField(auto_now_add=True)
     death_cause = models.CharField(
         choices=(
@@ -85,10 +87,8 @@ class DeadRabbit(Rabbit):
         max_length=1
     )
 
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
-
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> DeadRabbit:
+    def cast_to(cls, rabbit) -> DeadRabbit:
         return super().cast_to(rabbit)
 
     def get_absolute_url(self):
@@ -101,9 +101,6 @@ class _RabbitInCage(Rabbit):
 
     cage: Cage
 
-    def get_absolute_url(self):
-        raise NotImplementedError
-
     def clean(self):
         super().clean()
         # TODO: fix cage clean
@@ -115,37 +112,40 @@ class _RabbitInCage(Rabbit):
         #             neighbour.father is not None and neighbour.father != self.father:
         #         raise ValidationError('Only brothers and sisters can sit in one cage')
 
+    def get_absolute_url(self):
+        raise NotImplementedError
+
 
 class FatteningRabbit(_RabbitInCage):
+    CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
+
     history_model = FatteningRabbitHistory
 
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
 
-    def clean(self):
-        super().clean()
-        if self.is_male is None:
-            raise ValidationError('The sex of the FatteningRabbit must be determined')
-
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
-
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> FatteningRabbit:
+    def cast_to(cls, rabbit) -> FatteningRabbit:
         return super().cast_to(rabbit)
 
     def get_absolute_url(self):
         return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
 
+    def clean(self):
+        super().clean()
+        if self.is_male is None:
+            raise ValidationError('The sex of the FatteningRabbit must be determined')
+
 
 class Bunny(_RabbitInCage):
+    CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
+
     history_model = BunnyHistory
 
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
 
     @classmethod
     def cast_to(cls, rabbit: Rabbit) -> Bunny:
@@ -156,8 +156,13 @@ class Bunny(_RabbitInCage):
 
 
 class MotherRabbit(_RabbitInCage):
+    CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
+
     history_model = MotherRabbitHistory
 
+    cage = models.ForeignKey(
+        MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
+    )
     status = MultiSelectField(
         choices=(CHOICES_STATUS := (
             (STATUS_PREGNANT := 'P', 'STATUS_PREGNANT'),
@@ -165,14 +170,9 @@ class MotherRabbit(_RabbitInCage):
         )),
         blank=True, default='', max_choices=2
     )
-    cage = models.ForeignKey(
-        MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
-    )
-
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
 
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> MotherRabbit:
+    def cast_to(cls, rabbit) -> MotherRabbit:
         return super().cast_to(rabbit)
 
     def get_absolute_url(self):
@@ -187,16 +187,16 @@ class MotherRabbit(_RabbitInCage):
 
 
 class FatherRabbit(_RabbitInCage):
+    CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
+
     history_model = FatherRabbitHistory
 
     cage = models.ForeignKey(
         Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
 
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
-
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> FatherRabbit:
+    def cast_to(cls, rabbit) -> FatherRabbit:
         return super().cast_to(rabbit)
 
     def get_absolute_url(self):
