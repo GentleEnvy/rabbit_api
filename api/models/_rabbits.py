@@ -5,8 +5,7 @@ from typing import Final, Any, Union
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.utils.timezone import now
-from multiselectfield import MultiSelectField
+from django.utils import timezone
 
 from api.managers.mixins import *
 from api.models._history import *
@@ -25,7 +24,7 @@ class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
 
     history_model = RabbitHistory
 
-    birthdate = models.DateField(default=now)
+    birthdate = models.DateField(default=timezone.now)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )
