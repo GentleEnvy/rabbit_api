@@ -11,7 +11,7 @@ from multiselectfield import MultiSelectField
 from api.managers.mixins import *
 from api.models._history import *
 from api.models.base import BaseHistoricalModel
-from api.models._cages import Cage, FatteningCage, MotherCage
+from api.models._cages import *
 
 __all__ = [
     'Rabbit', 'DeadRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
@@ -161,15 +161,9 @@ class MotherRabbit(_RabbitInCage, MotherRabbitTimeManagerMixin):
     history_model = MotherRabbitHistory
 
     cage = models.ForeignKey(
-        MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
+        Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-    status = MultiSelectField(
-        choices=(CHOICES_STATUS := (
-            (STATUS_PREGNANT := 'P', 'STATUS_PREGNANT'),
-            (STATUS_FEEDS := 'F', 'STATUS_FEEDS')
-        )),
-        blank=True, default='', max_choices=2
-    )
+    is_pregnant = models.BooleanField(default=False)
 
     @classmethod
     def cast_to(cls, rabbit) -> MotherRabbit:
@@ -192,7 +186,7 @@ class FatherRabbit(_RabbitInCage, FatherRabbitTimeManagerMixin):
     history_model = FatherRabbitHistory
 
     cage = models.ForeignKey(
-        Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
+        FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
 
     @classmethod
