@@ -14,64 +14,44 @@ _field_kwargs = {
 }
 
 
-class RabbitHistory(BaseHistoryModel):
+class _BaseRabbitHistory(BaseHistoryModel):
     class Meta:
+        abstract = True
         unique_together = ('rabbit', 'time')
 
     historical_name = 'rabbit'
 
-    rabbit = models.ForeignKey('Rabbit', on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
+
+
+class RabbitHistory(_BaseRabbitHistory):
+    rabbit = models.ForeignKey('Rabbit', on_delete=models.CASCADE)
 
     is_vaccinated = models.BooleanField(**_field_kwargs)
-    is_ill = models.BooleanField(**_field_kwargs)
     current_type = models.TextField(**_field_kwargs)
+    warning_status = models.TextField(**_field_kwargs)
 
 
-class FatteningRabbitHistory(BaseHistoryModel):
-    class Meta:
-        unique_together = ('rabbit', 'time')
-
-    historical_name = 'rabbit'
-
+class FatteningRabbitHistory(_BaseRabbitHistory):
     rabbit = models.ForeignKey('FatteningRabbit', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
 
     cage = models.IntegerField(**_field_kwargs)
 
 
-class BunnyHistory(BaseHistoryModel):
-    class Meta:
-        unique_together = ('rabbit', 'time')
-
-    historical_name = 'rabbit'
-
+class BunnyHistory(_BaseRabbitHistory):
     rabbit = models.ForeignKey('Bunny', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
 
     cage = models.IntegerField(**_field_kwargs)
 
 
-class MotherRabbitHistory(BaseHistoryModel):
-    class Meta:
-        unique_together = ('rabbit', 'time')
-
-    historical_name = 'rabbit'
-
+class MotherRabbitHistory(_BaseRabbitHistory):
     rabbit = models.ForeignKey('MotherRabbit', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
 
-    status = models.TextField(**_field_kwargs)
     cage = models.IntegerField(**_field_kwargs)
+    is_pregnant = models.BooleanField(**_field_kwargs)
 
 
-class FatherRabbitHistory(BaseHistoryModel):
-    class Meta:
-        unique_together = ('rabbit', 'time')
-
-    historical_name = 'rabbit'
-
+class FatherRabbitHistory(_BaseRabbitHistory):
     rabbit = models.ForeignKey('FatherRabbit', on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
 
     cage = models.IntegerField(**_field_kwargs)

@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from multiselectfield import MultiSelectField
 
 from api.managers.mixins import *
 from api.models._history import *
@@ -33,7 +34,6 @@ class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
     )
     is_male = models.BooleanField(null=True, blank=True)
     is_vaccinated = models.BooleanField(default=False)
-    is_ill = models.BooleanField(default=False)
     current_type = models.CharField(
         choices=(
             (TYPE_DIED := 'D', 'TYPE_DEAD'),
@@ -43,6 +43,14 @@ class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
             (TYPE_MOTHER := 'M', 'TYPE_MOTHER')
         ),
         max_length=1, default=TYPE_BUNNY
+    )
+    warning_status = MultiSelectField(
+        choices=(
+            (NOT_EAT := 'NE', 'NOT_EAT'),
+            (NOT_DRINK := 'ND', 'NOT_DRINK'),
+            (GOT_SICK := 'GS', 'GOT_SICK')
+        ),
+        blank=True, default='', max_choices=3
     )
 
     @classmethod
