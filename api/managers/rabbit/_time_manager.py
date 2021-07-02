@@ -56,9 +56,18 @@ class BunnyTimeManager(RabbitTimeManager):
 class MotherRabbitTimeManager(RabbitTimeManager):
     model: 'MotherRabbit'
 
+    STATUS_PREGNANT = 'P'
+    STATUS_FEEDS_BUNNY = 'FB'
+
     @property
     def status(self):
-        return set(self.model.status)
+        statuses = set()
+        if self.model.is_pregnant:
+            statuses.add(self.STATUS_PREGNANT)
+        rabbits_in_cage = self.model.cage.cast.rabbits
+        if len(rabbits_in_cage) > 1:
+            statuses.add(self.STATUS_FEEDS_BUNNY)
+        return statuses
 
 
 class FatherRabbitTimeManager(RabbitTimeManager):
@@ -69,7 +78,7 @@ class FatherRabbitTimeManager(RabbitTimeManager):
 
     @property
     def status(self):
-        neighbours = self.model.cage.rabbits
-        if len(neighbours) == 0:
+        rabbits_in_cage = self.model.cage.cast.rabbits
+        if len(rabbits_in_cage) == 1:
             return {self.STATUS_RESTING}
         return {self.STATUS_MATING}
