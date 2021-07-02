@@ -1,7 +1,6 @@
 from abc import abstractmethod
-from datetime import datetime, timedelta
-
-from django.utils import timezone
+from datetime import datetime, timedelta, date
+from typing import Optional
 
 from api.managers.base import *
 from api.models import *
@@ -62,11 +61,11 @@ class FatteningRabbitTimeManager(RabbitTimeManager):
                 # was underweight
                 if last_inspection_with_delay.time + timedelta(
                         last_inspection_with_delay.delay + 10
-                ) > timezone.now():
+                ) > self.time:
                     return {self.STATUS_READY_TO_SLAUGHTER}
                 return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
             # is underweight
-            if last_inspection.time + timedelta(last_inspection.delay) > timezone.now():
+            if last_inspection.time + timedelta(last_inspection.delay) > self.time:
                 return {self.STATUS_NEED_INSPECTION}
             # continue to fattening on delay
         # younger than 80 days
@@ -89,14 +88,26 @@ class BunnyTimeManager(RabbitTimeManager):
 class MotherRabbitTimeManager(RabbitTimeManager):
     model: 'MotherRabbit'
 
+    STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_PREGNANT = 'P'
     STATUS_FEEDS_BUNNY = 'FB'
+
+    @property
+    def last_births(self) -> Optional[date]:
+        try:
+            return Rabbit.objects.filter(
+                mother__rabbit=self.model
+            ).latest('birthdate').birthdate
+        except Rabbit.DoesNotExist:
+            return None
 
     @property
     def status(self):
         statuses = set()
         if self.model.is_pregnant:
             statuses.add(self.STATUS_PREGNANT)
+        elif self.age.days >= 150 and self.last_births + timedelta(3) > self.time:
+            statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         rabbits_in_cage = self.model.cage.cast.rabbits
         if len(rabbits_in_cage) > 1:
             statuses.add(self.STATUS_FEEDS_BUNNY)
@@ -106,11 +117,15 @@ class MotherRabbitTimeManager(RabbitTimeManager):
 class FatherRabbitTimeManager(RabbitTimeManager):
     model: 'FatherRabbit'
 
+    STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_RESTING = 'R'
 
     @property
     def status(self):
+        statuses = set()
+        if self.age.days >= 180:
+            statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         rabbits_in_cage = self.model.cage.cast.rabbits
         if len(rabbits_in_cage) == 1:
-            return {self.STATUS_RESTING}
-        return set()
+            statuses.add(self.STATUS_RESTING)
+        return statuses
