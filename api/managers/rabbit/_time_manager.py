@@ -11,7 +11,7 @@ __all__ = [
 
 
 class RabbitTimeManager(BaseTimeManager):
-    model: Rabbit
+    model: 'Rabbit'
 
     @property
     def age(self) -> timedelta:
@@ -24,7 +24,7 @@ class RabbitTimeManager(BaseTimeManager):
 
 
 class FatteningRabbitTimeManager(RabbitTimeManager):
-    model: FatteningRabbit
+    model: 'FatteningRabbit'
 
     STATUS_NEED_VACCINATED = 'NV'
     STATUS_NEED_INSPECTION = 'NI'
@@ -41,7 +41,7 @@ class FatteningRabbitTimeManager(RabbitTimeManager):
 
 
 class BunnyTimeManager(RabbitTimeManager):
-    model: Bunny
+    model: 'Bunny'
 
     STATUS_NEED_JIGGING = 'NJ'
     STATUS_MOTHER_FEEDS = 'MF'
@@ -54,7 +54,7 @@ class BunnyTimeManager(RabbitTimeManager):
 
 
 class MotherRabbitTimeManager(RabbitTimeManager):
-    model: MotherRabbit
+    model: 'MotherRabbit'
 
     @property
     def status(self):
@@ -62,7 +62,7 @@ class MotherRabbitTimeManager(RabbitTimeManager):
 
 
 class FatherRabbitTimeManager(RabbitTimeManager):
-    model: FatherRabbit
+    model: 'FatherRabbit'
 
     STATUS_RESTING = 'R'
     STATUS_MATING = 'M'  # FIXME: leave ?
