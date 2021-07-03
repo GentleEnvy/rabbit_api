@@ -9,7 +9,7 @@ from api.models.base import BaseModel
 __all__ = ['FeedBatch']
 
 
-class FeedBatch(BaseModel):
+class FeedBatch(models.Model):
     delivery_date = models.DateField(default=now)
     bags_number = models.IntegerField(null=False, blank=False)
 
