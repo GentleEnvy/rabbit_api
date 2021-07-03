@@ -20,7 +20,7 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(BaseHistoricalModel, RabbitTimeManagerMixin):
+class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     CHAR_TYPE: str = None
 
     history_model = RabbitHistory
@@ -123,7 +123,7 @@ class _RabbitInCage(Rabbit):
         raise NotImplementedError
 
 
-class FatteningRabbit(_RabbitInCage, FatteningRabbitTimeManagerMixin):
+class FatteningRabbit(_RabbitInCage, FatteningRabbitManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
 
     history_model = FatteningRabbitHistory
@@ -145,7 +145,7 @@ class FatteningRabbit(_RabbitInCage, FatteningRabbitTimeManagerMixin):
             raise ValidationError('The sex of the FatteningRabbit must be determined')
 
 
-class Bunny(_RabbitInCage, BunnyTimeManagerMixin):
+class Bunny(_RabbitInCage, BunnyManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
 
     history_model = BunnyHistory
@@ -162,7 +162,7 @@ class Bunny(_RabbitInCage, BunnyTimeManagerMixin):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
 
 
-class MotherRabbit(_RabbitInCage, MotherRabbitTimeManagerMixin):
+class MotherRabbit(_RabbitInCage, MotherRabbitManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
 
     history_model = MotherRabbitHistory
@@ -187,7 +187,7 @@ class MotherRabbit(_RabbitInCage, MotherRabbitTimeManagerMixin):
             raise ValidationError('MotherRabbit must be a female')
 
 
-class FatherRabbit(_RabbitInCage, FatherRabbitTimeManagerMixin):
+class FatherRabbit(_RabbitInCage, FatherRabbitManagerMixin):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
 
     history_model = FatherRabbitHistory
