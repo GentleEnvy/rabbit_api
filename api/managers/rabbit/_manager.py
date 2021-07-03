@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from typing import Optional
 
 from django.utils.timezone import now
@@ -19,7 +19,7 @@ class RabbitManager(BaseManager):
 
     @property
     def age(self) -> timedelta:
-        return diff_time(self.model.birthdate)
+        return diff_time(now(), self.model.birthdate)
 
     @property
     @abstractmethod
@@ -96,15 +96,6 @@ class MotherRabbitManager(RabbitManager):
     STATUS_FEEDS_BUNNY = 'FB'
 
     @property
-    def last_births(self) -> Optional[date]:
-        try:
-            return Rabbit.objects.filter(
-                mother__rabbit=self.model
-            ).latest('birthdate').birthdate
-        except Rabbit.DoesNotExist:
-            return None
-
-    @property
     def status(self):
         statuses = set()
         if self.model.is_pregnant:
@@ -115,6 +106,24 @@ class MotherRabbitManager(RabbitManager):
         if len(rabbits_in_cage) > 1:
             statuses.add(self.STATUS_FEEDS_BUNNY)
         return statuses
+
+    @property
+    def last_births(self) -> Optional[date]:
+        try:
+            return Rabbit.objects.filter(
+                mother__rabbit=self.model
+            ).latest('birthdate').birthdate
+        except Rabbit.DoesNotExist:
+            return None
+
+    @property
+    def last_fertilization(self) -> Optional[datetime]:
+        try:
+            return MotherRabbitHistory.objects.filter(
+                rabbit=self.model, is_pregnant=True
+            ).latest('time').time
+        except MotherRabbitHistory.DoesNotExist:
+            return None
 
 
 class FatherRabbitManager(RabbitManager):
