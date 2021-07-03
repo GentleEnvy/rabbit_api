@@ -21,6 +21,7 @@ class _BaseRabbitHistory(BaseHistoryModel):
 
     historical_name = 'rabbit'
 
+    rabbit: models.ForeignKey
     time = models.DateTimeField(auto_now_add=True)
 
 
