@@ -123,7 +123,7 @@ class _RabbitInCage(Rabbit):
         raise NotImplementedError
 
 
-class FatteningRabbit(_RabbitInCage, FatteningRabbitManagerMixin):
+class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
 
     history_model = FatteningRabbitHistory
@@ -145,7 +145,7 @@ class FatteningRabbit(_RabbitInCage, FatteningRabbitManagerMixin):
             raise ValidationError('The sex of the FatteningRabbit must be determined')
 
 
-class Bunny(_RabbitInCage, BunnyManagerMixin):
+class Bunny(BunnyManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
 
     history_model = BunnyHistory
@@ -162,7 +162,7 @@ class Bunny(_RabbitInCage, BunnyManagerMixin):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
 
 
-class MotherRabbit(_RabbitInCage, MotherRabbitManagerMixin):
+class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
 
     history_model = MotherRabbitHistory
@@ -187,7 +187,7 @@ class MotherRabbit(_RabbitInCage, MotherRabbitManagerMixin):
             raise ValidationError('MotherRabbit must be a female')
 
 
-class FatherRabbit(_RabbitInCage, FatherRabbitManagerMixin):
+class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
 
     history_model = FatherRabbitHistory

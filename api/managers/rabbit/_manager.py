@@ -18,7 +18,10 @@ class RabbitManager(BaseManager):
 
     @property
     def age(self) -> timedelta:
-        return now() - datetime.combine(self.model.birthdate, datetime.min.time())
+        now_time = now()
+        return now_time - datetime.combine(
+            self.model.birthdate, datetime.min.time(), tzinfo=now_time.tzinfo
+        )
 
     @property
     @abstractmethod
