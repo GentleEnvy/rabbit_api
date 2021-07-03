@@ -1,9 +1,10 @@
 from abc import abstractmethod
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
 from typing import Optional
 
 from django.utils.timezone import now
 
+from api.utils.functions import diff_time
 from api.managers.base import *
 from api.models import *
 
@@ -18,10 +19,7 @@ class RabbitManager(BaseManager):
 
     @property
     def age(self) -> timedelta:
-        now_time = now()
-        return now_time - datetime.combine(
-            self.model.birthdate, datetime.min.time(), tzinfo=now_time.tzinfo
-        )
+        return diff_time(self.model.birthdate)
 
     @property
     @abstractmethod
