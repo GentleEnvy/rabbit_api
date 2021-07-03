@@ -3,7 +3,7 @@ from typing import Union
 
 from django.utils.timezone import utc
 
-__all__ = ['diff_time']
+__all__ = ['diff_time', 'date_to_datetime']
 
 
 def diff_time(
