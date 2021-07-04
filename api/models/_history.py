@@ -40,7 +40,6 @@ class MotherRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('MotherRabbit', on_delete=models.CASCADE)
 
     cage = models.IntegerField(**_field_kwargs)
-    is_pregnant = models.BooleanField(**_field_kwargs)
 
 
 class FatherRabbitHistory(RabbitHistory):

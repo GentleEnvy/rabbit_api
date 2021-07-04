@@ -177,7 +177,7 @@ class Migration(migrations.Migration):
             bases=('api.plan',),
         ),
         migrations.CreateModel(
-            name='Inspection',
+            name='BeforeSlaughterInspection',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('time', models.DateField(default=django.utils.timezone.now)),

@@ -170,7 +170,6 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-    is_pregnant = models.BooleanField(default=False)
 
     @classmethod
     def cast_to(cls, rabbit) -> MotherRabbit:
