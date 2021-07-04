@@ -6,7 +6,7 @@ from django.utils.timezone import now
 
 from api.utils.functions import diff_time
 from api.managers.base import *
-from api.models import *
+from api import models as api_models
 
 __all__ = [
     'RabbitManager', 'FatteningRabbitManager', 'BunnyManager',
@@ -15,7 +15,7 @@ __all__ = [
 
 
 class RabbitManager(BaseManager):
-    model: 'Rabbit'
+    model: 'api_models.Rabbit'
 
     @property
     def age(self) -> timedelta:
@@ -28,7 +28,7 @@ class RabbitManager(BaseManager):
 
 
 class FatteningRabbitManager(RabbitManager):
-    model: 'FatteningRabbit'
+    model: 'api_models.FatteningRabbit'
 
     STATUS_NEED_VACCINATION = 'NV'
     STATUS_NEED_INSPECTION = 'NI'
@@ -38,6 +38,7 @@ class FatteningRabbitManager(RabbitManager):
 
     @property
     def status(self):
+        Inspection = api_models.Inspection
         if not self.model.is_vaccinated:
             return {self.STATUS_NEED_VACCINATION}
         # vaccinated
@@ -76,7 +77,7 @@ class FatteningRabbitManager(RabbitManager):
 
 
 class BunnyManager(RabbitManager):
-    model: 'Bunny'
+    model: 'api_models.Bunny'
 
     STATUS_NEED_JIGGING = 'NJ'
     STATUS_MOTHER_FEEDS = 'MF'
@@ -89,7 +90,7 @@ class BunnyManager(RabbitManager):
 
 
 class MotherRabbitManager(RabbitManager):
-    model: 'MotherRabbit'
+    model: 'api_models.MotherRabbit'
 
     STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_PREGNANT = 'P'
@@ -110,24 +111,24 @@ class MotherRabbitManager(RabbitManager):
     @property
     def last_births(self) -> Optional[date]:
         try:
-            return Rabbit.objects.filter(
+            return api_models.Rabbit.objects.filter(
                 mother__rabbit=self.model
             ).latest('birthdate').birthdate
-        except Rabbit.DoesNotExist:
+        except api_models.Rabbit.DoesNotExist:
             return None
 
     @property
     def last_fertilization(self) -> Optional[datetime]:
         try:
-            return MotherRabbitHistory.objects.filter(
+            return api_models.MotherRabbitHistory.objects.filter(
                 rabbit=self.model, is_pregnant=True
             ).latest('time').time
-        except MotherRabbitHistory.DoesNotExist:
+        except api_models.MotherRabbitHistory.DoesNotExist:
             return None
 
 
 class FatherRabbitManager(RabbitManager):
-    model: 'FatherRabbit'
+    model: 'api_models.FatherRabbit'
 
     STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_RESTING = 'R'

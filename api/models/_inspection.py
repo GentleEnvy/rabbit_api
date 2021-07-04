@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from api.models import *
+from api.models._rabbits import *
 from api.models.base import *
 
 __all__ = ['Inspection']
