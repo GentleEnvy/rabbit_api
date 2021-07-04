@@ -38,26 +38,26 @@ class FatteningRabbitManager(RabbitManager):
 
     @property
     def status(self):
-        Inspection = api_models.Inspection
+        BeforeSlaughterInspection = api_models.BeforeSlaughterInspection
         if not self.model.is_vaccinated:
             return {self.STATUS_NEED_VACCINATION}
         # vaccinated
         if (age := self.age.days) >= 80:
             try:
-                last_inspection = Inspection.objects.filter(
+                last_inspection = BeforeSlaughterInspection.objects.filter(
                     time__gte=self.model.birthdate + timedelta(80),
                     rabbit=self.model
                 ).latest('time')
-            except Inspection.DoesNotExist:
+            except BeforeSlaughterInspection.DoesNotExist:
                 return {self.STATUS_NEED_INSPECTION}
             # recently there was an inspection
             if last_inspection.delay is None:
                 try:
-                    last_inspection_with_delay = Inspection.objects.filter(
+                    last_inspection_with_delay = BeforeSlaughterInspection.objects.filter(
                         time__gte=self.model.birthdate + timedelta(80),
                         rabbit=self.model
                     ).exclude(delay=None).latest('time')
-                except Inspection.DoesNotExist:
+                except BeforeSlaughterInspection.DoesNotExist:
                     # not underweight
                     if age >= 90:
                         return {self.STATUS_READY_TO_SLAUGHTER}
@@ -93,19 +93,48 @@ class MotherRabbitManager(RabbitManager):
     model: 'api_models.MotherRabbit'
 
     STATUS_READY_FOR_FERTILIZATION = 'RF'
-    STATUS_PREGNANT = 'P'
+    STATUS_UNCONFIRMED_PREGNANT = 'UP'
+    STATUS_NEED_INSPECTION = 'NI'
+    STATUS_CONFIRMED_PREGNANT = 'CP'
     STATUS_FEEDS_BUNNY = 'FB'
 
     @property
     def status(self):
+        PregnancyInspection = api_models.PregnancyInspection
         statuses = set()
-        if self.model.is_pregnant:
-            statuses.add(self.STATUS_PREGNANT)
-        elif self.age.days >= 150 and self.last_births + timedelta(3) > now():
-            statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
+
         rabbits_in_cage = self.model.cage.cast.rabbits
         if len(rabbits_in_cage) > 1:
             statuses.add(self.STATUS_FEEDS_BUNNY)
+
+        if self.age.days < 150:
+            return statuses
+
+        # age >= 150
+        last_births = self.last_births
+        last_fertilization = self.last_fertilization
+        if last_fertilization is None or diff_time(now(), last_fertilization).days >= 40:
+            if last_births is None or last_births + timedelta(3) > now():
+                statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
+            return statuses
+        # last_fertilization is not None and isn't overdue
+        if last_births is None or last_births < last_fertilization:
+            try:
+                last_pregnancy_inspection = PregnancyInspection.objects.filter(
+                    mother_rabbit=self.model, time__gte=last_fertilization
+                ).latest('time')
+            except PregnancyInspection.DoesNotExist:
+                statuses.add(self.STATUS_NEED_INSPECTION)
+                statuses.add(self.STATUS_UNCONFIRMED_PREGNANT)
+                return statuses
+            if last_pregnancy_inspection.is_pregnant:
+                statuses.add(self.STATUS_CONFIRMED_PREGNANT)
+            else:
+                statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
+            return statuses
+        # last_births is not None and last_births > last_fertilization
+        if last_births + timedelta(3) > now():
+            statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         return statuses
 
     @property
@@ -120,10 +149,10 @@ class MotherRabbitManager(RabbitManager):
     @property
     def last_fertilization(self) -> Optional[datetime]:
         try:
-            return api_models.MotherRabbitHistory.objects.filter(
-                rabbit=self.model, is_pregnant=True
+            return api_models.Mating.objects.filter(
+                mother_rabbit=self.model
             ).latest('time').time
-        except api_models.MotherRabbitHistory.DoesNotExist:
+        except api_models.Mating.DoesNotExist:
             return None
 
 

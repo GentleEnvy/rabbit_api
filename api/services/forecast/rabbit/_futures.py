@@ -100,21 +100,21 @@ class MotherRabbitFuture(BaseRabbitFuture):
         if self.age(condition.date).days >= 150:
             if MotherRabbitManager.STATUS_FEEDS_BUNNY in self.status:
                 mother_status.add(MotherRabbitManager.STATUS_FEEDS_BUNNY)
-            if MotherRabbitManager.STATUS_PREGNANT in self.status:
+            if MotherRabbitManager.STATUS_CONFIRMED_PREGNANT in self.status:
                 if self.last_fertilization is not None:
                     if diff_time(condition.date, self.last_fertilization).days >= 29:
                         self._birth(condition, _rand_birth_count())
                         mother_status.add(MotherRabbitManager.STATUS_FEEDS_BUNNY)
                         last_births = condition.date
                     else:  # pregnancy duration < 29 days
-                        mother_status.add(MotherRabbitManager.STATUS_PREGNANT)
+                        mother_status.add(MotherRabbitManager.STATUS_CONFIRMED_PREGNANT)
                 else:  # self.last_fertilization is None
                     last_births = condition.date
             else:  # female is not pregnant
                 if MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION in self.status:
                     if _rand_was_fertilized():
                         last_fertilization = condition.date
-                        mother_status.add(MotherRabbitManager.STATUS_PREGNANT)
+                        mother_status.add(MotherRabbitManager.STATUS_CONFIRMED_PREGNANT)
                     else:  # female wasn't fertilized
                         mother_status.add(
                             MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
