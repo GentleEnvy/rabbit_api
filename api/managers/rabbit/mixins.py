@@ -16,7 +16,7 @@ class RabbitManagerMixin(BaseManagerMixin):
 
 
 class FatteningRabbitManagerMixin(BaseManagerMixin):
-    _manager = FatherRabbitManager
+    _manager = FatteningRabbitManager
 
     @property
     def manager(self) -> FatherRabbitManager:
