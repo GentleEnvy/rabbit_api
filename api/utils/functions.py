@@ -10,9 +10,9 @@ def diff_time(
         reduced: Union[date, datetime], deductible: Union[date, datetime],
         tz: tzinfo = utc
 ) -> timedelta:
-    if isinstance(reduced, date):
+    if type(reduced) is date:
         reduced = date_to_datetime(reduced, tz=tz)
-    if isinstance(deductible, date):
+    if type(deductible) is date:
         deductible = date_to_datetime(deductible, tz=tz)
     return reduced - deductible
 
