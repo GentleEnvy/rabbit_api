@@ -6,16 +6,26 @@ from api.models import *
 __all__ = ['RabbitGeneralSerializer']
 
 
+# noinspection PyMethodMayBeStatic
 class RabbitGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rabbit
-        fields = ['id', 'cage', 'age']
+        fields = ['id', 'cage', 'birthday', 'is_male', 'current_type', 'weight', 'status']
 
-    age = serializers.SerializerMethodField()
     cage = serializers.SerializerMethodField()
+    weight = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
 
     def get_cage(self, rabbit):
         return model_to_dict(rabbit.cast.cage, fields=['farm_number', 'number', 'letter'])
 
-    def get_age(self, rabbit):
-        return rabbit.cast.manager.age
+    def get_weight(self, rabbit):
+        try:
+            return BeforeSlaughterInspection.objects.filter(
+                rabbit=rabbit
+            ).latest('time').weight
+        except BeforeSlaughterInspection.DoesNotExist:
+            return None
+
+    def get_status(self, rabbit):
+        return rabbit.cast.manager.status
