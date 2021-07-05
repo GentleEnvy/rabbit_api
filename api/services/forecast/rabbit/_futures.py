@@ -14,13 +14,13 @@ __all__ = [
 
 
 class BaseRabbitFuture(ABC):
-    def __init__(self, birthdate: date, status: set[str], id: int = None, **_):
+    def __init__(self, birthday: date, status: set[str], id: int = None, **_):
         self.id: Final[Optional[int]] = id
-        self.birthdate: Final[date] = birthdate
+        self.birthday: Final[date] = birthday
         self.status: Final[set[str]] = status
 
     def age(self, target_date: Union[date, datetime]) -> timedelta:
-        return diff_time(target_date, self.birthdate)
+        return diff_time(target_date, self.birthday)
 
     def tomorrow_state(self, condition: 'cond.ForecastCondition') -> None:
         raise NotImplementedError
@@ -143,7 +143,7 @@ class MotherRabbitFuture(BaseRabbitFuture):
     def _birth(condition: 'cond.ForecastCondition', count: int):
         for _ in range(count):
             condition.add_bunny(BunnyFuture(
-                birthdate=condition.date,
+                birthday=condition.date,
                 status={BunnyManager.STATUS_MOTHER_FEEDS}
             ))
 

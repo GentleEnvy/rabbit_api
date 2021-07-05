@@ -17,6 +17,8 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
         elif request.method.upper() == 'GET':
             if self.list_serializer is not None:
                 return self.list_serializer
+        if settings.DEBUG:
+            return self.list_serializer
         self.http_method_not_allowed(request)
 
 

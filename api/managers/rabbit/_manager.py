@@ -19,7 +19,7 @@ class RabbitManager(BaseManager):
 
     @property
     def age(self) -> timedelta:
-        return diff_time(now(), self.model.birthdate)
+        return diff_time(now(), self.model.birthday)
 
     @property
     @abstractmethod
@@ -45,7 +45,7 @@ class FatteningRabbitManager(RabbitManager):
         if (age := self.age.days) >= 80:
             try:
                 last_inspection = BeforeSlaughterInspection.objects.filter(
-                    time__gte=self.model.birthdate + timedelta(80),
+                    time__gte=self.model.birthday + timedelta(80),
                     rabbit=self.model
                 ).latest('time')
             except BeforeSlaughterInspection.DoesNotExist:
@@ -54,7 +54,7 @@ class FatteningRabbitManager(RabbitManager):
             if last_inspection.delay is None:
                 try:
                     last_inspection_with_delay = BeforeSlaughterInspection.objects.filter(
-                        time__gte=self.model.birthdate + timedelta(80),
+                        time__gte=self.model.birthday + timedelta(80),
                         rabbit=self.model
                     ).exclude(delay=None).latest('time')
                 except BeforeSlaughterInspection.DoesNotExist:
@@ -144,7 +144,7 @@ class MotherRabbitManager(RabbitManager):
         try:
             return api_models.Rabbit.objects.filter(
                 mother__rabbit=self.model
-            ).latest('birthdate').birthdate
+            ).latest('birthday').birthday
         except api_models.Rabbit.DoesNotExist:
             return None
 

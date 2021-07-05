@@ -5,6 +5,7 @@ __all__ = ['BaseModelSerializer']
 
 
 class BaseModelSerializer(ModelSerializer):
+    # TODO: filters
     def get_field_names(self, declared_fields, info):
         field_names = super().get_field_names(declared_fields, info)
         if hasattr(self, 'Meta'):

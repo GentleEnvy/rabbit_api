@@ -3,7 +3,7 @@ from django.forms import model_to_dict
 from rest_framework.fields import HiddenField
 
 from api.models import *
-from api.serializers.base import BaseModelSerializer
+from api.serializers import RabbitGeneralSerializer
 from api.views.model_views.base import BaseGeneralView
 from api.views.model_views.rabbit._default_serializers import *
 
@@ -15,14 +15,8 @@ __all__ = [
 
 
 class RabbitGeneralView(BaseGeneralView):
-    class __ListSerializer(BaseModelSerializer):
-        class Meta:
-            model = Rabbit
-            fields = '__all__'
-
-    model = Rabbit
-    list_serializer = __ListSerializer
-    queryset = model.objects.all()
+    list_serializer = RabbitGeneralSerializer
+    queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).all()
 
 
 class RabbitLiveGeneralView(BaseGeneralView):
