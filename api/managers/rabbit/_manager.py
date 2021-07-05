@@ -4,7 +4,7 @@ from typing import Optional
 
 from django.utils.timezone import now
 
-from api.utils.functions import diff_time
+from api.utils.functions import diff_time, to_datetime
 from api.managers.base import *
 from api import models as api_models
 
@@ -63,13 +63,15 @@ class FatteningRabbitManager(RabbitManager):
                         return {self.STATUS_READY_TO_SLAUGHTER}
                     return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
                 # was underweight
-                if last_inspection_with_delay.time + timedelta(
+                if to_datetime(last_inspection_with_delay.time + timedelta(
                         last_inspection_with_delay.delay + 10
-                ) > now():
+                )) > now():
                     return {self.STATUS_READY_TO_SLAUGHTER}
                 return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
             # is underweight
-            if last_inspection.time + timedelta(last_inspection.delay) > now():
+            if to_datetime(
+                    last_inspection.time + timedelta(last_inspection.delay)
+            ) > now():
                 return {self.STATUS_NEED_INSPECTION}
             # continue to fattening on delay
         # younger than 80 days
@@ -114,7 +116,7 @@ class MotherRabbitManager(RabbitManager):
         last_births = self.last_births
         last_fertilization = self.last_fertilization
         if last_fertilization is None or diff_time(now(), last_fertilization).days >= 40:
-            if last_births is None or last_births + timedelta(3) > now():
+            if last_births is None or to_datetime(last_births + timedelta(3)) > now():
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_fertilization is not None and isn't overdue
@@ -133,7 +135,7 @@ class MotherRabbitManager(RabbitManager):
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_births is not None and last_births > last_fertilization
-        if last_births + timedelta(3) > now():
+        if to_datetime(last_births + timedelta(3)) > now():
             statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         return statuses
 

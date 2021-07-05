@@ -3,7 +3,7 @@ from typing import Union
 
 from django.utils.timezone import utc
 
-__all__ = ['diff_time', 'date_to_datetime']
+__all__ = ['diff_time', 'to_datetime']
 
 
 def diff_time(
@@ -11,11 +11,14 @@ def diff_time(
         tz: tzinfo = utc
 ) -> timedelta:
     if type(reduced) is date:
-        reduced = date_to_datetime(reduced, tz=tz)
+        reduced = to_datetime(reduced, tz=tz)
     if type(deductible) is date:
-        deductible = date_to_datetime(deductible, tz=tz)
+        deductible = to_datetime(deductible, tz=tz)
     return reduced - deductible
 
 
-def date_to_datetime(date_: date, time_: time = time(), tz: tzinfo = utc) -> datetime:
+def to_datetime(date_: date, time_: time = time(), tz: tzinfo = utc) -> datetime:
+    _time = getattr(date_, 'time', lambda: _time)()
+    # noinspection SpellCheckingInspection
+    tz = getattr(date_, 'tzinfo', lambda: tz)()
     return datetime.combine(date_, time_, tzinfo=tz)
