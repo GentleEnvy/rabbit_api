@@ -7,8 +7,8 @@ from api.views.model_views.base import BaseDetailView
 from api.views.model_views.rabbit._default_serializers import *
 
 __all__ = [
-    'RabbitDetailView', 'DeadRabbitDetailView', 'FatteningRabbitDetailView',
-    'BunnyDetailView', 'MotherRabbitDetailView', 'FatherRabbitDetailView',
+    'RabbitDetailView', 'FatteningRabbitDetailView', 'BunnyDetailView',
+    'MotherRabbitDetailView', 'FatherRabbitDetailView',
 ]
 
 
@@ -16,16 +16,6 @@ class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
     def get(self, request, *args, **kwargs):
         return redirect_by_id(Rabbit, request, kwargs.get('id'))
-
-
-class DeadRabbitDetailView(BaseDetailView):
-    model = DeadRabbit
-    lookup_url_kwarg = 'id'
-    retrieve_serializer = create_default_retrieve_serializer(model)
-    update_serializer = create_default_retrieve_serializer(
-        model, is_male_field=BooleanField(read_only=True)
-    )
-    queryset = model.objects.all()
 
 
 class FatteningRabbitDetailView(BaseDetailView):

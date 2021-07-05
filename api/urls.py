@@ -14,22 +14,6 @@ urlpatterns = [
                     name='rabbit__general__url'
                 ),
                 path(
-                    'rabbit/live/', RabbitLiveGeneralView.as_view(),
-                    name='rabbit_live__general__url'
-                ),
-                path(
-                    'rabbit/dead/', DeadRabbitGeneralView.as_view(),
-                    name='dead_rabbit__general__url'
-                ),
-                path(
-                    'rabbit/fattening/', FatteningRabbitGeneralView.as_view(),
-                    name='fattening_rabbit__general__url'
-                ),
-                path(
-                    'rabbit/bunny/', BunnyGeneralView.as_view(),
-                    name='bunny__general__url'
-                ),
-                path(
                     'rabbit/mother/', MotherRabbitGeneralView.as_view(),
                     name='mother_rabbit__general__url'
                 ),
@@ -43,10 +27,6 @@ urlpatterns = [
                 path(
                     'rabbit/<int:id>/', RabbitDetailView.as_view(),
                     name='rabbit__detail__url'
-                ),
-                path(
-                    'rabbit/dead/<int:id>/', DeadRabbitDetailView.as_view(),
-                    name='dead_rabbit__detail__url'
                 ),
                 path(
                     'rabbit/fattening/<int:id>/', FatteningRabbitDetailView.as_view(),
