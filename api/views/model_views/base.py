@@ -12,8 +12,8 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
     def get_serializer_class(self):
         request = self.request
         if request.method.upper() == 'POST':
-            if self.create_serializer is not None or settings.DEBUG:
-                return self.list_serializer
+            if self.create_serializer is not None:
+                return self.create_serializer
         elif request.method.upper() == 'GET':
             if self.list_serializer is not None:
                 return self.list_serializer
