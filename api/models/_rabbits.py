@@ -25,7 +25,7 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
 
     history_model = RabbitHistory
 
-    birthdate = models.DateField(default=timezone.now)
+    birthday = models.DateTimeField(default=timezone.now)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )

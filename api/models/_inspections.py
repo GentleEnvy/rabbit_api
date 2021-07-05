@@ -9,12 +9,12 @@ __all__ = ['BeforeSlaughterInspection', 'PregnancyInspection']
 
 class BeforeSlaughterInspection(BaseModel):
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
-    time = models.DateField(default=timezone.now)
+    time = models.DateTimeField(default=timezone.now)
     weight = models.FloatField()
     delay = models.IntegerField(null=True, blank=True)
 
 
 class PregnancyInspection(BaseModel):
     mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
-    time = models.DateField(default=timezone.now)
+    time = models.DateTimeField(default=timezone.now)
     is_pregnant = models.BooleanField()
