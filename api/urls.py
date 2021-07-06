@@ -63,7 +63,9 @@ urlpatterns = [
                 )
             ]
         ]
-    ]
+    ],
+    # statistic
+    path('statistic/', StatisticView.as_view())
 
     # TODO: cast_to
     # path(
