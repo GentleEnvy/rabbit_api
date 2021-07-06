@@ -34,6 +34,7 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     )
     is_male = models.BooleanField(null=True, blank=True)
     is_vaccinated = models.BooleanField(default=False)
+    weight = models.FloatField(null=True, blank=True)
     current_type = models.CharField(
         choices=(
             (TYPE_DIED := 'D', 'TYPE_DEAD'),
