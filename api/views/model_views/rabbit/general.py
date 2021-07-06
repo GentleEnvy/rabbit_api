@@ -11,7 +11,12 @@ __all__ = [
 
 class RabbitGeneralView(BaseGeneralView):
     list_serializer = RabbitGeneralSerializer
-    queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).all()
+    queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).select_related(
+        'bunny', 'bunny__cage',
+        'fatteningrabbit', 'fatteningrabbit__cage',
+        'motherrabbit', 'motherrabbit__cage',
+        'fatherrabbit', 'fatherrabbit__cage'
+    ).all()
 
 
 class MotherRabbitGeneralView(BaseGeneralView):

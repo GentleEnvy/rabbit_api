@@ -53,30 +53,7 @@ urlpatterns = [
                 path(
                     'cage/', CageGeneralView.as_view(),
                     name='cage__general__url'
-                ),
-                path(
-                    'cage/mother/', MotherCageGeneralView.as_view(),
-                    name='mother_cage__general__url'
-                ),
-                path(
-                    'cage/fattening/', FatteningCageGeneralView.as_view(),
-                    name='fattening_cage__general__url'
-                ),
-            ],
-            # detail
-            *[
-                path(
-                    'cage/<int:id>/', CageDetailView.as_view(),
-                    name='cage__detail__url'
-                ),
-                path(
-                    'cage/mother/<int:id>/', MotherCageDetailView.as_view(),
-                    name='mother_cage__detail__url'
-                ),
-                path(
-                    'cage/fattening/<int:id>/', FatteningCageDetailView.as_view(),
-                    name='fattening_cage__detail__url'
-                ),
+                )
             ]
         ]
     ]
