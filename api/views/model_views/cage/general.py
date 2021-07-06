@@ -35,6 +35,36 @@ class CageGeneralView(BaseGeneralView):
                 cage_list.append(cage_info)
         return Response(cage_list)
 
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        params = self.request.query_params
+        farm_number = params.get('farm_number')
+        cage_number = params.get('cage_number')
+        letter = params.get('letter')
+        cage_type = params.get('cage_type')
+        rabbits_in = params.get('rabbits_in')
+        cage_status = params.get('cage_status')
+        limit_from = params.get('__limit_from__')
+        limit_to = params.get('__limit_to__')
+        order_by = params.get('__order_by__')
+        if order_by is None:
+            ordered_queryset = queryset
+        else:
+            ordered_queryset = queryset.order_by(order_by)
+
+        id_suitable_numbers_and_letters = []
+        filtered_queryset = ordered_queryset.filter(
+
+        )
+
+        if limit_from is not None:
+            if limit_to is not None:
+                return filtered_queryset[int(limit_from):int(limit_to)]
+            return filtered_queryset[int(limit_from):]
+        if limit_to is not None:
+            return filtered_queryset[:int(limit_to)]
+        return filtered_queryset
+
 
 class MotherCageGeneralView(BaseGeneralView):
     model = MotherCage
