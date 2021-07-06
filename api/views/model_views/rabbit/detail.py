@@ -1,5 +1,3 @@
-from rest_framework.fields import *
-
 from api.models import *
 from api.views.base import BaseView
 from api.views.model_views._utils import redirect_by_id
@@ -26,7 +24,7 @@ class FatteningRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = FatteningRabbitDetailSerializer
     update_serializer = FatteningRabbitDetailSerializer
-    queryset = model.objects.all()
+    queryset = FatteningRabbit.objects.all()
 
 
 class BunnyDetailView(BaseDetailView):
@@ -34,7 +32,7 @@ class BunnyDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = BunnyDetailSerializer
     update_serializer = BunnyDetailSerializer
-    queryset = model.objects.all()
+    queryset = Bunny.objects.all()
 
 
 class MotherRabbitDetailView(BaseDetailView):
@@ -42,7 +40,7 @@ class MotherRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = MotherRabbitDetailSerializer
     update_serializer = MotherRabbitDetailSerializer
-    queryset = model.objects.all()
+    queryset = MotherRabbit.objects.all()
 
 
 class FatherRabbitDetailView(BaseDetailView):
@@ -50,4 +48,4 @@ class FatherRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = FatherRabbitDetailSerializer
     update_serializer = FatherRabbitDetailSerializer
-    queryset = model.objects.all()
+    queryset = FatherRabbit.objects.all()

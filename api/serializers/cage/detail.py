@@ -2,10 +2,10 @@ from rest_framework import serializers
 
 from api.models import Cage
 
-__all__ = ['CageDetailSerializer']
+__all__ = ['CageUpdateSerializer']
 
 
-class CageDetailSerializer(serializers.ModelSerializer):
+class CageUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cage
         fields = ['status']

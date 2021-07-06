@@ -3,11 +3,11 @@ from rest_framework.fields import SkipField
 
 from api.models import Cage
 
-__all__ = ['CageGeneralSerializer']
+__all__ = ['CageListSerializer']
 
 
 # noinspection PyMethodMayBeStatic
-class CageGeneralSerializer(serializers.ModelSerializer):
+class CageListSerializer(serializers.ModelSerializer):
     # noinspection PyAbstractClass
     class _IsParallelField(serializers.SerializerMethodField):
         def get_attribute(self, cage):
