@@ -1,6 +1,6 @@
 from api.views.model_views.base import BaseGeneralView
-from api.serializers import *
-from api.models import *
+from api.serializers import CageGeneralSerializer
+from api.models import Cage
 
 __all__ = ['CageGeneralView']
 

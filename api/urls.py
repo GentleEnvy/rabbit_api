@@ -54,6 +54,13 @@ urlpatterns = [
                     'cage/', CageGeneralView.as_view(),
                     name='cage__general__url'
                 )
+            ],
+            # detail
+            *[
+                path(
+                    'cage/<int:id>', CageDetailView.as_view(),
+                    name='cage__detail__url'
+                )
             ]
         ]
     ]

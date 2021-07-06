@@ -30,7 +30,7 @@ class CageGeneralSerializer(serializers.ModelSerializer):
         return len(cage.cast.rabbits)
 
     def get_type(self, cage):
-        return type(cage.cast).__name__[0]
+        return type(cage.cast).__name__[0]  # FIXME: Cage.CHAR_TYPE
 
     def get_is_parallel(self, cage):
         return cage.cast.is_parallel
