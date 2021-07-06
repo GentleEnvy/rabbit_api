@@ -8,9 +8,9 @@ from rest_framework.views import exception_handler
 __all__ = ['redirect_by_id']
 
 
-def redirect_by_id(model, request, id):
+def redirect_by_id(model, request, id, **filters):
     try:
-        instance = model.objects.get(id=id)
+        instance = model.objects.get(id=id, **filters)
     except (FieldDoesNotExist, MultipleObjectsReturned, APIException) as e:
         return exception_handler(e, {'request', request})
     if query_params := request.query_params:

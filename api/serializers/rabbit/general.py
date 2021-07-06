@@ -3,7 +3,6 @@ from django.http import QueryDict
 from rest_framework import serializers
 
 from api.models import *
-from api.serializers.base import BaseModelSerializer
 
 __all__ = [
     'RabbitGeneralSerializer', 'MotherRabbitCreateSerializer',
@@ -45,7 +44,7 @@ class _BaseReproductionRabbitCreateSerializer(serializers.ModelSerializer):
         letter = data.get('cage__letter')
         if None not in (farm_number, number, letter):
             data['cage'] = Cage.objects.filter(
-                farm_number=farm_number[0], number=number[0], letter=letter[0]
+                farm_number=farm_number, number=number, letter=letter
             ).first().id
         self.initial_data = data
         return super().is_valid(raise_exception)
