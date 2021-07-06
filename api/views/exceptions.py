@@ -2,16 +2,24 @@ from __future__ import annotations
 
 from typing import Final, Union, Optional, Callable, Type
 
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError as RestFrameworkValidationError
 from rest_framework.response import Response
 
 __all__ = ['APIException', 'APIError']
 
 
-def _cast_validation_error(exception: ValidationError):
+def _cast_rest_framework_validation_error(exception: RestFrameworkValidationError):
     return APIException(
         status=int(exception.status_code),
         message=str(exception.detail)
+    )
+
+
+def _cast_django_validation_error(exception: DjangoValidationError):
+    return APIException(
+        status=int(exception.code or 400),
+        message=f'ValidationError: {exception.messages}'  # FIXME: to standard
     )
 
 
@@ -20,7 +28,8 @@ class APIException(Exception):
         Type[Exception],
         Callable[[Exception], APIException]
     ]] = {
-        ValidationError: _cast_validation_error
+        RestFrameworkValidationError: _cast_rest_framework_validation_error,
+        DjangoValidationError: _cast_django_validation_error
     }
 
     SUPPORT_TO_CAST_EXCEPTIONS: Final[tuple[Exception]] = tuple(__EXCEPTIONS__CAST)

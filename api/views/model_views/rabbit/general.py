@@ -1,6 +1,6 @@
 from api.models import Rabbit, DeadRabbit, Cage
 from api.serializers import (
-    RabbitGeneralSerializer, MotherRabbitCreateSerializer,
+    RabbitListSerializer, MotherRabbitCreateSerializer,
     FatherRabbitCreateSerializer
 )
 from api.views.model_views.base import BaseGeneralView
@@ -12,7 +12,8 @@ __all__ = [
 
 class RabbitGeneralView(BaseGeneralView):
     model = Rabbit
-    list_serializer = RabbitGeneralSerializer
+    list_serializer = RabbitListSerializer
+    # noinspection SpellCheckingInspection
     queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).select_related(
         'bunny', 'bunny__cage',
         'fatteningrabbit', 'fatteningrabbit__cage',
@@ -20,6 +21,7 @@ class RabbitGeneralView(BaseGeneralView):
         'fatherrabbit', 'fatherrabbit__cage'
     ).all()
 
+    # INPROGRESS: branch: feature-filters-(robinson)
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params

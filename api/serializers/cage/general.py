@@ -18,8 +18,8 @@ class CageGeneralSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cage
         fields = [
-            'farm_number', 'number', 'letter', 'type', 'is_parallel', 'number_rabbits',
-            'status'
+            'id', 'farm_number', 'number', 'letter', 'type', 'is_parallel',
+            'number_rabbits', 'status'
         ]
 
     number_rabbits = serializers.SerializerMethodField()

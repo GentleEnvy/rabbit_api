@@ -111,7 +111,7 @@ class _RabbitInCage(Rabbit):
 
     def clean(self):
         super().clean()
-        # TODO: fix cage clean
+        # FIXME: cage clean
         # neighbours = self.cage.cast.rabbits
         # if len(neighbours) >= 2:
         #     raise ValidationError('There are already 2 rabbits in this cage')

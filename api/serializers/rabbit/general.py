@@ -1,17 +1,16 @@
 from django.forms import model_to_dict
-from django.http import QueryDict
 from rest_framework import serializers
 
 from api.models import *
 
 __all__ = [
-    'RabbitGeneralSerializer', 'MotherRabbitCreateSerializer',
+    'RabbitListSerializer', 'MotherRabbitCreateSerializer',
     'FatherRabbitCreateSerializer'
 ]
 
 
 # noinspection PyMethodMayBeStatic
-class RabbitGeneralSerializer(serializers.ModelSerializer):
+class RabbitListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rabbit
         fields = ['id', 'cage', 'birthday', 'is_male', 'current_type', 'weight', 'status']
