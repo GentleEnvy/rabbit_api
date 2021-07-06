@@ -1,7 +1,8 @@
-from rest_framework.fields import HiddenField
-
-from api.models import *
-from api.serializers import *
+from api.models import Rabbit, DeadRabbit, Cage
+from api.serializers import (
+    RabbitGeneralSerializer, MotherRabbitCreateSerializer,
+    FatherRabbitCreateSerializer
+)
 from api.views.model_views.base import BaseGeneralView
 
 __all__ = [
