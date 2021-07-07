@@ -2,19 +2,20 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any
+from typing import Any, Final
 
 from api.models import Bunny
+
+__all__ = ['BirthOperation']
 
 
 class _BaseOperation(ABC):
     CHAR_TYPE: str
-    ORDER_BY_TIME = 'T'
 
     @classmethod
     def search(
             cls, rabbit_id: int = None, time_from: datetime = datetime.min,
-            time_to: datetime = datetime.max, order_by=ORDER_BY_TIME
+            time_to: datetime = datetime.max
     ) -> list[_BaseOperation]:
         raise NotImplementedError
 
@@ -37,20 +38,16 @@ class _BaseOperation(ABC):
 
 
 class BirthOperation(_BaseOperation):
-    CHAR_TYPE = 'B'
-    ORDER_BY_TIME = '-birthday'
+    CHAR_TYPE: Final[str] = 'B'
 
     @classmethod
-    def search(
-            cls, rabbit_id=None, time_from=datetime.min, time_to=datetime.max,
-            order_by=ORDER_BY_TIME
-    ):
+    def search(cls, rabbit_id=None, time_from=datetime.min, time_to=datetime.max):
         filters = {}
         if rabbit_id is not None:
             filters['id'] = rabbit_id
         queryset = Bunny.objects.filter(
             birthday__gt=time_from, birthday__lt=time_to, **filters
-        ).order_by(order_by)
+        )
         operations = []
         for bunny_info in queryset.all():
             operations.append(BirthOperation(**bunny_info))

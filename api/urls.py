@@ -69,7 +69,9 @@ urlpatterns = [
         path('statistic/', StatisticView.as_view()),
         # INPROGRESS: branch: feature-static-(envy):
         #  path('statistic/.../', )
-    ]
+    ],
+    # operation
+    path('operation/', OperationView.as_view())
 
     # TODO: cast_to
     #  path(
