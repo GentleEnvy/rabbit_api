@@ -8,7 +8,7 @@ from typing import Any, Final
 from api.models import *
 from api.utils.functions import to_datetime
 
-__all__ = ['BirthOperation', 'SlaughterOperation']
+__all__ = ['BirthOperation', 'SlaughterOperation', 'VaccinationOperation']
 
 
 class _BaseOperation(ABC):
@@ -80,3 +80,41 @@ class SlaughterOperation(_BaseOperation):
         super().__init__()
         self.time = to_datetime(death_date)
         self.rabbit_id = id
+
+
+class VaccinationOperation(_BaseOperation):
+    # noinspection SpellCheckingInspection
+    _relation_id_fields = (
+        'bunnyhistory__rabbit_id', 'fatteningrabbithistory__rabbit_id',
+        'motherrabbithistory__rabbit_id', 'fatherrabbithistory__rabbit_id'
+    )
+
+    @classmethod
+    def search(cls, rabbit_id=None, time_from=None, time_to=None):
+        filters = {}
+        if rabbit_id is not None:
+            for relation_id_field in cls._relation_id_fields:
+                filters[relation_id_field] = rabbit_id
+        if time_from is not None:
+            filters['time__gt'] = time_from
+        if time_to is not None:
+            filters['time__lt'] = time_to
+        queryset = RabbitHistory.objects.filter(**filters)
+        operations = []
+        for rabbit_history_info in queryset.values('time', *cls._relation_id_fields):
+            try:
+                operations.append(VaccinationOperation(**rabbit_history_info))
+            except ValueError:
+                continue
+        return operations
+
+    def __init__(self, time, **relation_id_fields):
+        super().__init__()
+        self.time = time
+        try:
+            self.rabbit_id = [
+                value for key, value in relation_id_fields.items()
+                if value is not None and key in self._relation_id_fields
+            ][0]
+        except IndexError:
+            raise ValueError

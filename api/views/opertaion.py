@@ -20,7 +20,7 @@ class OperationView(BaseView):
         limit_to = request.query_params.get('__limit_to__')
 
         operations = []
-        for operation_class in (BirthOperation, SlaughterOperation):
+        for operation_class in (BirthOperation, SlaughterOperation, VaccinationOperation):
             if type_ is None or type_ == operation_class.CHAR_TYPE:
                 operations.extend(operation_class.search(**filters))
 
