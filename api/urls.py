@@ -65,23 +65,23 @@ urlpatterns = [
         ]
     ],
     # statistic
-    path('statistic/', StatisticView.as_view())
+    *[
+        path('statistic/', StatisticView.as_view()),
+        # INPROGRESS: branch: feature-static-(envy):
+        #  path('statistic/.../', )
+    ]
 
     # TODO: cast_to
-    # path(
-    #     'rabbit/<int:id>/cast_to_dead', views.DeadRabbitView.as_view(),
-    #     name='dead_cast_url'
-    # ),
-    # path(
+    #  path(
     #     'rabbit/<int:id>/cast_to_fattening', views.DeadRabbitView.as_view(),
     #     name='fattening_cast_url'
-    # ),
-    # path(
+    #  ),
+    #  path(
     #     'rabbit/<int:id>/cast_to_mother', views.DeadRabbitView.as_view(),
     #     name='mother_cast_url'
-    # ),
-    # path(
+    #  ),
+    #  path(
     #     'rabbit/<int:id>/cast_to_father', views.DeadRabbitView.as_view(),
     #     name='father_cast_url'
-    # )
+    #  )
 ]
