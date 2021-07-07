@@ -20,14 +20,14 @@ class OperationView(BaseView):
         limit_to = request.query_params.get('__limit_to__')
 
         operations = []
-        for operation_class in (BirthOperation,):
+        for operation_class in (BirthOperation, SlaughterOperation):
             if type_ is None or type_ == operation_class.CHAR_TYPE:
                 operations.extend(operation_class.search(**filters))
 
         self._sort_operations(operations, order_by)
         operations = self._slice_operations(operations, limit_from, limit_to)
         return Response({
-            'operations': [operation.serizlise() for operation in operations]
+            'operations': [operation.serialize() for operation in operations]
         })
 
     def _get_filters(self, request: Request) -> dict[str, Any]:
