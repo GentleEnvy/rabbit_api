@@ -169,7 +169,7 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     history_model = MotherRabbitHistory
 
     cage = models.ForeignKey(
-        Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
+        MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
 
     @classmethod
