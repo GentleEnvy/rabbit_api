@@ -21,7 +21,8 @@ class OperationView(BaseView):
 
         operations = []
         for operation_class in (
-                BirthOperation, SlaughterOperation, VaccinationOperation, JiggingOperation
+                BirthOperation, SlaughterOperation, VaccinationOperation, MatingOperation,
+                JiggingOperation
         ):
             if type_ is None or type_ == operation_class.CHAR_TYPE:
                 operations.extend(operation_class.search(**filters))

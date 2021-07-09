@@ -9,7 +9,8 @@ from api.models import *
 from api.utils.functions import to_datetime
 
 __all__ = [
-    'BirthOperation', 'SlaughterOperation', 'VaccinationOperation', 'JiggingOperation'
+    'BirthOperation', 'SlaughterOperation', 'VaccinationOperation', 'MatingOperation',
+    'JiggingOperation'
 ]
 
 
@@ -124,11 +125,49 @@ class VaccinationOperation(_BaseOperation):
             raise ValueError
 
 
+class MatingOperation(_BaseOperation):
+    CHAR_TYPE: Final[str] = 'M'
+
+    @classmethod
+    def search(cls, rabbit_id=None, time_from=None, time_to=None):
+        filters = {}
+        if rabbit_id is not None:
+            if Rabbit.objects.get(id=rabbit_id).is_male:
+                filters['father_rabbit_id'] = rabbit_id
+            else:
+                filters['mother_rabbit_id'] = rabbit_id
+        if time_from is not None:
+            filters['time__gt'] = time_from
+        if time_to is not None:
+            filters['time__lt'] = time_to
+        queryset = Mating.objects.filter(
+            **filters
+        )
+        operations = []
+        for mating_info in queryset.values(
+                'time', 'father_rabbit_id', 'mother_rabbit_id'
+        ):
+            operations.append(MatingOperation(**mating_info))
+        return operations
+
+    def __init__(self, time, father_rabbit_id, mother_rabbit_id):
+        super().__init__()
+        self.time = time
+        self.rabbit_id = father_rabbit_id
+        self.mother_rabbit_id = mother_rabbit_id
+
+    def serialize(self):
+        super_serialize = super().serialize()
+        super_serialize['father_rabbit_id'] = super_serialize.pop('rabbit_id')
+        return super_serialize | {'mother_rabbit_id': self.mother_rabbit_id}
+
+
 class JiggingOperation(_BaseOperation):
     CHAR_TYPE: Final[str] = 'J'
 
     @classmethod
     def search(cls, rabbit_id=None, time_from=None, time_to=None):
+        # TODO: filters
         rabbits = Rabbit.objects.select_related(
             'bunny', 'fatteningrabbit', 'motherrabbit', 'fatherrabbit'
         ).prefetch_related(
@@ -170,10 +209,6 @@ class JiggingOperation(_BaseOperation):
                         'letter': history['cage'].letter
                     }
                 ))
-
-        from django.db import connection
-        from pprint import pprint
-        pprint(connection.queries)
 
         return operations
 
