@@ -20,7 +20,9 @@ class OperationView(BaseView):
         limit_to = request.query_params.get('__limit_to__')
 
         operations = []
-        for operation_class in (BirthOperation, SlaughterOperation, VaccinationOperation):
+        for operation_class in (
+                BirthOperation, SlaughterOperation, VaccinationOperation, JiggingOperation
+        ):
             if type_ is None or type_ == operation_class.CHAR_TYPE:
                 operations.extend(operation_class.search(**filters))
 
@@ -38,7 +40,7 @@ class OperationView(BaseView):
 
     def _sort_operations(self, operations: list, order_by: str) -> None:
         if order_by == self.ORDER_BY_TIME:
-            operations.sort(key=lambda o: o.time)
+            operations.sort(key=lambda o: o.time, reverse=True)
 
     @staticmethod
     def _slice_operations(operations: list, from_: int, to: int = None) -> list:

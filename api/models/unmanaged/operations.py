@@ -8,7 +8,9 @@ from typing import Any, Final
 from api.models import *
 from api.utils.functions import to_datetime
 
-__all__ = ['BirthOperation', 'SlaughterOperation', 'VaccinationOperation']
+__all__ = [
+    'BirthOperation', 'SlaughterOperation', 'VaccinationOperation', 'JiggingOperation'
+]
 
 
 class _BaseOperation(ABC):
@@ -83,6 +85,8 @@ class SlaughterOperation(_BaseOperation):
 
 
 class VaccinationOperation(_BaseOperation):
+    CHAR_TYPE: Final[str] = 'V'
+
     # noinspection SpellCheckingInspection
     _relation_id_fields = (
         'bunnyhistory__rabbit_id', 'fatteningrabbithistory__rabbit_id',
@@ -118,3 +122,70 @@ class VaccinationOperation(_BaseOperation):
             ][0]
         except IndexError:
             raise ValueError
+
+
+class JiggingOperation(_BaseOperation):
+    CHAR_TYPE: Final[str] = 'J'
+
+    @classmethod
+    def search(cls, rabbit_id=None, time_from=None, time_to=None):
+        rabbits = Rabbit.objects.select_related(
+            'bunny', 'fatteningrabbit', 'motherrabbit', 'fatherrabbit'
+        ).prefetch_related(
+            'bunny__bunnyhistory_set', 'bunny__bunnyhistory_set__cage',
+            *['fatteningrabbit__fatteningrabbithistory_set',
+              'fatteningrabbit__fatteningrabbithistory_set__cage'],
+            *['motherrabbit__motherrabbithistory_set',
+              'motherrabbit__motherrabbithistory_set__cage'],
+            *['fatherrabbit__fatherrabbithistory_set',
+              'fatherrabbit__fatherrabbithistory_set__cage']
+        )
+        operations = []
+        for rabbit in rabbits:
+            histories = []
+            for attr in ('bunny', 'fatteningrabbit', 'motherrabbit', 'fatherrabbit'):
+                if hasattr(rabbit, attr):
+                    for history in getattr(
+                            getattr(rabbit, attr), attr + 'history_set'
+                    ).all():
+                        if history.cage is not None:
+                            histories.append({
+                                'time': history.time,
+                                'cage': history.cage
+                            })
+            histories.sort(key=lambda h: h['time'])
+            prev = histories[0]
+            for history in histories[1:]:
+                operations.append(JiggingOperation(
+                    rabbit_id=rabbit.id,
+                    time=history['time'],
+                    old_cage={
+                        'farm_number': prev['cage'].farm_number,
+                        'number': prev['cage'].number,
+                        'letter': prev['cage'].letter
+                    },
+                    new_cage={
+                        'farm_number': history['cage'].farm_number,
+                        'number': history['cage'].number,
+                        'letter': history['cage'].letter
+                    }
+                ))
+
+        from django.db import connection
+        from pprint import pprint
+        pprint(connection.queries)
+
+        return operations
+
+    def __init__(self, rabbit_id, time, old_cage: dict, new_cage: dict):
+        super().__init__()
+        self.rabbit_id = rabbit_id
+        self.time = time
+        self.old_cage = old_cage
+        self.new_cage = new_cage
+
+    def serialize(self):
+        return super().serialize() | {
+            'old_cage': self.old_cage,
+            'new_cage': self.new_cage
+        }

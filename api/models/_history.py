@@ -27,22 +27,26 @@ class RabbitHistory(BaseHistoryModel):
 class FatteningRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('FatteningRabbit', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey(
+        'FatteningCage', on_delete=models.DO_NOTHING, **_field_kwargs
+    )
 
 
 class BunnyHistory(RabbitHistory):
     rabbit = models.ForeignKey('Bunny', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey('MotherCage', on_delete=models.DO_NOTHING, **_field_kwargs)
 
 
 class MotherRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('MotherRabbit', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey('MotherCage', on_delete=models.DO_NOTHING, **_field_kwargs)
 
 
 class FatherRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('FatherRabbit', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey(
+        'FatteningCage', on_delete=models.DO_NOTHING, **_field_kwargs
+    )
