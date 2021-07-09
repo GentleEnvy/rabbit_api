@@ -42,7 +42,8 @@ class CageGeneralView(BaseGeneralView):
         cage_number = params.get('cage_number')
         letter = params.get('letter')
         cage_type = params.get('cage_type')
-        rabbits_in = params.get('rabbits_in')
+        rabbits_from = params.get('rabbits_from')
+        rabbits_to = params.get('rabbits_to')
         cage_status = params.get('cage_status')
         limit_from = params.get('__limit_from__')
         limit_to = params.get('__limit_to__')
@@ -52,9 +53,14 @@ class CageGeneralView(BaseGeneralView):
         else:
             ordered_queryset = queryset.order_by(order_by)
 
-        id_suitable_numbers_and_letters = []
         filtered_queryset = ordered_queryset.filter(
-
+            farm_number__in=farm_number,
+            cage_number__in=cage_number,
+            letter__in=letter,
+            cage_type_in=cage_type,
+            rabbits_in__gte=rabbits_from,
+            rabbits_in__lte=rabbits_to,
+            status=cage_status
         )
 
         if limit_from is not None:
