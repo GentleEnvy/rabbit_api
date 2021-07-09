@@ -22,7 +22,10 @@ class RabbitGeneralView(BaseGeneralView):
     ).all()
 
     # INPROGRESS: branch: feature-filters-(robinson)
+    # FIXME: filters
     def filter_queryset(self, queryset):
+        return super().filter_queryset(queryset)
+        ###
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         farm_number = params.get('farm_number')

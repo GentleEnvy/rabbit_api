@@ -16,6 +16,7 @@ _field_kwargs = {
 
 class RabbitHistory(BaseHistoryModel):
     historical_name = 'rabbit'
+    replace_fields = {'cage': 'cage_id'}
 
     time = models.DateTimeField(auto_now_add=True)
 

@@ -32,9 +32,9 @@ class _BaseReproductionRabbitCreateSerializer(serializers.ModelSerializer):
         number = data.get('cage__number')
         letter = data.get('cage__letter')
         if None not in (farm_number, number, letter):
-            data['cage'] = Cage.objects.filter(
+            data['cage'] = Cage.objects.get(
                 farm_number=farm_number, number=number, letter=letter
-            ).first().id
+            ).id
         self.initial_data = data
         return super().is_valid(raise_exception)
 
