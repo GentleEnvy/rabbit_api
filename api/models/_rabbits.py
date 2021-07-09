@@ -34,6 +34,7 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     )
     is_male = models.BooleanField(null=True, blank=True)
     is_vaccinated = models.BooleanField(default=False)
+    weight = models.FloatField(null=True, blank=True)
     current_type = models.CharField(
         choices=(
             (TYPE_DIED := 'D', 'TYPE_DEAD'),
@@ -110,7 +111,7 @@ class _RabbitInCage(Rabbit):
 
     def clean(self):
         super().clean()
-        # TODO: fix cage clean
+        # FIXME: cage clean
         # neighbours = self.cage.cast.rabbits
         # if len(neighbours) >= 2:
         #     raise ValidationError('There are already 2 rabbits in this cage')
@@ -168,7 +169,7 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     history_model = MotherRabbitHistory
 
     cage = models.ForeignKey(
-        Cage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
+        MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
 
     @classmethod

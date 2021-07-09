@@ -1,30 +1,31 @@
-from django.db.models import Q
-from django.forms import model_to_dict
-from rest_framework.fields import HiddenField
-
-from api.models import *
-from api.serializers.base import BaseModelSerializer
+from api.models import Rabbit, DeadRabbit, Cage
+from api.serializers import (
+    RabbitListSerializer, MotherRabbitCreateSerializer,
+    FatherRabbitCreateSerializer
+)
 from api.views.model_views.base import BaseGeneralView
-from api.views.model_views.rabbit._default_serializers import *
 
 __all__ = [
-    'RabbitGeneralView', 'RabbitLiveGeneralView', 'DeadRabbitGeneralView',
-    'FatteningRabbitGeneralView', 'BunnyGeneralView', 'MotherRabbitGeneralView',
-    'FatherRabbitGeneralView'
+    'RabbitGeneralView', 'MotherRabbitGeneralView', 'FatherRabbitGeneralView'
 ]
 
 
 class RabbitGeneralView(BaseGeneralView):
-    class __ListSerializer(BaseModelSerializer):
-        class Meta:
-            model = Rabbit
-            fields = '__all__'
-
     model = Rabbit
-    list_serializer = __ListSerializer
-    queryset = model.objects.all()
+    list_serializer = RabbitListSerializer
+    # noinspection SpellCheckingInspection
+    queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).select_related(
+        'bunny', 'bunny__cage',
+        'fatteningrabbit', 'fatteningrabbit__cage',
+        'motherrabbit', 'motherrabbit__cage',
+        'fatherrabbit', 'fatherrabbit__cage'
+    ).all()
 
+    # INPROGRESS: branch: feature-filters-(robinson)
+    # FIXME: filters
     def filter_queryset(self, queryset):
+        return super().filter_queryset(queryset)
+        ###
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         farm_number = params.get('farm_number')
@@ -70,63 +71,13 @@ class RabbitGeneralView(BaseGeneralView):
         return filtered_queryset
 
 
-class RabbitLiveGeneralView(BaseGeneralView):
-    model = Rabbit
-    list_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).all()
-
-    def list(self, request, *args, **kwargs):
-        super_list = super().list(request, *args, **kwargs)
-        ids = [rabbit_info['id'] for rabbit_info in super_list.data]
-        mother_cages = MotherCage.objects.filter(
-            Q(fatherrabbit__id__in=ids) | Q(motherrabbit__id__in=ids) |
-            Q(bunny__id__in=ids)
-        )
-        fattening_cages = FatteningCage.objects.filter(
-            Q(fatherrabbit__id__in=ids) | Q(fatteningrabbit__id__in=ids)
-        )
-        cages = {c.id: c for c in mother_cages} | {c.id: c for c in fattening_cages}
-        for rabbit_info in super_list.data:
-            if cage := cages.get(rabbit_info['id']):
-                cage_info = model_to_dict(cage)
-                cage_info.pop('cage_ptr')
-                rabbit_info['cage'] = cage_info
-        return super_list
-
-
-class DeadRabbitGeneralView(BaseGeneralView):
-    model = DeadRabbit
-    list_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
-
-
-class FatteningRabbitGeneralView(BaseGeneralView):
-    model = FatteningRabbit
-    create_serializer = create_default_create_serializer(model)
-    list_serializer = create_default_retrieve_serializer(model, 1)
-    queryset = model.objects.all()
-
-
-class BunnyGeneralView(BaseGeneralView):
-    model = Bunny
-    create_serializer = create_default_create_serializer(model)
-    list_serializer = create_default_retrieve_serializer(model, 1)
-    queryset = model.objects.all()
-
-
 class MotherRabbitGeneralView(BaseGeneralView):
-    model = MotherRabbit
-    create_serializer = create_default_create_serializer(
-        model, is_male_field=HiddenField(default=False)
-    )
-    list_serializer = create_default_retrieve_serializer(model, 1)
+    model = MotherRabbitCreateSerializer.Meta.model
+    create_serializer = MotherRabbitCreateSerializer
     queryset = model.objects.all()
 
 
 class FatherRabbitGeneralView(BaseGeneralView):
-    model = FatherRabbit
-    create_serializer = create_default_create_serializer(
-        model, is_male_field=HiddenField(default=True)
-    )
-    list_serializer = create_default_retrieve_serializer(model, 1)
+    model = FatherRabbitCreateSerializer.Meta.model
+    create_serializer = FatherRabbitCreateSerializer
     queryset = model.objects.all()

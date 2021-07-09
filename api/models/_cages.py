@@ -65,7 +65,6 @@ class FatteningCage(Cage):
     @property
     def rabbits(self):
         rabbit_set = set(self.fatteningrabbit_set.all())
-        rabbit_set.update(self.motherrabbit_set.all())
         rabbit_set.update(self.fatherrabbit_set.all())
         return rabbit_set
 

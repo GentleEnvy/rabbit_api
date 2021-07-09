@@ -12,6 +12,7 @@ class BaseHistoryModel(models.Model):
 
     historical_name: str
     time_name: str = 'time'
+    replace_fields: dict = {}
 
 
 class BaseHistoricalModel(ListenDiffModel):
@@ -54,6 +55,11 @@ class BaseHistoricalModel(ListenDiffModel):
                     for field, new_value in model_to_dict(self).items()
                     if field in history_fields
                 }
+        for old_filed, new_field in self.history_model.replace_fields.items():
+            try:
+                new_dict[new_field] = new_dict.pop(old_filed)
+            except KeyError:
+                pass
         super().save(*args, **kwargs)
         self.history_model.objects.create(
             **(new_dict | {self.history_model.historical_name: self})
