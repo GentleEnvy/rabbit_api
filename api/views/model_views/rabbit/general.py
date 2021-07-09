@@ -24,8 +24,6 @@ class RabbitGeneralView(BaseGeneralView):
     # INPROGRESS: branch: feature-filters-(robinson)
     # FIXME: filters
     def filter_queryset(self, queryset):
-        return super().filter_queryset(queryset)
-        ###
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         farm_number = params.get('farm_number')
@@ -48,18 +46,17 @@ class RabbitGeneralView(BaseGeneralView):
             ordered_queryset = queryset.order_by(order_by)
 
         filtered_queryset = ordered_queryset.filter(
-            is_male=True if gender == 'male' else False,
-            current_type=rabbit_type[:1].upper(),
-        ).filter(
+            # не уверен, что это правильное решение для pk
             pk__in=[
                 rabbit.id for rabbit in ordered_queryset
                 if any(s in rabbit.cast.manager.status for s in status) and rabbit.cast.cage.farm_number in farm_number
-            ]
-        ).filter(
-            pk__in=[
+            ] + [
                 rabbit.id for rabbit in ordered_queryset
                 if age_from < rabbit.cast.manager.age < age_to and weight_from < rabbit.weight < weight_to
-            ]
+            ],
+            is_male=True if gender == 'male' else False,
+            current_type=rabbit_type,
+
         )
 
         if limit_from is not None:

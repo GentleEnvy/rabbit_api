@@ -1,16 +1,16 @@
 from django.forms import model_to_dict
 from rest_framework.response import Response
 
-from api.serializers.base import BaseModelSerializer
+from api.serializers import CageListSerializer
 from api.views.model_views.base import BaseGeneralView
 from api.models import *
-from api.views.model_views.cage._default_serializers import *
+from api.views.model_views.cage import *
 
 __all__ = ['CageGeneralView', 'MotherCageGeneralView', 'FatteningCageGeneralView']
 
 
 class CageGeneralView(BaseGeneralView):
-    class __ListSerializer(BaseModelSerializer):
+    class __ListSerializer(CageListSerializer):
         class Meta:
             model = Cage
             fields = ['id']
@@ -53,13 +53,17 @@ class CageGeneralView(BaseGeneralView):
         else:
             ordered_queryset = queryset.order_by(order_by)
 
+        id_suitable_cages = []
+        for cage in ordered_queryset:
+            if cage.farm_number in farm_number \
+                    and cage.number in cage_number \
+                    and cage.letter in letter \
+                    and cage.cast.type == cage_type \
+                    and rabbits_from <= len(cage.cast.rabbits) <= rabbits_to:
+                id_suitable_cages.append(cage.id)
+
         filtered_queryset = ordered_queryset.filter(
-            farm_number__in=farm_number,
-            cage_number__in=cage_number,
-            letter__in=letter,
-            cage_type_in=cage_type,
-            rabbits_in__gte=rabbits_from,
-            rabbits_in__lte=rabbits_to,
+            id__in=id_suitable_cages,
             status=cage_status
         )
 
@@ -74,13 +78,13 @@ class CageGeneralView(BaseGeneralView):
 
 class MotherCageGeneralView(BaseGeneralView):
     model = MotherCage
-    list_serializer = create_default_retrieve_serializer(model)
-    create_serializer = create_default_retrieve_serializer(model)
+    list_serializer = CageListSerializer
+    create_serializer = CageListSerializer
     queryset = model.objects.all()
 
 
 class FatteningCageGeneralView(BaseGeneralView):
     model = FatteningCage
-    list_serializer = create_default_retrieve_serializer(model)
-    create_serializer = create_default_retrieve_serializer(model)
+    list_serializer = CageListSerializer
+    create_serializer = CageListSerializer
     queryset = model.objects.all()
