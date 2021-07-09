@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABC
 from datetime import datetime
-from typing import Any, Final
+from typing import Any, Final, Optional
 
 from api.models import *
 from api.utils.functions import to_datetime
@@ -165,10 +165,12 @@ class MatingOperation(_BaseOperation):
 class JiggingOperation(_BaseOperation):
     CHAR_TYPE: Final[str] = 'J'
 
+    # noinspection SpellCheckingInspection
     @classmethod
     def search(cls, rabbit_id=None, time_from=None, time_to=None):
-        # TODO: filters
-        rabbits = Rabbit.objects.select_related(
+        rabbits = Rabbit.objects.filter(
+            **({} if rabbit_id is None else {'id': rabbit_id})
+        ).select_related(
             'bunny', 'fatteningrabbit', 'motherrabbit', 'fatherrabbit'
         ).prefetch_related(
             'bunny__bunnyhistory_set', 'bunny__bunnyhistory_set__cage',
@@ -192,24 +194,25 @@ class JiggingOperation(_BaseOperation):
                                 'time': history.time,
                                 'cage': history.cage
                             })
-            histories.sort(key=lambda h: h['time'])
-            prev = histories[0]
-            for history in histories[1:]:
-                operations.append(JiggingOperation(
-                    rabbit_id=rabbit.id,
-                    time=history['time'],
-                    old_cage={
-                        'farm_number': prev['cage'].farm_number,
-                        'number': prev['cage'].number,
-                        'letter': prev['cage'].letter
-                    },
-                    new_cage={
-                        'farm_number': history['cage'].farm_number,
-                        'number': history['cage'].number,
-                        'letter': history['cage'].letter
-                    }
-                ))
-
+            if len(histories) > 1:
+                histories.sort(key=lambda h: h['time'])
+                prev = histories[0]
+                for history in histories[1:]:
+                    if cls._check_time(history['time'], time_from, time_to):
+                        operations.append(JiggingOperation(
+                            rabbit_id=rabbit.id,
+                            time=history['time'],
+                            old_cage={
+                                'farm_number': prev['cage'].farm_number,
+                                'number': prev['cage'].number,
+                                'letter': prev['cage'].letter
+                            },
+                            new_cage={
+                                'farm_number': history['cage'].farm_number,
+                                'number': history['cage'].number,
+                                'letter': history['cage'].letter
+                            }
+                        ))
         return operations
 
     def __init__(self, rabbit_id, time, old_cage: dict, new_cage: dict):
@@ -224,3 +227,11 @@ class JiggingOperation(_BaseOperation):
             'old_cage': self.old_cage,
             'new_cage': self.new_cage
         }
+
+    @staticmethod
+    def _check_time(
+            time: datetime, from_: Optional[datetime], to: Optional[datetime]
+    ) -> bool:
+        if from_ is not None and time < from_ or to is not None and time > to:
+            return False
+        return True
