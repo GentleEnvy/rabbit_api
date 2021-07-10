@@ -104,7 +104,7 @@ class DeadRabbit(Rabbit):
 
 
 class _RabbitInCage(Rabbit):
-    class Meta:
+    class Meta(Rabbit.Meta):
         abstract = True
 
     cage: Cage

@@ -14,7 +14,7 @@ __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 
 
 class Cage(BaseModel):
-    class Meta:
+    class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
 
     farm_number = models.IntegerField(
