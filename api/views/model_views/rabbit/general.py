@@ -27,10 +27,10 @@ class RabbitGeneralView(BaseGeneralView):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         farm_number = params.get('farm_number')
-        gender = params.get('gender')
-        rabbit_type = params.get('type')
+        gender = params.get('gender', [True, False])
+        rabbit_type = params.get('type', ['D', 'B', 'F', 'P', 'M'])
         # breed = params.get('breed')
-        status = params.get('status')
+        status = params.get('status', ['NE', 'ND', 'GS', ''])
         age_from = params.get('age_from', 0)
         age_to = params.get('age_to', float('inf'))
         weight_from = params.get('weight_from', 0)
@@ -52,12 +52,19 @@ class RabbitGeneralView(BaseGeneralView):
                 if any(s in rabbit.cast.manager.status for s in status) and rabbit.cast.cage.farm_number in farm_number
             ] + [
                 rabbit.id for rabbit in ordered_queryset
-                if age_from < rabbit.cast.manager.age < age_to and weight_from < rabbit.weight < weight_to
+                if age_from < rabbit.cast.manager.age.days < age_to and weight_from < rabbit.weight < weight_to
             ],
-            is_male=True if gender == 'male' else False,
-            current_type=rabbit_type,
-
         )
+
+        if rabbit_type is not None:
+            filtered_queryset = filtered_queryset.filter(
+                current_type__in=rabbit_type
+            )
+        if gender is not None:
+            if len(gender) < 2:
+                filtered_queryset = filtered_queryset.filter(
+                    is_male=True if gender == 'male' else False,
+                )
 
         if limit_from is not None:
             if limit_to is not None:

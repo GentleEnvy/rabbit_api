@@ -38,13 +38,14 @@ class CageGeneralView(BaseGeneralView):
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
+        # выбирается только 1 ферма, ограничений на выбор клеток и букв нет
         farm_number = params.get('farm_number')
-        cage_number = params.get('cage_number')
-        letter = params.get('letter')
+        cage_number = params.get('cage_number', [i for i in range(1, len(Cage.objects.filter(farm_number=farm_number)))])
+        letter = params.get('letter', ['а', 'б', 'в', 'г'])
         cage_type = params.get('cage_type')
-        rabbits_from = params.get('rabbits_from')
-        rabbits_to = params.get('rabbits_to')
-        cage_status = params.get('cage_status')
+        rabbits_from = params.get('rabbits_from', 0)
+        rabbits_to = params.get('rabbits_to', float('inf'))
+        cage_status = params.get('cage_status', ['C', 'R', ''])
         limit_from = params.get('__limit_from__')
         limit_to = params.get('__limit_to__')
         order_by = params.get('__order_by__')
@@ -64,7 +65,7 @@ class CageGeneralView(BaseGeneralView):
 
         filtered_queryset = ordered_queryset.filter(
             id__in=id_suitable_cages,
-            status=cage_status
+            status__in=cage_status
         )
 
         if limit_from is not None:
