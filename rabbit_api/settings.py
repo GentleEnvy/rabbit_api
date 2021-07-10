@@ -5,8 +5,6 @@ import django_heroku
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-
 DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
 
 INSTALLED_APPS = [
@@ -82,6 +80,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+SECRET_KEY = '''<django_heroku>'''
 ALLOWED_HOSTS = '''<django_heroku>'''
 DATABASES = '''<django_heroku>'''
 
