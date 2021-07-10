@@ -82,6 +82,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SECRET_KEY = '''<django_heroku>'''
 ALLOWED_HOSTS = '''<django_heroku>'''
-DATABASES = '''<django_heroku>'''
+DATABASES = {'default': ''''<django_heroku>'''}
 
 django_heroku.settings(locals(), test_runner=False)
