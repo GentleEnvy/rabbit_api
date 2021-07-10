@@ -24,6 +24,11 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig'
 ]
 
+# noinspection SpellChekingInspectionb
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination'
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
