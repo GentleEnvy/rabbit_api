@@ -1,4 +1,4 @@
-from api.models import Rabbit, DeadRabbit, Cage
+from api.models import Rabbit, DeadRabbit, Cage, FatteningCage
 from api.serializers import (
     RabbitListSerializer, MotherRabbitCreateSerializer,
     FatherRabbitCreateSerializer
@@ -26,18 +26,16 @@ class RabbitGeneralView(BaseGeneralView):
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
-        farm_number = params.get('farm_number')
-        gender = params.get('gender', [True, False])
-        rabbit_type = params.get('type', ['D', 'B', 'F', 'P', 'M'])
+        farm_number = [int(item) for item in params.get('farm_number', '-1').split(',')]
+        is_male = [bool(int(item)) for item in params.get('is_male', [])]
+        rabbit_type = [item for item in params.get('rabbit_type', [])]
         # breed = params.get('breed')
-        status = params.get('status', ['NE', 'ND', 'GS', ''])
-        age_from = params.get('age_from', 0)
-        age_to = params.get('age_to', float('inf'))
-        weight_from = params.get('weight_from', 0)
-        weight_to = params.get('weight_to', float('inf'))
+        status = [item for item in params.get('status', [])]
+        age_from = float(params.get('age_from', 0))
+        age_to = float(params.get('age_to', float('inf')))
+        weight_from = float(params.get('weight_from', 0))
+        weight_to = float(params.get('weight_to', float('inf')))
 
-        limit_from = params.get('__limit_from__')
-        limit_to = params.get('__limit_to__')
         order_by = params.get('__order_by__')
 
         if order_by is None:
@@ -46,32 +44,17 @@ class RabbitGeneralView(BaseGeneralView):
             ordered_queryset = queryset.order_by(order_by)
 
         filtered_queryset = ordered_queryset.filter(
-            # не уверен, что это правильное решение для pk
             pk__in=[
                 rabbit.id for rabbit in ordered_queryset
-                if any(s in rabbit.cast.manager.status for s in status) and rabbit.cast.cage.farm_number in farm_number
-            ] + [
-                rabbit.id for rabbit in ordered_queryset
-                if age_from < rabbit.cast.manager.age.days < age_to and weight_from < rabbit.weight < weight_to
+                if (len(status) == 0 or any(s in rabbit.cast.manager.status for s in status))
+                and (farm_number[0] == -1 or rabbit.cast.cage.farm_number in farm_number)
+                and (rabbit.weight is None or weight_from <= rabbit.weight <= weight_to)
+                and age_from <= rabbit.cast.manager.age.days <= age_to
             ],
+            **({} if len(rabbit_type) == 0 else {'current_type__in': rabbit_type}),
+            **({} if len(is_male) == 0 else {'is_male__in': is_male}),
         )
 
-        if rabbit_type is not None:
-            filtered_queryset = filtered_queryset.filter(
-                current_type__in=rabbit_type
-            )
-        if gender is not None:
-            if len(gender) < 2:
-                filtered_queryset = filtered_queryset.filter(
-                    is_male=True if gender == 'male' else False,
-                )
-
-        if limit_from is not None:
-            if limit_to is not None:
-                return filtered_queryset[int(limit_from):int(limit_to)]
-            return filtered_queryset[int(limit_from):]
-        if limit_to is not None:
-            return filtered_queryset[:int(limit_to)]
         return filtered_queryset
 
 
