@@ -83,7 +83,7 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
 class DeadRabbit(Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
 
-    death_date = models.DateField(auto_now_add=True)
+    death_day = models.DateTimeField(default=timezone.now)
     death_cause = models.CharField(
         choices=(
             (CAUSE_SLAUGHTER := 'S', 'CAUSE_SLAUGHTER'),
@@ -102,7 +102,7 @@ class DeadRabbit(Rabbit):
         return super().recast(rabbit)
 
     def get_absolute_url(self):
-        return reverse('dead_rabbit__detail__url', kwargs={'id': self.id})
+        raise AttributeError
 
 
 class _RabbitInCage(Rabbit):
