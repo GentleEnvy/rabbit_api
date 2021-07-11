@@ -7,6 +7,8 @@ from api.utils.functions import to_datetime
 from api.views.base import BaseView
 from api.models.unmanaged.operations import *
 
+__all__ = ['OperationView']
+
 
 class OperationView(BaseView):
     FILTER_QUERY_PARAMS = ('rabbit_id', 'time_from', 'time_to')
