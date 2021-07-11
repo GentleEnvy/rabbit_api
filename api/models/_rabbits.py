@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, Any, Union
+from typing import Final, Union
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -62,7 +62,7 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
             raise NotImplementedError('CHAR_TYPE must be determined')
         if rabbit.current_type == DeadRabbit.CHAR_TYPE:
             raise TypeError("It's forbidden to recast onto DeadRabbit")
-        casted_rabbit: Any = cls(rabbit_ptr=rabbit)
+        casted_rabbit = getattr(rabbit, cls.__name__.lower()) or cls(rabbit_ptr=rabbit)
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
