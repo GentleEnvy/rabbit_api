@@ -23,6 +23,8 @@ _is_valid_cage = {'status': []}
 class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     CHAR_TYPE: str = None
 
+    history_model = RabbitHistory
+
     birthday = models.DateTimeField(default=timezone.now)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
@@ -88,7 +90,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
 class DeadRabbit(Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
 
-    history_model = ''  # TODO
+    history_model = DeadRabbitHistory
 
     death_day = models.DateTimeField(default=timezone.now)
     death_cause = models.CharField(

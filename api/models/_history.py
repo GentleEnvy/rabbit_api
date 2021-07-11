@@ -3,8 +3,8 @@ from django.db import models
 from api.models.base import BaseHistoryModel
 
 __all__ = [
-    'RabbitHistory', 'FatteningRabbitHistory', 'BunnyHistory', 'MotherRabbitHistory',
-    'FatherRabbitHistory'
+    'RabbitHistory', 'DeadRabbitHistory', 'FatteningRabbitHistory', 'BunnyHistory',
+    'MotherRabbitHistory', 'FatherRabbitHistory'
 ]
 
 _field_kwargs = {
@@ -26,7 +26,7 @@ class RabbitHistory(BaseHistoryModel):
 
 
 class DeadRabbitHistory(RabbitHistory):
-    rabbit = models.ForeignKey('FatteningRabbit', on_delete=models.CASCADE)
+    rabbit = models.ForeignKey('DeadRabbit', on_delete=models.CASCADE)
 
 
 class FatteningRabbitHistory(RabbitHistory):
