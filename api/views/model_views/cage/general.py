@@ -1,39 +1,20 @@
-from django.forms import model_to_dict
-from rest_framework.response import Response
-
-from api.serializers import CageListSerializer
 from api.views.model_views.base import BaseGeneralView
-from api.models import *
-from api.views.model_views.cage import *
+from api.serializers import CageListSerializer
+from api.models import Cage
 
-__all__ = ['CageGeneralView', 'MotherCageGeneralView', 'FatteningCageGeneralView']
+__all__ = ['CageGeneralView']
 
 
 class CageGeneralView(BaseGeneralView):
-    class __ListSerializer(CageListSerializer):
-        class Meta:
-            model = Cage
-            fields = ['id']
-
     model = Cage
-    list_serializer = __ListSerializer
-    queryset = Cage.objects.all().values('id')
-
-    def list(self, request, *args, **kwargs):
-        super_list = super().list(request, *args, **kwargs)
-        ids = [cage_info['id'] for cage_info in super_list.data]
-        mother_cages = MotherCage.objects.filter(id__in=ids)
-        fattening_cages = FatteningCage.objects.filter(id__in=ids)
-        cage_list = []
-        for cages, type_cage in zip(
-                (mother_cages, fattening_cages),
-                ('mother_cage', 'fattening_cage')
-        ):
-            for cage in cages:
-                cage_info = model_to_dict(cage) | {'_type_': type_cage}
-                cage_info.pop('cage_ptr')
-                cage_list.append(cage_info)
-        return Response(cage_list)
+    list_serializer = CageListSerializer
+    # noinspection SpellCheckingInspection
+    queryset = Cage.objects.select_related(
+        'mothercage', 'fatteningcage'
+    ).prefetch_related(
+        'mothercage__motherrabbit_set', 'mothercage__bunny_set',
+        'fatteningcage__fatteningrabbit_set', 'fatteningcage__fatherrabbit_set'
+    )
 
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
@@ -75,17 +56,3 @@ class CageGeneralView(BaseGeneralView):
         if limit_to is not None:
             return filtered_queryset[:int(limit_to)]
         return filtered_queryset
-
-
-class MotherCageGeneralView(BaseGeneralView):
-    model = MotherCage
-    list_serializer = CageListSerializer
-    create_serializer = CageListSerializer
-    queryset = model.objects.all()
-
-
-class FatteningCageGeneralView(BaseGeneralView):
-    model = FatteningCage
-    list_serializer = CageListSerializer
-    create_serializer = CageListSerializer
-    queryset = model.objects.all()
