@@ -20,10 +20,8 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
+class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     CHAR_TYPE: str = None
-
-    history_model = RabbitHistory
 
     birthday = models.DateTimeField(default=timezone.now)
     mother = models.ForeignKey(
@@ -62,7 +60,9 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
             raise NotImplementedError('CHAR_TYPE must be determined')
         if rabbit.current_type == DeadRabbit.CHAR_TYPE:
             raise TypeError("It's forbidden to recast onto DeadRabbit")
-        casted_rabbit = getattr(rabbit, cls.__name__.lower()) or cls(rabbit_ptr=rabbit)
+        casted_rabbit = getattr(
+            rabbit, cls.__name__.lower(), None
+        ) or cls(rabbit_ptr=rabbit)
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
@@ -79,9 +79,16 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     def get_absolute_url(self) -> str:
         raise NotImplementedError
 
+    def save(self, *args, **kwargs):
+        if self.__class__ is Rabbit:
+            raise NotImplementedError("Instance can't be saved as Rabbit (base class)")
+        super().save(*args, **kwargs)
+
 
 class DeadRabbit(Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
+
+    history_model = ''  # TODO
 
     death_day = models.DateTimeField(default=timezone.now)
     death_cause = models.CharField(

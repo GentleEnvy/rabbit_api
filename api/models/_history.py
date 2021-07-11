@@ -25,6 +25,10 @@ class RabbitHistory(BaseHistoryModel):
     warning_status = models.TextField(**_field_kwargs)
 
 
+class DeadRabbitHistory(RabbitHistory):
+    rabbit = models.ForeignKey('FatteningRabbit', on_delete=models.CASCADE)
+
+
 class FatteningRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('FatteningRabbit', on_delete=models.CASCADE)
 
