@@ -57,9 +57,11 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     @classmethod
     def recast(cls, rabbit: Rabbit):
         if cls is Rabbit:
-            raise NotImplementedError("instance can't be cast to Rabbit (base class)")
+            raise NotImplementedError("Instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
             raise NotImplementedError('CHAR_TYPE must be determined')
+        if rabbit.current_type == DeadRabbit.CHAR_TYPE:
+            raise TypeError("It's forbidden to recast onto DeadRabbit")
         casted_rabbit: Any = cls(rabbit_ptr=rabbit)
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
@@ -157,7 +159,7 @@ class Bunny(BunnyManagerMixin, _RabbitInCage):
 
     @classmethod
     def recast(cls, _):
-        raise NotImplementedError('CHAR_TYPE must be determined')
+        raise NotImplementedError("It's forbidden to recast to Bunny")
 
     def get_absolute_url(self):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
