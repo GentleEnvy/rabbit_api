@@ -1,22 +1,25 @@
 from django.db import models
 from django.forms import model_to_dict
 
-from api.models.base._base_model import ListenDiffModel
+from api.models.base._base_model import ListenDiffModel, BaseModel
 
 __all__ = ['BaseHistoryModel', 'BaseHistoricalModel']
 
 
-class BaseHistoryModel(models.Model):
-    class Meta:
+class BaseHistoryModel(BaseModel):
+    class Meta(BaseModel.Meta):
         abstract = True
 
     historical_name: str
     time_name: str = 'time'
     replace_fields: dict = {}
 
+    def save(self, *args, **kwargs):
+        models.Model.save(self, *args, **kwargs)
+
 
 class BaseHistoricalModel(ListenDiffModel):
-    class Meta:
+    class Meta(ListenDiffModel.Meta):
         abstract = True
 
     history_model: BaseHistoryModel
