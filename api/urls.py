@@ -9,25 +9,13 @@ urlpatterns = [
         *[
             # general
             *[
-                path(
-                    'rabbit/', RabbitGeneralView.as_view(),
-                    name='rabbit__general__url'
-                ),
-                path(
-                    'rabbit/mother/', MotherRabbitGeneralView.as_view(),
-                    name='mother_rabbit__general__url'
-                ),
-                path(
-                    'rabbit/father/', FatherRabbitGeneralView.as_view(),
-                    name='father_rabbit__general__url'
-                ),
+                path('rabbit/', RabbitGeneralView.as_view()),
+                path('rabbit/mother/', MotherRabbitGeneralView.as_view()),
+                path('rabbit/father/', FatherRabbitGeneralView.as_view())
             ],
             # detail
             *[
-                path(
-                    'rabbit/<int:id>/', RabbitDetailView.as_view(),
-                    name='rabbit__detail__url'
-                ),
+                path('rabbit/<int:id>/', RabbitDetailView.as_view()),
                 path(
                     'rabbit/fattening/<int:id>/', FatteningRabbitDetailView.as_view(),
                     name='fattening_rabbit__detail__url'
@@ -49,19 +37,9 @@ urlpatterns = [
         # cage
         *[
             # general
-            *[
-                path(
-                    'cage/', CageGeneralView.as_view(),
-                    name='cage__general__url'
-                )
-            ],
+            path('cage/', CageGeneralView.as_view()),
             # detail
-            *[
-                path(
-                    'cage/<int:id>', CageDetailView.as_view(),
-                    name='cage__detail__url'
-                )
-            ]
+            path('cage/<int:id>', CageDetailView.as_view())
         ]
     ],
     # statistic
@@ -71,19 +49,14 @@ urlpatterns = [
         #  path('statistic/.../', )
     ],
     # operation
-    path('operation/', OperationView.as_view())
-
-    # TODO: recast
-    #  path(
-    #     'rabbit/<int:id>/cast_to_fattening', views.DeadRabbitView.as_view(),
-    #     name='fattening_cast_url'
-    #  ),
-    #  path(
-    #     'rabbit/<int:id>/cast_to_mother', views.DeadRabbitView.as_view(),
-    #     name='mother_cast_url'
-    #  ),
-    #  path(
-    #     'rabbit/<int:id>/cast_to_father', views.DeadRabbitView.as_view(),
-    #     name='father_cast_url'
-    #  )
+    path('operation/', OperationView.as_view()),
+    # recast
+    *[
+        path('rabbit/<int:id>/recast_to_dead', DeadRabbitRecastView.as_view()),
+        path('rabbit/<int:id>/recast_to_fattening', FatteningRabbitRecastView.as_view()),
+        path(
+            'rabbit/<int:id>/recast_to_reproduction',
+            ReproductionRabbitRecastView.as_view()
+        )
+    ]
 ]
