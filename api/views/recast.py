@@ -20,7 +20,7 @@ class _BaseRecastView(BaseView):
         if self.serializer_class is not None:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            recast_info = serializer.data
+            recast_info = serializer.validated_data
         else:
             recast_info = None
         self._save(casted_rabbit, recast_info)
@@ -49,3 +49,4 @@ class FatteningRabbitRecastView(_BaseRecastView):
     def _recast(self, rabbit):
         if rabbit.current_type == FatteningRabbit.CHAR_TYPE:
             raise ValidationError({'current_type': 'Rabbit already fattening'})
+        return super()._recast(rabbit)

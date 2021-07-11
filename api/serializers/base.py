@@ -16,15 +16,16 @@ class BaseReadOnlyRaiseSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
+# FIXME: make a custom Field instead of a Serializer
 class BaseSupportsCageSerializer(serializers.ModelSerializer):
     def is_valid(self, raise_exception=False):
         data = {key: value for key, value in self.initial_data.items()}
-        farm_number = data.get('cage__farm_number')
-        number = data.get('cage__number')
-        letter = data.get('cage__letter')
+        farm_number = data.pop('cage__farm_number', None)
+        number = data.pop('cage__number', None)
+        letter = data.pop('cage__letter', None)
         if None not in (farm_number, number, letter):
             data['cage'] = Cage.objects.get(
                 farm_number=farm_number, number=number, letter=letter
-            ).id
+            ).cast  # TODO: select_related
         self.initial_data = data
         return super().is_valid(raise_exception)
