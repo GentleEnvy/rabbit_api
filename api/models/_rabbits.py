@@ -55,7 +55,7 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     )
 
     @classmethod
-    def cast_to(cls, rabbit: Rabbit):
+    def recast(cls, rabbit: Rabbit):
         if cls is Rabbit:
             raise NotImplementedError("instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
@@ -96,8 +96,8 @@ class DeadRabbit(Rabbit):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> DeadRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> DeadRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('dead_rabbit__detail__url', kwargs={'id': self.id})
@@ -134,8 +134,8 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> FatteningRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> FatteningRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
@@ -156,8 +156,8 @@ class Bunny(BunnyManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> Bunny:
-        return super().cast_to(rabbit)
+    def recast(cls, _):
+        raise NotImplementedError('CHAR_TYPE must be determined')
 
     def get_absolute_url(self):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
@@ -173,8 +173,8 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> MotherRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> MotherRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
@@ -197,8 +197,8 @@ class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> FatherRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> FatherRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('father_rabbit__detail__url', kwargs={'id': self.id})

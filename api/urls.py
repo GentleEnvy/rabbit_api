@@ -73,7 +73,7 @@ urlpatterns = [
     # operation
     path('operation/', OperationView.as_view())
 
-    # TODO: cast_to
+    # TODO: recast
     #  path(
     #     'rabbit/<int:id>/cast_to_fattening', views.DeadRabbitView.as_view(),
     #     name='fattening_cast_url'
