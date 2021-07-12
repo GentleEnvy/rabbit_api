@@ -53,6 +53,7 @@ class Cage(BaseModel):
             pass
         raise TypeError('The cell type is not defined')
 
+    # FIXME: not counting the dead rabbits
     @property
     def rabbits(self) -> set['api_models.Rabbit']:
         raise NotImplementedError

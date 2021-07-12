@@ -1,7 +1,6 @@
-
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
+from api.serializers.base import BaseReadOnlyRaiseSerializer
 from api.models import *
 
 __all__ = [
@@ -12,7 +11,7 @@ __all__ = [
 
 def _create_detail_serializer(serializer_model):
     # noinspection PyMethodMayBeStatic
-    class _Serializer(serializers.ModelSerializer):
+    class _Serializer(BaseReadOnlyRaiseSerializer):
         class __CageSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Cage
@@ -28,15 +27,6 @@ def _create_detail_serializer(serializer_model):
 
         cage = __CageSerializer(read_only=True)
         status = serializers.SerializerMethodField(read_only=True)
-
-        def to_internal_value(self, data):
-            print(data)
-            for read_only_field in self.Meta.read_only_fields:
-                if read_only_field in data:
-                    raise ValidationError({
-                        read_only_field: f'{read_only_field} is read only'
-                    })
-            return super().to_internal_value(data)
 
         def get_status(self, rabbit):
             return rabbit.cast.manager.status

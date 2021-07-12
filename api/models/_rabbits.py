@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, Any, Union
+from typing import Final, Union
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -20,7 +20,7 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
+class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     CHAR_TYPE: str = None
 
     history_model = RabbitHistory
@@ -55,12 +55,16 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     )
 
     @classmethod
-    def cast_to(cls, rabbit: Rabbit):
+    def recast(cls, rabbit: Rabbit):
         if cls is Rabbit:
-            raise NotImplementedError("instance can't be cast to Rabbit (base class)")
+            raise NotImplementedError("Instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
             raise NotImplementedError('CHAR_TYPE must be determined')
-        casted_rabbit: Any = cls(rabbit_ptr=rabbit)
+        if rabbit.current_type == DeadRabbit.CHAR_TYPE:
+            raise TypeError("It's forbidden to recast from DeadRabbit")
+        casted_rabbit = getattr(
+            rabbit, cls.__name__.lower(), None
+        ) or cls(rabbit_ptr=rabbit)
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
@@ -77,11 +81,18 @@ class Rabbit(BaseHistoricalModel, RabbitManagerMixin):
     def get_absolute_url(self) -> str:
         raise NotImplementedError
 
+    def save(self, *args, **kwargs):
+        if self.__class__ is Rabbit:
+            raise NotImplementedError("Instance can't be saved as Rabbit (base class)")
+        super().save(*args, **kwargs)
+
 
 class DeadRabbit(Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
 
-    death_date = models.DateField(auto_now_add=True)
+    history_model = DeadRabbitHistory
+
+    death_day = models.DateTimeField(default=timezone.now)
     death_cause = models.CharField(
         choices=(
             (CAUSE_SLAUGHTER := 'S', 'CAUSE_SLAUGHTER'),
@@ -96,11 +107,11 @@ class DeadRabbit(Rabbit):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> DeadRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> DeadRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
-        return reverse('dead_rabbit__detail__url', kwargs={'id': self.id})
+        raise AttributeError
 
 
 class _RabbitInCage(Rabbit):
@@ -134,8 +145,8 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> FatteningRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> FatteningRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
@@ -156,8 +167,8 @@ class Bunny(BunnyManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit: Rabbit) -> Bunny:
-        return super().cast_to(rabbit)
+    def recast(cls, _):
+        raise NotImplementedError("It's forbidden to recast to Bunny")
 
     def get_absolute_url(self):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
@@ -173,8 +184,8 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> MotherRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> MotherRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
@@ -197,8 +208,8 @@ class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     )
 
     @classmethod
-    def cast_to(cls, rabbit) -> FatherRabbit:
-        return super().cast_to(rabbit)
+    def recast(cls, rabbit) -> FatherRabbit:
+        return super().recast(rabbit)
 
     def get_absolute_url(self):
         return reverse('father_rabbit__detail__url', kwargs={'id': self.id})
