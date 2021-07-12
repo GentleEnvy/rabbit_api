@@ -50,3 +50,7 @@ class FatteningRabbitRecastView(_BaseRecastView):
         if rabbit.current_type == FatteningRabbit.CHAR_TYPE:
             raise ValidationError({'current_type': 'Rabbit already fattening'})
         return super()._recast(rabbit)
+
+
+class ReproductionRabbitRecastView(_BaseRecastView):
+    pass

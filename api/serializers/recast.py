@@ -19,3 +19,7 @@ class FatteningRabbitRecastSerializer(BaseSupportsCageSerializer):
 
     is_male = serializers.BooleanField(required=False)
     weight = serializers.FloatField(required=False)
+
+
+class ReproductionRabbitRecastSerializer(BaseSupportsCageSerializer):
+    pass
