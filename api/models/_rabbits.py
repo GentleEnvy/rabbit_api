@@ -9,6 +9,7 @@ from django.utils import timezone
 from multiselectfield import MultiSelectField
 
 from api.managers.mixins import *
+from api.models._breed import *
 from api.models._history import *
 from api.models.base import BaseHistoricalModel
 from api.models._cages import *
@@ -35,6 +36,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     is_male = models.BooleanField(null=True, blank=True)
     is_vaccinated = models.BooleanField(default=False)
     weight = models.FloatField(null=True, blank=True)
+    breed = models.ForeignKey(Breed, on_delete=models.PROTECT)
     current_type = models.CharField(
         choices=(
             (TYPE_DIED := 'D', 'TYPE_DEAD'),
