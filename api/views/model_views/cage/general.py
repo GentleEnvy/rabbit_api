@@ -27,7 +27,7 @@ class CageGeneralView(BaseGeneralView):
             item for item in params.get('cage_type', 'fattening,mother').split(',')
         ]
         rabbits_from = int(params.get('rabbits_from', 0))
-        rabbits_to = int(params.get('rabbits_to', float('inf')))
+        rabbits_to = int(params.get('rabbits_to', 100))  # FIXME
         cage_status = [item for item in params.get('cage_status', [])]
         order_by = params.get('__order_by__')
 
