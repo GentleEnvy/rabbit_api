@@ -1,6 +1,6 @@
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import CageListSerializer
-from api.models import Cage, MotherCage, FatteningCage
+from api.models import Cage, FatteningCage
 
 __all__ = ['CageGeneralView']
 
@@ -16,13 +16,16 @@ class CageGeneralView(BaseGeneralView):
         'fatteningcage__fatteningrabbit_set', 'fatteningcage__fatherrabbit_set'
     )
 
+    # INPROGRESS: branch: feature-filters-(robinson)
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         farm_number = [int(item) for item in params.get('farm_number', '-1').split(',')]
         cage_number = [int(item) for item in params.get('cage_number', '-1').split(',')]
         cage_letter = [item for item in params.get('cage_letter', [])]
-        cage_type = [item for item in params.get('cage_type', 'fattening,mother').split(',')]
+        cage_type = [
+            item for item in params.get('cage_type', 'fattening,mother').split(',')
+        ]
         rabbits_from = int(params.get('rabbits_from', 0))
         rabbits_to = int(params.get('rabbits_to', float('inf')))
         cage_status = [item for item in params.get('cage_status', [])]
@@ -35,8 +38,12 @@ class CageGeneralView(BaseGeneralView):
 
         id_suitable_cages = []
         for cage in ordered_queryset:
-            current_type = 'fattening' if isinstance(cage.cast, FatteningCage) else 'mother'
-            if cage is not None and current_type in cage_type and rabbits_from <= len(cage.cast.rabbits) <= rabbits_to:
+            current_type = 'fattening' if isinstance(
+                cage.cast, FatteningCage
+            ) else 'mother'
+            if cage is not None and \
+                    current_type in cage_type and \
+                    rabbits_from <= len(cage.cast.rabbits) <= rabbits_to:
                 id_suitable_cages.append(cage.id)
 
         filtered_queryset = ordered_queryset.filter(
