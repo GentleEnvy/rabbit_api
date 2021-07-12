@@ -52,11 +52,13 @@ urlpatterns = [
     path('operation/', OperationView.as_view()),
     # recast
     *[
-        path('rabbit/<int:id>/recast_to_dead', DeadRabbitRecastView.as_view()),
-        path('rabbit/<int:id>/recast_to_fattening', FatteningRabbitRecastView.as_view()),
+        path('rabbit/<int:id>/recast_to_dead/', DeadRabbitRecastView.as_view()),
+        path('rabbit/<int:id>/recast_to_fattening/', FatteningRabbitRecastView.as_view()),
         path(
-            'rabbit/<int:id>/recast_to_reproduction',
+            'rabbit/<int:id>/recast_to_reproduction/',
             ReproductionRabbitRecastView.as_view()
         )
-    ]
+    ],
+    # breed
+    path('breed/', BreedGeneralView.as_view())
 ]

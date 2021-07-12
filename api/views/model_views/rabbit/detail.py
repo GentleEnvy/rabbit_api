@@ -1,6 +1,6 @@
 from api.models import *
 from api.views.base import BaseView
-from api.views.model_views._utils import redirect_by_id
+from api.views.model_views.utils import redirect_by_id
 from api.views.model_views.base import BaseDetailView
 from api.serializers import *
 
