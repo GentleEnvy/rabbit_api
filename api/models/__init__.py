@@ -1,3 +1,4 @@
+from api.models._breed import *
 from api.models._cages import *
 from api.models._plans import *
 from api.models._mating import *

@@ -3,8 +3,8 @@ from django.db import models
 from api.models.base import BaseHistoryModel
 
 __all__ = [
-    'RabbitHistory', 'FatteningRabbitHistory', 'BunnyHistory', 'MotherRabbitHistory',
-    'FatherRabbitHistory'
+    'RabbitHistory', 'DeadRabbitHistory', 'FatteningRabbitHistory', 'BunnyHistory',
+    'MotherRabbitHistory', 'FatherRabbitHistory'
 ]
 
 _field_kwargs = {
@@ -23,6 +23,10 @@ class RabbitHistory(BaseHistoryModel):
     is_vaccinated = models.BooleanField(**_field_kwargs)
     current_type = models.TextField(**_field_kwargs)
     warning_status = models.TextField(**_field_kwargs)
+
+
+class DeadRabbitHistory(RabbitHistory):
+    rabbit = models.ForeignKey('DeadRabbit', on_delete=models.CASCADE)
 
 
 class FatteningRabbitHistory(RabbitHistory):
