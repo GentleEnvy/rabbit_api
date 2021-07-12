@@ -36,16 +36,18 @@ class RabbitListSerializer(serializers.ModelSerializer):
 class MotherRabbitCreateSerializer(BaseSupportsCageSerializer):
     class Meta:
         model = MotherRabbit
-        fields = '__all__'
+        fields = ['birthday', 'breed', 'cage', 'current_type', 'is_male', 'is_vaccinated']
 
     current_type = serializers.HiddenField(default=Meta.model.CHAR_TYPE)
     is_male = serializers.HiddenField(default=False)
+    is_vaccinated = serializers.HiddenField(default=True)
 
 
 class FatherRabbitCreateSerializer(BaseSupportsCageSerializer):
     class Meta:
         model = FatherRabbit
-        fields = '__all__'
+        fields = ['birthday', 'breed', 'cage', 'current_type', 'is_male', 'is_vaccinated']
 
     current_type = serializers.HiddenField(default=Meta.model.CHAR_TYPE)
     is_male = serializers.HiddenField(default=True)
+    is_vaccinated = serializers.HiddenField(default=True)
