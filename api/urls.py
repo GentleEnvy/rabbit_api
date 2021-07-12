@@ -54,9 +54,9 @@ urlpatterns = [
     *[
         path('rabbit/<int:id>/recast_to_dead', DeadRabbitRecastView.as_view()),
         path('rabbit/<int:id>/recast_to_fattening', FatteningRabbitRecastView.as_view()),
-        # path(
-        #     'rabbit/<int:id>/recast_to_reproduction',
-        #     ReproductionRabbitRecastView.as_view()
-        # )
+        path(
+            'rabbit/<int:id>/recast_to_reproduction',
+            ReproductionRabbitRecastView.as_view()
+        )
     ]
 ]

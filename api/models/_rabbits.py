@@ -61,7 +61,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
         if cls.CHAR_TYPE is None:
             raise NotImplementedError('CHAR_TYPE must be determined')
         if rabbit.current_type == DeadRabbit.CHAR_TYPE:
-            raise TypeError("It's forbidden to recast to DeadRabbit")
+            raise TypeError("It's forbidden to recast from DeadRabbit")
         casted_rabbit = getattr(
             rabbit, cls.__name__.lower(), None
         ) or cls(rabbit_ptr=rabbit)

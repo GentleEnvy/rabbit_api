@@ -3,7 +3,10 @@ from rest_framework import serializers
 from api.serializers.base import *
 from api.models import *
 
-__all__ = ['DeadRabbitRecastSerializer', 'FatteningRabbitRecastSerializer']
+__all__ = [
+    'DeadRabbitRecastSerializer', 'FatteningRabbitRecastSerializer',
+    'MotherRabbitRecastSerializer', 'FatherRabbitRecastSerializer'
+]
 
 
 class DeadRabbitRecastSerializer(serializers.ModelSerializer):
@@ -21,5 +24,19 @@ class FatteningRabbitRecastSerializer(BaseSupportsCageSerializer):
     weight = serializers.FloatField(required=False)
 
 
-class ReproductionRabbitRecastSerializer(BaseSupportsCageSerializer):
-    pass
+class MotherRabbitRecastSerializer(BaseSupportsCageSerializer):
+    class Meta:
+        model = MotherRabbit
+        fields = ['is_male', 'is_vaccinated', 'weight', 'cage']
+
+    is_male = serializers.HiddenField(default=False)
+    weight = serializers.FloatField(required=False)
+
+
+class FatherRabbitRecastSerializer(BaseSupportsCageSerializer):
+    class Meta:
+        model = FatherRabbit
+        fields = ['is_male', 'is_vaccinated', 'weight', 'cage']
+
+    is_male = serializers.HiddenField(default=True)
+    weight = serializers.FloatField(required=False)
