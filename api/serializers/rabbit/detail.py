@@ -20,16 +20,20 @@ def _create_detail_serializer(serializer_model):
         class Meta:
             model = serializer_model
             read_only_fields = [
-                'id', 'is_male', 'birthday', 'current_type', 'cage', 'status'
+                'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status'
             ]
             fields = read_only_fields + ['weight']
             depth = 1
 
         cage = __CageSerializer(read_only=True)
-        status = serializers.SerializerMethodField(read_only=True)
+        status = serializers.SerializerMethodField()
+        breed = serializers.SerializerMethodField()
 
         def get_status(self, rabbit):
             return rabbit.cast.manager.status
+
+        def get_breed(self, rabbit):
+            return rabbit.breed.title
 
     return _Serializer
 

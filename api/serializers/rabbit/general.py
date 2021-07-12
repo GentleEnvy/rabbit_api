@@ -14,16 +14,23 @@ __all__ = [
 class RabbitListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rabbit
-        fields = ['id', 'cage', 'birthday', 'is_male', 'current_type', 'weight', 'status']
+        fields = [
+            'id', 'cage', 'birthday', 'is_male', 'breed', 'current_type', 'weight',
+            'status'
+        ]
 
     cage = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    breed = serializers.SerializerMethodField()
 
     def get_cage(self, rabbit):
         return model_to_dict(rabbit.cast.cage, fields=['farm_number', 'number', 'letter'])
 
     def get_status(self, rabbit):
         return rabbit.cast.manager.status
+
+    def get_breed(self, rabbit):
+        return rabbit.breed.title
 
 
 class MotherRabbitCreateSerializer(BaseSupportsCageSerializer):
