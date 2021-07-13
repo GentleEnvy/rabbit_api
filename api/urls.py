@@ -10,8 +10,7 @@ urlpatterns = [
             # general
             *[
                 path('rabbit/', RabbitGeneralView.as_view()),
-                path('rabbit/mother/', MotherRabbitGeneralView.as_view()),
-                path('rabbit/father/', FatherRabbitGeneralView.as_view())
+                path('rabbit/reproduction/', ReproductionRabbitGeneralView.as_view())
             ],
             # detail
             *[
