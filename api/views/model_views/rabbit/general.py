@@ -1,13 +1,15 @@
-from api.models import Rabbit, DeadRabbit, Cage, FatteningCage
+from django.conf import settings
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
+from api.models import *
 from api.serializers import (
     RabbitListSerializer, MotherRabbitCreateSerializer,
     FatherRabbitCreateSerializer
 )
 from api.views.model_views.base import BaseGeneralView
 
-__all__ = [
-    'RabbitGeneralView', 'MotherRabbitGeneralView', 'FatherRabbitGeneralView'
-]
+__all__ = ['RabbitGeneralView', 'ReproductionRabbitGeneralView']
 
 
 class RabbitGeneralView(BaseGeneralView):
@@ -58,13 +60,36 @@ class RabbitGeneralView(BaseGeneralView):
         return filtered_queryset
 
 
-class MotherRabbitGeneralView(BaseGeneralView):
-    model = MotherRabbitCreateSerializer.Meta.model
-    create_serializer = MotherRabbitCreateSerializer
-    queryset = model.objects.all()
+class ReproductionRabbitGeneralView(BaseGeneralView):
+    class __ReproductionRabbitCreateSerializer(MotherRabbitCreateSerializer):
+        is_male = serializers.BooleanField(required=True)
+        cage = serializers.PrimaryKeyRelatedField(queryset=Cage.objects.all())
 
+    create_serializer = __ReproductionRabbitCreateSerializer
 
-class FatherRabbitGeneralView(BaseGeneralView):
-    model = FatherRabbitCreateSerializer.Meta.model
-    create_serializer = FatherRabbitCreateSerializer
-    queryset = model.objects.all()
+    def _get_male(self):
+        if (is_male := self.request.data.get('is_male')) is None:
+            raise ValidationError(
+                {'is_male': 'The sex of the reproduction rabbit must be determined'}
+            )
+        return is_male
+
+    def get_queryset(self):
+        try:
+            if self._get_male():
+                return FatherRabbit.objects.all()
+            return MotherRabbit.objects.all()
+        except ValidationError:
+            if settings.DEBUG:
+                return Rabbit.objects.none()
+            raise
+
+    def get_serializer_class(self):
+        try:
+            if self._get_male():
+                return FatherRabbitCreateSerializer
+            return MotherRabbitCreateSerializer
+        except ValidationError:
+            if settings.DEBUG:
+                return super().get_serializer_class()
+            raise
