@@ -20,6 +20,7 @@ class CageGeneralView(BaseGeneralView):
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
+
         farm_number = [int(item) for item in params.get('farm_number', '-1').split(',')]
         cage_number = [int(item) for item in params.get('cage_number', '-1').split(',')]
         cage_letter = [item for item in params.get('cage_letter', [])]
@@ -29,6 +30,7 @@ class CageGeneralView(BaseGeneralView):
         rabbits_from = int(params.get('rabbits_from', 0))
         rabbits_to = int(params.get('rabbits_to', 100))  # FIXME
         cage_status = [item for item in params.get('cage_status', [])]
+
         order_by = params.get('__order_by__')
 
         if order_by is None:
@@ -51,7 +53,7 @@ class CageGeneralView(BaseGeneralView):
             **({} if farm_number[0] == -1 else {'farm_number__in': farm_number}),
             **({} if cage_number[0] == -1 else {'number__in': cage_number}),
             **({} if len(cage_letter) == 0 else {'letter__in': cage_letter}),
-            **({} if len(cage_status) == 0 else {'status__in': cage_status}),
+            **({} if len(cage_status) == 0 else {'status__in': cage_status})
         )
 
         return filtered_queryset
