@@ -30,7 +30,7 @@ urlpatterns = [
                 path(
                     'rabbit/father/<int:id>/', FatherRabbitDetailView.as_view(),
                     name='father_rabbit__detail__url'
-                ),
+                )
             ]
         ],
         # cage
