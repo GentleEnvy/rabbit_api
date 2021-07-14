@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import CageListSerializer
 from api.models import Cage, FatteningCage
@@ -16,20 +18,30 @@ class CageGeneralView(BaseGeneralView):
         'fatteningcage__fatteningrabbit_set', 'fatteningcage__fatherrabbit_set'
     )
 
-    # INPROGRESS: branch: feature-filters-(robinson)
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
 
-        farm_number = [int(item) for item in params.get('farm_number', '-1').split(',')]
-        cage_number = [int(item) for item in params.get('cage_number', '-1').split(',')]
-        cage_letter = [item for item in params.get('cage_letter', [])]
-        cage_type = [
-            item for item in params.get('cage_type', 'fattening,mother').split(',')
-        ]
-        rabbits_from = int(params.get('rabbits_from', 0))
-        rabbits_to = int(params.get('rabbits_to', 100))  # FIXME
-        cage_status = [item for item in params.get('cage_status', [])]
+        if farm_number := params.get('farm_number'):
+            queryset = queryset.filter(farm_number__in=farm_number.split(','))
+
+        if status := params.get('status'):
+            status = status.split(',')
+            if len(status) == 1:
+                queryset = queryset.filter(status=status)
+            elif len(status) == 2:
+                queryset = queryset.filter(Q(status=status) | Q(status=status[::-1]))
+            else:
+                raise ValueError('Too many statuses')
+        if type_ := params.get('type'):
+            type_ = type_.split(',')
+        number_rabbits_from = params.get('number_rabbits_from')
+        number_rabbits_to = params.get('number_rabbits_to')
+
+        filtered_queryset = queryset.filter(**(farm_number | status))
+        filtered_queryset = filtered_queryset.filter(pk__in=[
+
+        ])
 
         order_by = params.get('__order_by__')
 
