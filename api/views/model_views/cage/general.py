@@ -24,6 +24,8 @@ class CageGeneralView(BaseGeneralView):
 
         if farm_number := params.get('farm_number'):
             queryset = queryset.filter(farm_number__in=farm_number.split(','))
+        if is_parallel := params.get('is_parallel'):
+            queryset = queryset.filter(is_parallel=bool(int(is_parallel)))
         if status := params.get('status'):
             status = status.split(',')
             if len(status) == 1:
