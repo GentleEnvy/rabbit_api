@@ -59,8 +59,7 @@ class ReproductionRabbitRecastView(BaseView):
         rabbit = Rabbit.objects.get(id=id)
         if rabbit.current_type in (MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE):
             raise ValidationError(
-                {'current_type': 'It is forbidden to recast from reproduction '
-                                 'to reproduction'}
+                {'current_type': 'Rabbit already reproduction'}
             )
         is_male = rabbit.is_male
         is_male = request.data.get('is_male') if is_male is None else is_male

@@ -48,7 +48,7 @@ urlpatterns = [
         #  path('statistic/.../', )
     ],
     # operation
-    path('operation/', OperationView.as_view()),
+    path('operation/', OperationGeneralView.as_view()),
     # recast
     *[
         path('rabbit/<int:id>/recast_to_dead/', DeadRabbitRecastView.as_view()),
