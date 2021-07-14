@@ -1,8 +1,8 @@
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import CageListSerializer
-from api.models import Cage, FatteningCage
+from api.models import Cage
 
 __all__ = ['CageGeneralView']
 
@@ -24,7 +24,6 @@ class CageGeneralView(BaseGeneralView):
 
         if farm_number := params.get('farm_number'):
             queryset = queryset.filter(farm_number__in=farm_number.split(','))
-
         if status := params.get('status'):
             status = status.split(',')
             if len(status) == 1:
@@ -33,39 +32,52 @@ class CageGeneralView(BaseGeneralView):
                 queryset = queryset.filter(Q(status=status) | Q(status=status[::-1]))
             else:
                 raise ValueError('Too many statuses')
+
         if type_ := params.get('type'):
             type_ = type_.split(',')
-        number_rabbits_from = params.get('number_rabbits_from')
-        number_rabbits_to = params.get('number_rabbits_to')
+        if number_rabbits_from := params.get('number_rabbits_from'):
+            number_rabbits_from = int(number_rabbits_from)
+        if number_rabbits_to := params.get('number_rabbits_to'):
+            number_rabbits_to = int(number_rabbits_to)
 
-        filtered_queryset = queryset.filter(**(farm_number | status))
-        filtered_queryset = filtered_queryset.filter(pk__in=[
-
-        ])
-
-        order_by = params.get('__order_by__')
-
-        if order_by is None:
-            ordered_queryset = queryset
-        else:
-            ordered_queryset = queryset.order_by(order_by)
-
-        id_suitable_cages = []
-        for cage in ordered_queryset:
-            current_type = 'fattening' if isinstance(
-                cage.cast, FatteningCage
-            ) else 'mother'
-            if cage is not None and \
-                    current_type in cage_type and \
-                    rabbits_from <= len(cage.cast.rabbits) <= rabbits_to:
-                id_suitable_cages.append(cage.id)
-
-        filtered_queryset = ordered_queryset.filter(
-            id__in=id_suitable_cages,
-            **({} if farm_number[0] == -1 else {'farm_number__in': farm_number}),
-            **({} if cage_number[0] == -1 else {'number__in': cage_number}),
-            **({} if len(cage_letter) == 0 else {'letter__in': cage_letter}),
-            **({} if len(cage_status) == 0 else {'status__in': cage_status})
+        queryset = queryset.filter(
+            id__in=[
+                cage.id for cage in queryset
+                if (
+                    (
+                        number_rabbits_from is None or
+                        number_rabbits_from <= len(cage.cast.rabbits)
+                    ) and (
+                        number_rabbits_to is None or
+                        number_rabbits_to >= len(cage.cast.rabbits)
+                    ) and (
+                        type_ is None or
+                        cage.cast.CHAR_TYPE in type_
+                    )
+                )
+            ]
         )
 
-        return filtered_queryset
+        if order_by := params.get('__order_by__'):
+            return self._order_queryset(queryset, order_by)
+        return queryset
+
+    @staticmethod
+    def _order_queryset(queryset: QuerySet, order_by: str):
+        if order_by in ('farm_number', '-farm_number'):
+            return queryset.order_by(order_by)
+        if order_by == 'number':
+            return queryset.order_by('number', 'letter')
+        if order_by == '-number':
+            return queryset.order_by('-number', '-letter')
+        if order_by == 'number_rabbits':
+            return sorted(queryset, key=lambda c: len(c.cast.rabbits))
+        if order_by == '-number_rabbits':
+            return sorted(queryset, key=lambda c: len(c.cast.rabbits), reverse=True)
+        if order_by == 'status':
+            return sorted(queryset, key=lambda c: [-len(c.status), c.status])
+        if order_by == '-status':
+            return sorted(
+                queryset, key=lambda c: [-len(c.status), c.status], reverse=True
+            )
+        return queryset
