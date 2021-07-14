@@ -96,7 +96,7 @@ class RabbitGeneralView(BaseGeneralView):
                     (FatteningRabbit, MotherRabbit, FatherRabbit, Bunny)
                 ),
                 start=[]
-            ),
+            )
         if order_by == 'breed':
             return queryset.order_by('breed__title')
         if order_by == 'status':
