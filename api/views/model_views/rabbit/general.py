@@ -100,7 +100,7 @@ class RabbitGeneralView(BaseGeneralView):
         if order_by == 'breed':
             return queryset.order_by('breed__title')
         if order_by == 'status':
-            return sorted(queryset, key=lambda r: next(iter(r.cast.status)))
+            return sorted(queryset, key=lambda r: next(iter(r.cast.manager.status)))
         if order_by in ('weight', '-weight'):
             return queryset.order_by(order_by)
         return queryset
