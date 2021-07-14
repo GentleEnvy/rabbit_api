@@ -17,6 +17,8 @@ class Cage(BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
 
+    CHAR_TYPE: str = None
+
     farm_number = models.IntegerField(
         validators=[MinValueValidator(2), MaxValueValidator(4)]
     )
@@ -63,6 +65,8 @@ class Cage(BaseModel):
 
 
 class FatteningCage(Cage):
+    CHAR_TYPE = 'F'
+
     @property
     def rabbits(self):
         rabbit_set = set(self.fatteningrabbit_set.all())
@@ -74,6 +78,8 @@ class FatteningCage(Cage):
 
 
 class MotherCage(Cage):
+    CHAR_TYPE = 'M'
+
     is_parallel = models.BooleanField(default=False)
 
     @property

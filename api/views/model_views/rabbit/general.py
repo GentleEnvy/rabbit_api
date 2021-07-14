@@ -52,14 +52,19 @@ class RabbitGeneralView(BaseGeneralView):
         if status := params.get('status'):
             status = status.split(',')
 
-        filtered_queryset = queryset.filter(**(
+        filtered_queryset = queryset.filter(
+            **(
                 farm_number | is_male | type_ | breed | age_from | age_to | weight_from |
                 weight_to
-        ))
-        filtered_queryset = filtered_queryset.filter(pk__in=[
-            rabbit.id for rabbit in queryset.all()
-            if (status is None or any(s in rabbit.cast.manager.status for s in status))
-        ])
+            )
+        )
+        filtered_queryset = filtered_queryset.filter(
+            id__in=[
+                rabbit.id for rabbit in queryset.all()
+                if
+                (status is None or any(s in rabbit.cast.manager.status for s in status))
+            ]
+        )
 
         if order_by := params.get('__order_by__'):
             return self._order_queryset(filtered_queryset, order_by)
@@ -81,9 +86,12 @@ class RabbitGeneralView(BaseGeneralView):
                 queryset, key=lambda r: [r.cast.cage.number, r.cast.cage.letter]
             )
         if order_by == 'type':
-            return sum((
-                list(queryset.filter(current_type=rabbit_class.CHAR_TYPE).all())
-                for rabbit_class in (FatteningRabbit, MotherRabbit, FatherRabbit, Bunny)),
+            return sum(
+                (
+                    list(queryset.filter(current_type=rabbit_class.CHAR_TYPE).all())
+                    for rabbit_class in
+                    (FatteningRabbit, MotherRabbit, FatherRabbit, Bunny)
+                ),
                 start=[]
             ),
         if order_by == 'breed':
