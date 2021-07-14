@@ -32,8 +32,6 @@ class RabbitGeneralView(BaseGeneralView):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
 
-        if farm_number := params.get('farm_number', {}):
-            farm_number = {'cage__farm_number__in': map(int, farm_number.split(','))}
         if is_male := params.get('is_male', {}):
             is_male = {'is_male': bool(int(is_male))}
         if type_ := params.get('type', {}):
@@ -51,18 +49,23 @@ class RabbitGeneralView(BaseGeneralView):
 
         if status := params.get('status'):
             status = status.split(',')
+        if farm_number := params.get('farm_number'):
+            farm_number = list(map(int, farm_number.split(',')))
 
         filtered_queryset = queryset.filter(
-            **(
-                farm_number | is_male | type_ | breed | age_from | age_to | weight_from |
-                weight_to
-            )
+            **(is_male | type_ | breed | age_from | age_to | weight_from | weight_to)
         )
         filtered_queryset = filtered_queryset.filter(
             id__in=[
-                rabbit.id for rabbit in queryset.all()
+                rabbit.id for rabbit in queryset
                 if
-                (status is None or any(s in rabbit.cast.manager.status for s in status))
+                (
+                    status is None or
+                    any(s in rabbit.cast.manager.status for s in status)
+                ) and (
+                    farm_number is None or
+                    rabbit.cast.cage.farm_number in farm_number
+                )
             ]
         )
 
