@@ -13,6 +13,8 @@ class _EmptySerializer(serializers.ModelSerializer):
 
 
 class BaseGeneralView(ListCreateAPIView, BaseView):
+    _EmptySerializer = _EmptySerializer
+
     create_serializer: serializers.ModelSerializer = None
     list_serializer: serializers.ModelSerializer = None
 
@@ -25,11 +27,13 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
             if self.list_serializer is not None:
                 return self.list_serializer
         if settings.DEBUG:
-            return _EmptySerializer
+            return self._EmptySerializer
         self.http_method_not_allowed(request)
 
 
 class BaseDetailView(RetrieveUpdateAPIView, BaseView):
+    _EmptySerializer = _EmptySerializer
+
     retrieve_serializer: serializers.ModelSerializer = None
     update_serializer: serializers.ModelSerializer = None
 
@@ -42,5 +46,5 @@ class BaseDetailView(RetrieveUpdateAPIView, BaseView):
             if self.update_serializer is not None:
                 return self.update_serializer
         if settings.DEBUG:
-            return _EmptySerializer
+            return self._EmptySerializer
         self.http_method_not_allowed(request)
