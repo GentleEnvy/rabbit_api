@@ -22,9 +22,9 @@ INSTALLED_APPS = [
 ]
 
 # noinspection SpellCheckingInspection
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination'
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination'
+# }
 
 CORS_ALLOW_ALL_ORIGINS = True
 
