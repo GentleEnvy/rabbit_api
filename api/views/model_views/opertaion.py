@@ -1,7 +1,3 @@
-from typing import Any
-
-from rest_framework.request import Request
-
 from api.utils.functions import to_datetime
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import OperationListSerializer
