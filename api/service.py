@@ -1,23 +1,23 @@
 from api.models import *
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import random
+
+DAYS_FOR_SAFE_FERTILIZATION = 3
 
 
 def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
-    if not rabbit.is_male and MotherRabbit(rabbit).status == 'P':
+    if rabbit.current_type == Rabbit.TYPE_MOTHER and rabbit.cast.manager.last_fertilization is not None \
+            and (rabbit.cast.manager.last_fertilization - datetime.today()).days < DAYS_FOR_SAFE_FERTILIZATION:
         raise ValueError('This rabbit is pregnant, no partner should be found')
-    if rabbit.is_ill:
+    if rabbit.warning_status:
         raise ValueError('This rabbit is ill')
-    if rabbit.CHAR_TYPE == 'B':
+    if rabbit.current_type == Rabbit.TYPE_BUNNY:
         raise ValueError('This rabbit is too young to breed')
 
-    if rabbit.is_male:
-        rabbit = FatherRabbit.objects.get(pk=rabbit.id)
-    else:
-        rabbit = MotherRabbit.objects.get(pk=rabbit.id)
+    rabbit = rabbit.cast
 
-    # rabbit_breed = rabbit.breed
-    list_of_rabbits = Rabbit.objects.all()
+    rabbit_breed = rabbit.breed
+    list_of_rabbits = Rabbit.objects.filter(breed=rabbit_breed, current_type__in=['P', 'M', 'D'])
     d = {}
     males = {m.id: m for m in FatherRabbit.objects.all()}
     females = {f.id: f for f in MotherRabbit.objects.all()}
@@ -30,20 +30,17 @@ def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
     used = set()
     for _ in list_of_rabbits:
         min_rabbit = None
-
         for j in list_of_rabbits:
             if j not in used and (min_rabbit is None or d[j.id] < d[min_rabbit.id]):
                 min_rabbit = j
-
         if d.get(min_rabbit.id) == float('inf'):
             break
-
         used.add(min_rabbit)
         min_rabbit = males[min_rabbit.id] if min_rabbit.is_male else females[min_rabbit.id]
         for relative in (min_rabbit.mother,
                          min_rabbit.father,
                          *min_rabbit.rabbit_set.all()):
-            if relative is not None and d[min_rabbit.id] + 1 < d[relative.id]:
+            if relative is not None and relative.id in d.keys() and d[min_rabbit.id] + 1 < d[relative.id]:
                 d[relative.id] = d[min_rabbit.id] + 1
     max_d = 0
     max_id = rabbit.id
