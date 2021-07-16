@@ -1,108 +1,146 @@
-from django.db.models import Q
-from django.forms import model_to_dict
-from rest_framework.fields import HiddenField
+from datetime import datetime, timedelta
+
+from django.db.models import QuerySet
+
+from django.conf import settings
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from api.models import *
-from api.serializers.base import BaseModelSerializer
+from api.serializers import (
+    RabbitListSerializer, MotherRabbitCreateSerializer,
+    FatherRabbitCreateSerializer
+)
 from api.views.model_views.base import BaseGeneralView
-from api.views.model_views.rabbit._default_serializers import \
-    create_default_retrieve_serializer
 
-__all__ = [
-    'RabbitGeneralView', 'RabbitLiveGeneralView', 'DeadRabbitGeneralView',
-    'FatteningRabbitGeneralView', 'BunnyGeneralView', 'MotherRabbitGeneralView',
-    'FatherRabbitGeneralView'
-]
-
-
-def _create_default_create_serializer(serializer_model, is_male_field=None):
-    if is_male_field is None:
-        class DefaultCreateSerializer(BaseModelSerializer):
-            class Meta:
-                model = serializer_model
-                fields = '__all__'
-
-            current_type = HiddenField(default=serializer_model.CHAR_TYPE)
-    else:
-        class DefaultCreateSerializer(BaseModelSerializer):
-            class Meta:
-                model = serializer_model
-                fields = '__all__'
-
-            current_type = HiddenField(default=serializer_model.CHAR_TYPE)
-            is_male = is_male_field
-
-    return DefaultCreateSerializer
+__all__ = ['RabbitGeneralView', 'ReproductionRabbitGeneralView']
 
 
 class RabbitGeneralView(BaseGeneralView):
-    class __ListSerializer(BaseModelSerializer):
-        class Meta:
-            model = Rabbit
-            fields = '__all__'
-
     model = Rabbit
-    list_serializer = __ListSerializer
-    queryset = model.objects.all()
+    list_serializer = RabbitListSerializer
+    # noinspection SpellCheckingInspection
+    queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).select_related(
+        'breed',
+        'bunny', 'bunny__cage',
+        'fatteningrabbit', 'fatteningrabbit__cage',
+        'motherrabbit', 'motherrabbit__cage',
+        'fatherrabbit', 'fatherrabbit__cage'
+    ).all()
 
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        params = self.request.query_params
 
-class RabbitLiveGeneralView(BaseGeneralView):
-    model = Rabbit
-    list_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).all()
+        if is_male := params.get('is_male', {}):
+            is_male = {'is_male': bool(int(is_male))}
+        if type_ := params.get('type', {}):
+            type_ = {'current_type__in': type_.split(',')}
+        if breed := params.get('breed', {}):
+            breed = {'breed__in': list(map(int, breed.split(',')))}
+        if age_from := params.get('age_from', {}):
+            age_from = {'birthday__lte': datetime.utcnow() - timedelta(int(age_from))}
+        if age_to := params.get('age_to', {}):
+            age_to = {'birthday__gte': datetime.utcnow() - timedelta(int(age_to))}
+        if weight_from := params.get('weight_from', {}):
+            weight_from = {'weight__gte': weight_from}
+        if weight_to := params.get('weight_to', {}):
+            weight_to = {'weight__lte': weight_to}
 
-    def list(self, request, *args, **kwargs):
-        super_list = super().list(request, *args, **kwargs)
-        ids = [rabbit_info['id'] for rabbit_info in super_list.data]
-        mother_cages = MotherCage.objects.filter(
-            Q(fatherrabbit__id__in=ids) | Q(motherrabbit__id__in=ids) |
-            Q(bunny__id__in=ids)
+        if status := params.get('status'):
+            status = status.split(',')
+        if farm_number := params.get('farm_number'):
+            farm_number = list(map(int, farm_number.split(',')))
+
+        filtered_queryset = queryset.filter(
+            **(is_male | type_ | breed | age_from | age_to | weight_from | weight_to)
         )
-        fattening_cages = FatteningCage.objects.filter(
-            Q(fatherrabbit__id__in=ids) | Q(fatteningrabbit__id__in=ids)
+        filtered_queryset = filtered_queryset.filter(
+            id__in=[
+                rabbit.id for rabbit in queryset
+                if
+                (
+                    status is None or
+                    any(s in rabbit.cast.manager.status for s in status)
+                ) and (
+                    farm_number is None or
+                    rabbit.cast.cage.farm_number in farm_number
+                )
+            ]
         )
-        cages = {c.id: c for c in mother_cages} | {c.id: c for c in fattening_cages}
-        for rabbit_info in super_list.data:
-            if cage := cages.get(rabbit_info['id']):
-                cage_info = model_to_dict(cage)
-                cage_info.pop('cage_ptr')
-                rabbit_info['cage'] = cage_info
-        return super_list
+
+        if order_by := params.get('__order_by__'):
+            return self._order_queryset(filtered_queryset, order_by)
+        return filtered_queryset
+
+    @staticmethod
+    def _order_queryset(queryset: QuerySet, order_by: str):
+        if order_by == 'age':
+            return queryset.order_by('birthday')
+        if order_by == '-age':
+            return queryset.order_by('-birthday')
+        if order_by == 'sex':
+            return list(queryset.exclude(is_male=None).order_by('-is_male')) + \
+                   list(queryset.filter(is_male=None))
+        if order_by == 'farm_number':
+            return sorted(queryset, key=lambda r: r.cast.cage.farm_number)
+        if order_by == 'cage_number':
+            return sorted(
+                queryset, key=lambda r: [r.cast.cage.number, r.cast.cage.letter]
+            )
+        if order_by == 'type':
+            return sum(
+                (
+                    list(queryset.filter(current_type=rabbit_class.CHAR_TYPE).all())
+                    for rabbit_class in
+                    (FatteningRabbit, MotherRabbit, FatherRabbit, Bunny)
+                ),
+                start=[]
+            )
+        if order_by == 'breed':
+            return queryset.order_by('breed__title')
+        if order_by == 'status':
+            return sorted(
+                queryset,
+                key=lambda r: '' if len(status := r.cast.manager.status) == 0 else next(
+                    iter(status)
+                ), reverse=True
+            )
+        if order_by in ('weight', '-weight'):
+            return queryset.order_by(order_by)
+        return queryset
 
 
-class DeadRabbitGeneralView(BaseGeneralView):
-    model = DeadRabbit
-    list_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
+class ReproductionRabbitGeneralView(BaseGeneralView):
+    class __ReproductionRabbitCreateSerializer(MotherRabbitCreateSerializer):
+        is_male = serializers.BooleanField(required=True)
+        cage = serializers.PrimaryKeyRelatedField(queryset=Cage.objects.all())
 
+    create_serializer = __ReproductionRabbitCreateSerializer
 
-class FatteningRabbitGeneralView(BaseGeneralView):
-    model = FatteningRabbit
-    create_serializer = _create_default_create_serializer(model)
-    list_serializer = create_default_retrieve_serializer(model, 1)
-    queryset = model.objects.all()
+    def _get_male(self):
+        if (is_male := self.request.data.get('is_male')) is None:
+            raise ValidationError(
+                {'is_male': 'The sex of the reproduction rabbit must be determined'}
+            )
+        return is_male
 
+    def get_queryset(self):
+        try:
+            if self._get_male():
+                return FatherRabbit.objects.all()
+            return MotherRabbit.objects.all()
+        except ValidationError:
+            if settings.DEBUG:
+                return Rabbit.objects.none()
+            raise
 
-class BunnyGeneralView(BaseGeneralView):
-    model = Bunny
-    create_serializer = _create_default_create_serializer(model)
-    list_serializer = create_default_retrieve_serializer(model, 1)
-    queryset = model.objects.all()
-
-
-class MotherRabbitGeneralView(BaseGeneralView):
-    model = MotherRabbit
-    create_serializer = _create_default_create_serializer(
-        model, is_male_field=HiddenField(default=False)
-    )
-    list_serializer = create_default_retrieve_serializer(model, 1)
-    queryset = model.objects.all()
-
-
-class FatherRabbitGeneralView(BaseGeneralView):
-    model = FatherRabbit
-    create_serializer = _create_default_create_serializer(
-        model, is_male_field=HiddenField(default=True)
-    )
-    list_serializer = create_default_retrieve_serializer(model, 1)
-    queryset = model.objects.all()
+    def get_serializer_class(self):
+        try:
+            if self._get_male():
+                return FatherRabbitCreateSerializer
+            return MotherRabbitCreateSerializer
+        except ValidationError:
+            if settings.DEBUG:
+                return super().get_serializer_class()
+            raise

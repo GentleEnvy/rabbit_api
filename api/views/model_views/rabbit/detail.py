@@ -1,57 +1,51 @@
 from api.models import *
 from api.views.base import BaseView
-from api.views.model_views._utils import redirect_by_id
+from api.views.model_views.utils import redirect_by_id
 from api.views.model_views.base import BaseDetailView
-from api.views.model_views.rabbit._default_serializers import \
-    create_default_retrieve_serializer
+from api.serializers import *
 
 __all__ = [
-    'RabbitDetailView', 'DeadRabbitDetailView', 'FatteningRabbitDetailView',
-    'BunnyDetailView', 'MotherRabbitDetailView', 'FatherRabbitDetailView',
+    'RabbitDetailView', 'FatteningRabbitDetailView', 'BunnyDetailView',
+    'MotherRabbitDetailView', 'FatherRabbitDetailView',
 ]
 
 
 class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
     def get(self, request, *args, **kwargs):
-        return redirect_by_id(Rabbit, request, kwargs.get('id'))
-
-
-class DeadRabbitDetailView(BaseDetailView):
-    model = DeadRabbit
-    lookup_url_kwarg = 'id'
-    retrieve_serializer = create_default_retrieve_serializer(model)
-    update_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
+        return redirect_by_id(Rabbit, request, kwargs.get('id'), current_type__in=[
+            FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
+            FatherRabbit.CHAR_TYPE
+        ])
 
 
 class FatteningRabbitDetailView(BaseDetailView):
     model = FatteningRabbit
     lookup_url_kwarg = 'id'
-    retrieve_serializer = create_default_retrieve_serializer(model, 1)
-    update_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
+    retrieve_serializer = FatteningRabbitDetailSerializer
+    update_serializer = FatteningRabbitDetailSerializer
+    queryset = FatteningRabbit.objects.all()
 
 
 class BunnyDetailView(BaseDetailView):
     model = Bunny
     lookup_url_kwarg = 'id'
-    retrieve_serializer = create_default_retrieve_serializer(model, 1)
-    update_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
+    retrieve_serializer = BunnyDetailSerializer
+    update_serializer = BunnyDetailSerializer
+    queryset = Bunny.objects.all()
 
 
 class MotherRabbitDetailView(BaseDetailView):
     model = MotherRabbit
     lookup_url_kwarg = 'id'
-    retrieve_serializer = create_default_retrieve_serializer(model, 1)
-    update_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
+    retrieve_serializer = MotherRabbitDetailSerializer
+    update_serializer = MotherRabbitDetailSerializer
+    queryset = MotherRabbit.objects.all()
 
 
 class FatherRabbitDetailView(BaseDetailView):
     model = FatherRabbit
     lookup_url_kwarg = 'id'
-    retrieve_serializer = create_default_retrieve_serializer(model, 1)
-    update_serializer = create_default_retrieve_serializer(model)
-    queryset = model.objects.all()
+    retrieve_serializer = FatherRabbitDetailSerializer
+    update_serializer = FatherRabbitDetailSerializer
+    queryset = FatherRabbit.objects.all()
