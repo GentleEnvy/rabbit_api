@@ -64,7 +64,8 @@ class MotherRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
     class Meta:
         model = Bunny
         read_only_fields = [
-            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status'
+            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status',
+            'output'
         ]
         fields = read_only_fields + ['weight']
         depth = 1
@@ -81,10 +82,10 @@ class MotherRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         return rabbit.breed.title
 
     def get_output(self, rabbit: MotherRabbit):
-        children = rabbit.rabbit_set
+        children = rabbit.rabbit_set.all()
         if len(children) == 0:
             return 0
-        births = [children[0]]
+        births = [children[0].birthday]
         for child in children[1:]:
             for birth in births:
                 if abs(diff_time(birth, child.birthday).days) > 2:
@@ -98,7 +99,8 @@ class FatherRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
     class Meta:
         model = FatteningRabbit
         read_only_fields = [
-            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status'
+            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status',
+            'output'
         ]
         fields = read_only_fields + ['weight']
         depth = 1
@@ -115,10 +117,10 @@ class FatherRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         return rabbit.breed.title
 
     def get_output(self, rabbit: FatherRabbit):
-        children = rabbit.rabbit_set
+        children = rabbit.rabbit_set.all()
         if len(children) == 0:
             return 0
-        births = [children[0]]
+        births = [children[0].birthday]
         for child in children[1:]:
             for birth in births:
                 if abs(diff_time(birth, child.birthday).days) > 2:
