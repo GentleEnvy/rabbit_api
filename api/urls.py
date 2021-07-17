@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 
 from api.views import *
 
@@ -59,5 +60,11 @@ urlpatterns = [
         )
     ],
     # breed
-    path('breed/', BreedGeneralView.as_view())
+    path('breed/', BreedGeneralView.as_view()),
+
+    # echo
+    path('echo/', EchoView.as_view()),
+    # auth
+    path('auth/token/', obtain_auth_token),
+    path('auth/session/', AuthSessionView.as_view())
 ]

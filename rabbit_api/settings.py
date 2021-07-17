@@ -11,6 +11,7 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+# noinspection SpellCheckingInspection
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 
     'api.apps.ApiConfig'
@@ -27,11 +29,16 @@ INSTALLED_APPS = [
 
 # noinspection SpellCheckingInspection
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination'
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ]
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+# noinspection SpellCheckingInspection
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
