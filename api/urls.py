@@ -62,5 +62,6 @@ urlpatterns = [
     path('breed/', BreedGeneralView.as_view()),
 
     # plan
-    path('plan/', PlanGeneralView.as_view())
+    path('plan/', PlanGeneralView.as_view()),
+    path('plan/<int:id>', PlanDetailView.as_view())
 ]
