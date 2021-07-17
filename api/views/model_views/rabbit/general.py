@@ -26,6 +26,8 @@ class RabbitGeneralView(BaseGeneralView):
         'fatteningrabbit', 'fatteningrabbit__cage',
         'motherrabbit', 'motherrabbit__cage',
         'fatherrabbit', 'fatherrabbit__cage'
+    ).prefetch_related(
+        'motherrabbit__rabbit_set', 'fatherrabbit__rabbit_set'
     ).all()
 
     def filter_queryset(self, queryset):
