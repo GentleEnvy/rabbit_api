@@ -17,7 +17,7 @@ def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
     rabbit = rabbit.cast
 
     rabbit_breed = rabbit.breed
-    list_of_rabbits = Rabbit.objects.filter(breed=rabbit_breed, current_type__in=['P', 'M', 'D'])
+    list_of_rabbits = Rabbit.objects.filter(breed=rabbit_breed)
     d = {}
     males = {m.id: m for m in FatherRabbit.objects.all()}
     females = {f.id: f for f in MotherRabbit.objects.all()}
@@ -36,12 +36,13 @@ def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
         if d.get(min_rabbit.id) == float('inf'):
             break
         used.add(min_rabbit)
-        min_rabbit = males[min_rabbit.id] if min_rabbit.is_male else females[min_rabbit.id]
-        for relative in (min_rabbit.mother,
-                         min_rabbit.father,
-                         *min_rabbit.rabbit_set.all()):
-            if relative is not None and relative.id in d.keys() and d[min_rabbit.id] + 1 < d[relative.id]:
-                d[relative.id] = d[min_rabbit.id] + 1
+        min_rabbit = min_rabbit.cast
+        if min_rabbit.current_type in [Rabbit.TYPE_DIED, Rabbit.TYPE_FATHER, Rabbit.TYPE_MOTHER]:
+            for relative in (min_rabbit.mother,
+                             min_rabbit.father,
+                             *min_rabbit.rabbit_set.all()):
+                if relative is not None and d[min_rabbit.id] + 1 < d.get(relative.id, -1):
+                    d[relative.id] = d[min_rabbit.id] + 1
     max_d = 0
     max_id = rabbit.id
     partners = males if not is_male else females
