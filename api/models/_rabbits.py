@@ -124,7 +124,7 @@ class _RabbitInCage(Rabbit):
     class Meta(Rabbit.Meta):
         abstract = True
 
-    cage: Cage
+    # cage: Cage
 
     def get_absolute_url(self):
         raise NotImplementedError

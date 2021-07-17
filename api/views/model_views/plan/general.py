@@ -7,5 +7,5 @@ __all__ = ['PlanGeneralView']
 
 class PlanGeneralView(BaseGeneralView):
     model = Plan
-    queryset = Plan.objects.filter(is_completed=False)
+    queryset = Plan.objects.all()
     list_serializer = PlanListSerializer
