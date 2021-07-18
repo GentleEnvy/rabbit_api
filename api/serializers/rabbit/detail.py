@@ -99,14 +99,19 @@ class _ReproductionRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         raise NotImplementedError
 
 
-# TODO: clarify death_causes
 # noinspection PyMethodMayBeStatic
 class MotherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
     def get_output_efficiency(self, rabbit):
         efficiency_children = rabbit.rabbit_set.filter(
-            Q(current_type=FatteningRabbit.CHAR_TYPE) |
-            Q(current_type=DeadRabbit.CHAR_TYPE) &
-            ~Q(deadrabbit__death_cause=DeadRabbit.CAUSE_MOTHER)
+            Q(
+                current_type__in=(c.CHAR_TYPE for c in
+                    (FatteningRabbit, MotherRabbit, FatherRabbit)
+                )
+            ) | Q(current_type=DeadRabbit.CHAR_TYPE) & Q(
+                deadrabbit__death_cause__in=(
+                    DeadRabbit.CAUSE_SLAUGHTER, DeadRabbit.CAUSE_EXTRA
+                )
+            )
         ).count()
         output = self.get_output(rabbit)
         if output == 0:
@@ -118,8 +123,15 @@ class MotherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
 class FatherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
     def get_output_efficiency(self, rabbit):
         efficiency_children = rabbit.rabbit_set.filter(
-            Q(current_type=FatteningRabbit.CHAR_TYPE) |
-            Q(current_type=DeadRabbit.CHAR_TYPE)
+            Q(
+                current_type__in=(c.CHAR_TYPE for c in
+                    (FatteningRabbit, MotherRabbit, FatherRabbit)
+                )
+            ) | Q(current_type=DeadRabbit.CHAR_TYPE) & ~Q(
+                deadrabbit__death_cause__in=(
+                    DeadRabbit.CAUSE_ILLNESS, DeadRabbit.CAUSE_DISEASE
+                )
+            )
         ).count()
         output = self.get_output(rabbit)
         if output == 0:
