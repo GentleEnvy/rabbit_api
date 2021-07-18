@@ -108,6 +108,9 @@ class MotherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
             Q(current_type=DeadRabbit.CHAR_TYPE) &
             ~Q(deadrabbit__death_cause=DeadRabbit.CAUSE_MOTHER)
         ).count()
+        output = self.get_output(rabbit)
+        if output == 0:
+            return None
         return efficiency_children / self.get_output(rabbit)
 
 
@@ -118,4 +121,7 @@ class FatherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
             Q(current_type=FatteningRabbit.CHAR_TYPE) |
             Q(current_type=DeadRabbit.CHAR_TYPE)
         ).count()
+        output = self.get_output(rabbit)
+        if output == 0:
+            return None
         return efficiency_children / self.get_output(rabbit)
