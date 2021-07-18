@@ -1,21 +1,25 @@
 from django.db import models
 from django.forms import model_to_dict
 
-from api.models.base._base_model import ListenDiffModel
+from api.models.base._base_model import ListenDiffModel, BaseModel
 
 __all__ = ['BaseHistoryModel', 'BaseHistoricalModel']
 
 
-class BaseHistoryModel(models.Model):
-    class Meta:
+class BaseHistoryModel(BaseModel):
+    class Meta(BaseModel.Meta):
         abstract = True
 
     historical_name: str
     time_name: str = 'time'
+    replace_fields: dict = {}
+
+    def save(self, *args, **kwargs):
+        models.Model.save(self, *args, **kwargs)
 
 
 class BaseHistoricalModel(ListenDiffModel):
-    class Meta:
+    class Meta(ListenDiffModel.Meta):
         abstract = True
 
     history_model: BaseHistoryModel
@@ -54,6 +58,11 @@ class BaseHistoricalModel(ListenDiffModel):
                     for field, new_value in model_to_dict(self).items()
                     if field in history_fields
                 }
+        for old_filed, new_field in self.history_model.replace_fields.items():
+            try:
+                new_dict[new_field] = new_dict.pop(old_filed)
+            except KeyError:
+                pass
         super().save(*args, **kwargs)
         self.history_model.objects.create(
             **(new_dict | {self.history_model.historical_name: self})

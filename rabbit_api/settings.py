@@ -5,10 +5,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
-DEBUG = None if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
+DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
 
 ALLOWED_HOSTS = [
-    '127.0.0.1'
+    '*'
 ]
 
 INSTALLED_APPS = [
@@ -20,11 +20,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'corsheaders',
 
     'api.apps.ApiConfig'
 ]
 
+# noinspection SpellCheckingInspection
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination'
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,30 +64,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rabbit_api.wsgi.application'
 
-# noinspection SpellCheckingInspection
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get(
-            'DJANGO_DATABASE_DEFAULT_HOST'
-        ) or 'ec2-54-210-128-153.compute-1.amazonaws.com',
-        'NAME': os.environ.get(
-            'DJANGO_DATABASE_DEFAULT_NAME'
-        ) or 'd8pin0kdm4djo1',
-        'USER': os.environ.get(
-            'DJANGO_DATABASE_DEFAULT_USER'
-        ) or 'fezzozxzryvemd',
-        'PORT': os.environ.get(
-            'DJANGO_DATABASE_DEFAULT_PORT'
-        ) or '5432',
+        'HOST': os.environ['DJANGO_DATABASE_DEFAULT_HOST'],
+        'NAME': os.environ['DJANGO_DATABASE_DEFAULT_NAME'],
+        'USER': os.environ['DJANGO_DATABASE_DEFAULT_USER'],
+        'PORT': os.environ['DJANGO_DATABASE_DEFAULT_PORT'],
         'PASSWORD': os.environ['DJANGO_DATABASE_DEFAULT_PASSWORD']
     }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.'
-                'UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.UserAttributeSimilarityValidator',
     }, {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     }, {
@@ -89,10 +90,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+USE_TZ = False
 
 STATIC_URL = '/static/'
 

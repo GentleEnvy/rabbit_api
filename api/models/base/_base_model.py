@@ -7,6 +7,7 @@ __all__ = ['BaseModel', 'ListenDiffModel']
 class BaseModel(models.Model):
     class Meta:
         abstract = True
+        ordering = ['pk']
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -14,7 +15,7 @@ class BaseModel(models.Model):
 
 
 class ListenDiffModel(BaseModel):
-    class Meta:
+    class Meta(BaseModel.Meta):
         abstract = True
 
     listening_fields: tuple[str, ...] = '__all__'

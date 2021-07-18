@@ -9,45 +9,12 @@ urlpatterns = [
         *[
             # general
             *[
-                path(
-                    'rabbit/', RabbitGeneralView.as_view(),
-                    name='rabbit__general__url'
-                ),
-                path(
-                    'rabbit/live/', RabbitLiveGeneralView.as_view(),
-                    name='rabbit_live__general__url'
-                ),
-                path(
-                    'rabbit/dead/', DeadRabbitGeneralView.as_view(),
-                    name='dead_rabbit__general__url'
-                ),
-                path(
-                    'rabbit/fattening/', FatteningRabbitGeneralView.as_view(),
-                    name='fattening_rabbit__general__url'
-                ),
-                path(
-                    'rabbit/bunny/', BunnyGeneralView.as_view(),
-                    name='bunny__general__url'
-                ),
-                path(
-                    'rabbit/mother/', MotherRabbitGeneralView.as_view(),
-                    name='mother_rabbit__general__url'
-                ),
-                path(
-                    'rabbit/father/', FatherRabbitGeneralView.as_view(),
-                    name='father_rabbit__general__url'
-                ),
+                path('rabbit/', RabbitGeneralView.as_view()),
+                path('rabbit/reproduction/', ReproductionRabbitGeneralView.as_view())
             ],
             # detail
             *[
-                path(
-                    'rabbit/<int:id>/', RabbitDetailView.as_view(),
-                    name='rabbit__detail__url'
-                ),
-                path(
-                    'rabbit/dead/<int:id>/', DeadRabbitDetailView.as_view(),
-                    name='dead_rabbit__detail__url'
-                ),
+                path('rabbit/<int:id>/', RabbitDetailView.as_view()),
                 path(
                     'rabbit/fattening/<int:id>/', FatteningRabbitDetailView.as_view(),
                     name='fattening_rabbit__detail__url'
@@ -63,59 +30,38 @@ urlpatterns = [
                 path(
                     'rabbit/father/<int:id>/', FatherRabbitDetailView.as_view(),
                     name='father_rabbit__detail__url'
-                ),
+                )
             ]
         ],
         # cage
         *[
             # general
-            *[
-                path(
-                    'cage/', CageGeneralView.as_view(),
-                    name='cage__general__url'
-                ),
-                path(
-                    'cage/mother/', MotherCageGeneralView.as_view(),
-                    name='mother_cage__general__url'
-                ),
-                path(
-                    'cage/fattening/', FatteningCageGeneralView.as_view(),
-                    name='fattening_cage__general__url'
-                ),
-            ],
+            path('cage/', CageGeneralView.as_view()),
             # detail
-            *[
-                path(
-                    'cage/<int:id>/', CageDetailView.as_view(),
-                    name='cage__detail__url'
-                ),
-                path(
-                    'cage/mother/<int:id>/', MotherCageDetailView.as_view(),
-                    name='mother_cage__detail__url'
-                ),
-                path(
-                    'cage/fattening/<int:id>/', FatteningCageDetailView.as_view(),
-                    name='fattening_cage__detail__url'
-                ),
-            ]
+            path('cage/<int:id>', CageDetailView.as_view())
         ]
-    ]
+    ],
+    # statistic
+    *[
+        path('statistic/', StatisticView.as_view()),
+        # INPROGRESS: branch: feature-static-(envy):
+        #  path('statistic/.../', )
+    ],
+    # operation
+    path('operation/', OperationGeneralView.as_view()),
+    # recast
+    *[
+        path('rabbit/<int:id>/recast_to_dead/', DeadRabbitRecastView.as_view()),
+        path('rabbit/<int:id>/recast_to_fattening/', FatteningRabbitRecastView.as_view()),
+        path(
+            'rabbit/<int:id>/recast_to_reproduction/',
+            ReproductionRabbitRecastView.as_view()
+        )
+    ],
+    # breed
+    path('breed/', BreedGeneralView.as_view()),
 
-    # TODO: cast_to
-    # path(
-    #     'rabbit/<int:id>/cast_to_dead', views.DeadRabbitView.as_view(),
-    #     name='dead_cast_url'
-    # ),
-    # path(
-    #     'rabbit/<int:id>/cast_to_fattening', views.DeadRabbitView.as_view(),
-    #     name='fattening_cast_url'
-    # ),
-    # path(
-    #     'rabbit/<int:id>/cast_to_mother', views.DeadRabbitView.as_view(),
-    #     name='mother_cast_url'
-    # ),
-    # path(
-    #     'rabbit/<int:id>/cast_to_father', views.DeadRabbitView.as_view(),
-    #     name='father_cast_url'
-    # )
+    # plan
+    path('plan/', PlanGeneralView.as_view()),
+    path('plan/<int:id>', PlanDetailView.as_view())
 ]

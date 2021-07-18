@@ -14,8 +14,10 @@ __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 
 
 class Cage(BaseModel):
-    class Meta:
+    class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
+
+    CHAR_TYPE: str = None
 
     farm_number = models.IntegerField(
         validators=[MinValueValidator(2), MaxValueValidator(4)]
@@ -53,6 +55,7 @@ class Cage(BaseModel):
             pass
         raise TypeError('The cell type is not defined')
 
+    # FIXME: not counting the dead rabbits
     @property
     def rabbits(self) -> set['api_models.Rabbit']:
         raise NotImplementedError
@@ -62,10 +65,11 @@ class Cage(BaseModel):
 
 
 class FatteningCage(Cage):
+    CHAR_TYPE = 'F'
+
     @property
     def rabbits(self):
         rabbit_set = set(self.fatteningrabbit_set.all())
-        rabbit_set.update(self.motherrabbit_set.all())
         rabbit_set.update(self.fatherrabbit_set.all())
         return rabbit_set
 
@@ -74,6 +78,8 @@ class FatteningCage(Cage):
 
 
 class MotherCage(Cage):
+    CHAR_TYPE = 'M'
+
     is_parallel = models.BooleanField(default=False)
 
     @property

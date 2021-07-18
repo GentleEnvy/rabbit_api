@@ -1,20 +1,17 @@
 from abc import ABC
 from typing import Final, Type
-from datetime import datetime
 
-from django.utils.timezone import now
-
-__all__ = ['BaseTimeManager', 'BaseTimeManagerMixin']
+__all__ = ['BaseManager', 'BaseManagerMixin']
 
 
-class BaseTimeManager(ABC):
-    def __init__(self, model, time: datetime = None):
+class BaseManager(ABC):
+    def __init__(self, model):
         self.model: Final = model
-        self.time: Final = now() if time is None else time
 
 
-class BaseTimeManagerMixin:
-    _time_manager: Type[BaseTimeManager]
+class BaseManagerMixin:
+    _manager: Type[BaseManager]
 
-    def time_manager(self, time: datetime = None):
-        return self._time_manager(self, time)
+    @property
+    def manager(self):
+        return self._manager(self)

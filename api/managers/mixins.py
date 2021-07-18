@@ -1,1 +1,1 @@
-from api.managers.rabbit.mixin import *
+from api.managers.rabbit.mixins import *

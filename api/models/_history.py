@@ -3,8 +3,8 @@ from django.db import models
 from api.models.base import BaseHistoryModel
 
 __all__ = [
-    'RabbitHistory', 'FatteningRabbitHistory', 'BunnyHistory', 'MotherRabbitHistory',
-    'FatherRabbitHistory'
+    'RabbitHistory', 'DeadRabbitHistory', 'FatteningRabbitHistory', 'BunnyHistory',
+    'MotherRabbitHistory', 'FatherRabbitHistory'
 ]
 
 _field_kwargs = {
@@ -14,44 +14,44 @@ _field_kwargs = {
 }
 
 
-class _BaseRabbitHistory(BaseHistoryModel):
-    class Meta:
-        abstract = True
-        unique_together = ('rabbit', 'time')
-
+class RabbitHistory(BaseHistoryModel):
     historical_name = 'rabbit'
+    replace_fields = {'cage': 'cage_id'}
 
     time = models.DateTimeField(auto_now_add=True)
-
-
-class RabbitHistory(_BaseRabbitHistory):
-    rabbit = models.ForeignKey('Rabbit', on_delete=models.CASCADE)
 
     is_vaccinated = models.BooleanField(**_field_kwargs)
     current_type = models.TextField(**_field_kwargs)
     warning_status = models.TextField(**_field_kwargs)
 
 
-class FatteningRabbitHistory(_BaseRabbitHistory):
+class DeadRabbitHistory(RabbitHistory):
+    rabbit = models.ForeignKey('DeadRabbit', on_delete=models.CASCADE)
+
+
+class FatteningRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('FatteningRabbit', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey(
+        'FatteningCage', on_delete=models.DO_NOTHING, **_field_kwargs
+    )
 
 
-class BunnyHistory(_BaseRabbitHistory):
+class BunnyHistory(RabbitHistory):
     rabbit = models.ForeignKey('Bunny', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey('MotherCage', on_delete=models.DO_NOTHING, **_field_kwargs)
 
 
-class MotherRabbitHistory(_BaseRabbitHistory):
+class MotherRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('MotherRabbit', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
-    is_pregnant = models.BooleanField(**_field_kwargs)
+    cage = models.ForeignKey('MotherCage', on_delete=models.DO_NOTHING, **_field_kwargs)
 
 
-class FatherRabbitHistory(_BaseRabbitHistory):
+class FatherRabbitHistory(RabbitHistory):
     rabbit = models.ForeignKey('FatherRabbit', on_delete=models.CASCADE)
 
-    cage = models.IntegerField(**_field_kwargs)
+    cage = models.ForeignKey(
+        'FatteningCage', on_delete=models.DO_NOTHING, **_field_kwargs
+    )
