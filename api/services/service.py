@@ -3,9 +3,10 @@ from datetime import date, timedelta, datetime
 import random
 
 DAYS_FOR_SAFE_FERTILIZATION = 3
+TOP_RANGE = 10
 
 
-def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
+def find_optimal_partner(rabbit: Rabbit) -> dict:
     if rabbit.current_type == Rabbit.TYPE_MOTHER and rabbit.cast.manager.last_fertilization is not None \
             and (rabbit.cast.manager.last_fertilization - datetime.today()).days < DAYS_FOR_SAFE_FERTILIZATION:
         raise ValueError('This rabbit is pregnant, no partner should be found')
@@ -37,35 +38,22 @@ def find_optimal_partner(rabbit: Rabbit) -> (Rabbit, int):
             break
         used.add(min_rabbit)
         min_rabbit = min_rabbit.cast
-        if min_rabbit.current_type in [Rabbit.TYPE_DIED, Rabbit.TYPE_FATHER, Rabbit.TYPE_MOTHER]:
-            for relative in (min_rabbit.mother,
-                             min_rabbit.father,
-                             *min_rabbit.rabbit_set.all()):
-                if relative is not None and d[min_rabbit.id] + 1 < d.get(relative.id, -1):
-                    d[relative.id] = d[min_rabbit.id] + 1
-    max_d = 0
-    max_id = rabbit.id
-    partners = males if not is_male else females
-    # удалить из partners мертвых и маленьких кроликов
-    # брать сразу всех максимально отдаленных для нахождения лучшего среди них
-    best_breeding_potential = 0
-    for partner_id, partner_d in d.items():
-        if max_d == float('inf'):
-            break
-        if partner_d > max_d and partner_id in partners:
-            max_d = partner_d
-            # max_id = partner_id
+        for relative in (min_rabbit.mother,
+                         min_rabbit.father,
+                         *({} if min_rabbit.current_type in [Rabbit.TYPE_BUNNY, Rabbit.TYPE_FATTENING]
+                             else min_rabbit.rabbit_set.all())):
+            if relative is not None and d[min_rabbit.id] + 1 < d.get(relative.id, -1):
+                d[relative.id] = d[min_rabbit.id] + 1
+    partners = Rabbit.objects.filter(is_male=(not is_male), current_type__in=[Rabbit.TYPE_MOTHER, Rabbit.TYPE_FATHER])
+    top_partners = {
+        k: v for k, v in sorted(d.items(), key=lambda item: item[1])
+        if len(partners.all().filter(pk=k))
+    }
 
-    for dist in d.items():
-        # and best_breeding_potential < min_rabbit.breeding_potential:
-        if dist == max_d:
-            pass
-            # max_id =
-
-    if max_id == rabbit.id:
+    if not len(top_partners):
         raise Exception('No suitable rabbits found')
 
-    return Rabbit.objects.get(id=max_id), max_d
+    return top_partners
 
 
 def get_next_random_rabbit(mother: MotherRabbit or None, father: FatherRabbit or None, cage: Cage) -> Rabbit:
