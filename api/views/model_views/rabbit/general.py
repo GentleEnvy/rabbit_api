@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 from django.db.models import QuerySet
-
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -27,13 +26,13 @@ class RabbitGeneralView(BaseGeneralView):
         'motherrabbit', 'motherrabbit__cage',
         'fatherrabbit', 'fatherrabbit__cage'
     ).prefetch_related(
-        'motherrabbit__rabbit_set', 'fatherrabbit__rabbit_set'
+        'motherrabbit__rabbit_set', 'motherrabbit__cage__bunny_set',
+        'fatherrabbit__rabbit_set'
     ).all()
 
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
-
         if is_male := params.get('is_male', {}):
             is_male = {'is_male': bool(int(is_male))}
         if type_ := params.get('type', {}):

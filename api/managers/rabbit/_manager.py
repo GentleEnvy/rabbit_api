@@ -63,14 +63,16 @@ class FatteningRabbitManager(RabbitManager):
                         return {self.STATUS_READY_TO_SLAUGHTER}
                     return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
                 # was underweight
-                if to_datetime(last_inspection_with_delay.time + timedelta(
+                if to_datetime(
+                    last_inspection_with_delay.time + timedelta(
                         last_inspection_with_delay.delay + 10
-                )) > now():
+                    )
+                ) > now():
                     return {self.STATUS_READY_TO_SLAUGHTER}
                 return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
             # is underweight
             if to_datetime(
-                    last_inspection.time + timedelta(last_inspection.delay)
+                last_inspection.time + timedelta(last_inspection.delay)
             ) > now():
                 return {self.STATUS_NEED_INSPECTION}
             # continue to fattening on delay
@@ -106,8 +108,11 @@ class MotherRabbitManager(RabbitManager):
         statuses = set()
 
         rabbits_in_cage = self.model.cage.cast.rabbits
-        if len(rabbits_in_cage) > 1:
-            statuses.add(self.STATUS_FEEDS_BUNNY)
+        for rabbit_in_cage in rabbits_in_cage:
+            if rabbit_in_cage != self.model:
+                if rabbit_in_cage.current_type == api_models.Bunny.CHAR_TYPE:
+                    statuses.add(self.STATUS_FEEDS_BUNNY)
+                    break
 
         if self.age.days < 150:
             return statuses
