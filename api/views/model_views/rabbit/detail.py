@@ -42,6 +42,11 @@ class MotherRabbitDetailView(BaseDetailView):
     update_serializer = MotherRabbitDetailSerializer
     queryset = MotherRabbit.objects.prefetch_related('rabbit_set').all()
 
+    def delete(self, request, *args, **kwargs):
+        mother_rabbit: MotherRabbit = self.get_object()
+        DeadRabbit.recast(mother_rabbit)
+        pass
+
 
 class FatherRabbitDetailView(BaseDetailView):
     model = FatherRabbit
