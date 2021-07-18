@@ -34,6 +34,8 @@ class CageGeneralView(BaseGeneralView):
                 queryset = queryset.filter(Q(status=status) | Q(status=status[::-1]))
             else:
                 raise ValueError('Too many statuses')
+        elif status == '':
+            queryset = queryset.filter(status=[])
 
         if type_ := params.get('type'):
             type_ = type_.split(',')
