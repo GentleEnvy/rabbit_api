@@ -17,15 +17,21 @@ class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
     def get(self, request, *args, **kwargs):
         return redirect_by_id(
-            Rabbit, request, kwargs.get('id'), current_type__in=[
+            Rabbit, request, kwargs.get('id'), current_type__in=(
                 FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
                 FatherRabbit.CHAR_TYPE
-            ]
+            )
         )
 
 
 class _BaseRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
+
+    def delete(self, request, *args, **kwargs):
+        instance_rabbit = self.get_object()
+        dead_rabbit = DeadRabbit.recast(instance_rabbit)
+        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
+        return Response(status.HTTP_204_NO_CONTENT)
 
 
 class FatteningRabbitDetailView(_BaseRabbitDetailView):
@@ -40,14 +46,6 @@ class BunnyDetailView(_BaseRabbitDetailView):
     queryset = Bunny.objects.all()
     retrieve_serializer = BunnyDetailSerializer
     update_serializer = BunnyDetailSerializer
-
-
-class _BaseReproductionRabbitDetailView(_BaseRabbitDetailView):
-    def delete(self, request, *args, **kwargs):
-        reproduction_rabbit = self.get_object()
-        dead_rabbit = DeadRabbit.recast(reproduction_rabbit)
-        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
-        return Response(status.HTTP_204_NO_CONTENT)
 
 
 class MotherRabbitDetailView(_BaseRabbitDetailView):
