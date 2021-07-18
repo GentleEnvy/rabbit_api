@@ -40,7 +40,7 @@ class MotherRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
     retrieve_serializer = MotherRabbitDetailSerializer
     update_serializer = MotherRabbitDetailSerializer
-    queryset = MotherRabbit.objects.all()
+    queryset = MotherRabbit.objects.prefetch_related('rabbit_set').all()
 
 
 class FatherRabbitDetailView(BaseDetailView):
