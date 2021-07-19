@@ -37,9 +37,9 @@ class RabbitGeneralView(BaseGeneralView):
         if is_male := params.get('is_male'):
             filters['is_male'] = bool(int(is_male))
         if type_ := params.get('type'):
-            filters['type'] = tuple(type_.split(','))
+            filters['type'] = type_.split(',')
         if breed := params.get('breed'):
-            filters['breed'] = tuple(map(int, breed.split(',')))
+            filters['breed'] = list(map(int, breed.split(',')))
         if age_from := params.get('age_from'):
             filters['age_from'] = datetime.utcnow() - timedelta(int(age_from))
         if age_to := params.get('age_to'):
@@ -49,9 +49,9 @@ class RabbitGeneralView(BaseGeneralView):
         if weight_to := params.get('weight_to'):
             filters['weight_to'] = float(weight_to)
         if status := params.get('status'):
-            filters['status'] = tuple(status.split(','))
+            filters['status'] = status.split(',')
         if farm_number := params.get('farm_number'):
-            filters['farm_number'] = tuple(map(int, farm_number.split(',')))
+            filters['farm_number'] = list(map(int, farm_number.split(',')))
         filterer = RabbitFilterer(queryset)
         filterer.filter(**filters)
         if order_by := params.get('__order_by__'):

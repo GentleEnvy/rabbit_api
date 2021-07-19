@@ -27,7 +27,7 @@ class PlanRabbitsView(BaseGeneralView):
         if is_male := params.get('is_male'):
             filters['is_male'] = bool(int(is_male))
         if breed := params.get('breed'):
-            filters['breed'] = tuple(map(int, breed.split(',')))
+            filters['breed'] = list(map(int, breed.split(',')))
         if age_from := params.get('age_from'):
             filters['age_from'] = datetime.utcnow() - timedelta(int(age_from))
         if age_to := params.get('age_to'):
@@ -37,11 +37,11 @@ class PlanRabbitsView(BaseGeneralView):
         if weight_to := params.get('weight_to'):
             filters['weight_to'] = float(weight_to)
         if farm_number := params.get('farm_number'):
-            filters['farm_number'] = tuple(map(int, farm_number.split(',')))
+            filters['farm_number'] = list(map(int, farm_number.split(',')))
         filterer = RabbitFilterer(queryset)
         filterer.filter(
-            type_=(FatteningRabbit.CHAR_TYPE,),
-            status=(FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER,),
+            type_=[FatteningRabbit.CHAR_TYPE],
+            status=[FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER],
             **filters
         )
         return filterer.order_by_plan(Plan.objects.get(id=self.kwargs['id']))
