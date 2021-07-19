@@ -7,6 +7,8 @@ __all__ = ['AuthTokenView']
 
 
 class AuthTokenView(ObtainAuthToken, BaseAuthView):
+    post = BaseAuthView.post
+    
     def _make_json_response(self, user) -> dict:
         token, created = Token.objects.get_or_create(user=user)
         return {'token': token.key}

@@ -24,7 +24,7 @@ class BaseAuthView(BaseView):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
-            'groups': list(user.groups.values('name', type=F('typegroup__type')))
+            'groups': [g['type'] for g in user.groups.values(type=F('typegroup__type'))]
         }
     
     def _make_json_response(self, user) -> dict:
