@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
 
+# noinspection SpellCheckingInspection
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -16,18 +17,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 
     'api.apps.ApiConfig'
 ]
 
 # noinspection SpellCheckingInspection
-# REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination'
-# }
+REST_FRAMEWORK = {
+    # FIXME: 'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ]
+}
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+# noinspection SpellCheckingInspection
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 

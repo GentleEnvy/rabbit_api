@@ -65,5 +65,11 @@ urlpatterns = [
         path('plan/', PlanGeneralView.as_view()),
         path('plan/<int:id>/', PlanDetailView.as_view()),
         path('plan/<int:id>/rabbits/', PlanRabbitsView.as_view())
-    ]
+    ],
+    path('breed/', BreedGeneralView.as_view()),
+    # echo
+    path('echo/', EchoView.as_view()),
+    # auth
+    path('auth/token/', AuthTokenView.as_view()),
+    path('auth/session/', AuthSessionView.as_view())
 ]
