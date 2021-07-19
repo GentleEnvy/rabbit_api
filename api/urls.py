@@ -39,14 +39,14 @@ urlpatterns = [
             # general
             path('cage/', CageGeneralView.as_view()),
             # detail
-            path('cage/<int:id>', CageDetailView.as_view())
+            path('cage/<int:id>/', CageDetailView.as_view())
         ]
     ],
     # statistic
     *[
         path('statistic/', StatisticView.as_view()),
         # INPROGRESS: branch: feature-static-(envy):
-        #  path('statistic/.../', )
+        #   path('statistic/.../', )
     ],
     # operation
     path('operation/', OperationGeneralView.as_view()),
@@ -60,6 +60,13 @@ urlpatterns = [
         )
     ],
     # breed
+    path('breed/', BreedGeneralView.as_view()),
+    # plan
+    *[
+        path('plan/', PlanGeneralView.as_view()),
+        path('plan/<int:id>/', PlanDetailView.as_view()),
+        path('plan/<int:id>/rabbits/', PlanRabbitsView.as_view())
+    ],
     path('breed/', BreedGeneralView.as_view()),
 
     # echo

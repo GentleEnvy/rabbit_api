@@ -2,19 +2,17 @@ from copy import deepcopy
 from datetime import date
 from typing import Final
 
-from api.services.forecast.rabbit._futures import *
+from api.services.prediction.rabbit._futures import *
 
-__all__ = ['ForecastCondition']
+__all__ = ['PredictionCondition']
 
 
-class ForecastCondition:
+class PredictionCondition:
     def __init__(
-            self,
-            date_: date,
-            bunnies: set[BunnyFuture] = None,
-            fattening_rabbits: set[FatteningRabbitFuture] = None,
-            mother_rabbits: set[MotherRabbitFuture] = None,
-            father_rabbits: set[FatherRabbitFuture] = None
+        self, date_: date, bunnies: set[BunnyFuture] = None,
+        fattening_rabbits: set[FatteningRabbitFuture] = None,
+        mother_rabbits: set[MotherRabbitFuture] = None,
+        father_rabbits: set[FatherRabbitFuture] = None
     ):
         self.date: Final[date] = date_
         self.bunnies: Final[set[BunnyFuture]] = deepcopy(bunnies) or set()

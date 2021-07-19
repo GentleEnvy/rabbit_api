@@ -9,6 +9,7 @@ from django.utils import timezone
 from multiselectfield import MultiSelectField
 
 from api.managers.mixins import *
+from api.models._plans import Plan
 from api.models._breed import *
 from api.models._history import *
 from api.models.base import BaseHistoricalModel
@@ -116,27 +117,21 @@ class DeadRabbit(Rabbit):
         raise AttributeError
 
 
+# TODO: add validation:
+#   - reproduction rabbits are sitting in a cage alone
+#   - only brothers or only sisters sit in the same cage (max 6)
 class _RabbitInCage(Rabbit):
     class Meta(Rabbit.Meta):
         abstract = True
 
-    cage: Cage
-
-    def clean(self):
-        super().clean()
-        # FIXME: cage clean
-        # neighbours = self.cage.cast.rabbits
-        # if len(neighbours) >= 2:
-        #     raise ValidationError('There are already 2 rabbits in this cage')
-        # for neighbour in neighbours:
-        #     if neighbour.mother is not None and neighbour.mother != self.mother or \
-        #             neighbour.father is not None and neighbour.father != self.father:
-        #         raise ValidationError('Only brothers and sisters can sit in one cage')
+    # cage: Cage
 
     def get_absolute_url(self):
         raise NotImplementedError
 
 
+# TODO: add validation:
+#   - the rabbit is attached to the plan only if it has the STATUS_READY_TO_SLAUGHTER
 class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
 
@@ -145,6 +140,7 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
+    plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
 
     @classmethod
     def recast(cls, rabbit) -> FatteningRabbit:

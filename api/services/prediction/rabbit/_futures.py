@@ -4,7 +4,7 @@ from typing import Final, Optional, Union
 import random
 
 from api.managers import *
-from api.services.forecast.rabbit import _condition as cond
+from api.services.prediction.rabbit import _condition as cond
 from api.utils.functions import diff_time
 
 __all__ = [
@@ -22,7 +22,7 @@ class BaseRabbitFuture(ABC):
     def age(self, target_date: Union[date, datetime]) -> timedelta:
         return diff_time(target_date, self.birthday)
 
-    def tomorrow_state(self, condition: 'cond.ForecastCondition') -> None:
+    def tomorrow_state(self, condition: 'cond.PredictionCondition') -> None:
         raise NotImplementedError
 
 
@@ -30,11 +30,11 @@ class BunnyFuture(BaseRabbitFuture):
     DEFAULT_DEATH_PROBABILITY: Final[float] = 0.07
 
     def tomorrow_state(
-            self, condition, death_probability=DEFAULT_DEATH_PROBABILITY
+        self, condition, death_probability=DEFAULT_DEATH_PROBABILITY
     ):
         if random.choices(
-                (True, False),
-                weights=(death_probability, 1 - death_probability)
+            (True, False),
+            weights=(death_probability, 1 - death_probability)
         )[0]:
             return
 
@@ -42,9 +42,11 @@ class BunnyFuture(BaseRabbitFuture):
             fattening_rabbit = FatteningRabbitFuture(**self.__dict__ | {'status': set()})
             condition.add_fattening_rabbit(fattening_rabbit)
         else:
-            condition.add_bunny(BunnyFuture(
-                **self.__dict__ | {'status': {BunnyManager.STATUS_MOTHER_FEEDS}}
-            ))
+            condition.add_bunny(
+                BunnyFuture(
+                    **self.__dict__ | {'status': {BunnyManager.STATUS_MOTHER_FEEDS}}
+                )
+            )
 
 
 class FatteningRabbitFuture(BaseRabbitFuture):
@@ -60,9 +62,11 @@ class FatteningRabbitFuture(BaseRabbitFuture):
             else:  # age >= 90
                 fattening_status.add(FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER)
         # age < 80
-        condition.add_fattening_rabbit(FatteningRabbitFuture(
-            **self.__dict__ | {'status': fattening_status}
-        ))
+        condition.add_fattening_rabbit(
+            FatteningRabbitFuture(
+                **self.__dict__ | {'status': fattening_status}
+            )
+        )
 
 
 class MotherRabbitFuture(BaseRabbitFuture):
@@ -78,8 +82,8 @@ class MotherRabbitFuture(BaseRabbitFuture):
         self.last_births: Final[Optional[date]] = last_births
 
     def tomorrow_state(
-            self, condition, birth_prob_map: dict[int, float] = None,
-            fertilization_prob: float = DEFAULT_FERTILIZATION_PROBABILITY
+        self, condition, birth_prob_map: dict[int, float] = None,
+        fertilization_prob: float = DEFAULT_FERTILIZATION_PROBABILITY
     ):
         def _rand_birth_count() -> int:
             return random.choices(
@@ -87,9 +91,11 @@ class MotherRabbitFuture(BaseRabbitFuture):
             )[0]
 
         def _rand_was_fertilized() -> bool:
-            return random.choices((True, False), weights=(
-                fertilization_prob, 1 - fertilization_prob
-            ))[0]
+            return random.choices(
+                (True, False), weights=(
+                    fertilization_prob, 1 - fertilization_prob
+                )
+            )[0]
 
         if birth_prob_map is None:
             birth_prob_map = self.DEFAULT_BIRTHS_PROBABILITY_MAP
@@ -131,33 +137,43 @@ class MotherRabbitFuture(BaseRabbitFuture):
                             MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
                         )
 
-        condition.add_mother_rabbit(MotherRabbitFuture(
-            **self.__dict__ | {
-                'status': mother_status,
-                'last_fertilization': last_fertilization,
-                'last_births': last_births
-            }
-        ))
+        condition.add_mother_rabbit(
+            MotherRabbitFuture(
+                **self.__dict__ | {
+                    'status': mother_status,
+                    'last_fertilization': last_fertilization,
+                    'last_births': last_births
+                }
+            )
+        )
 
     @staticmethod
-    def _birth(condition: 'cond.ForecastCondition', count: int):
+    def _birth(condition: 'cond.PredictionCondition', count: int):
         for _ in range(count):
-            condition.add_bunny(BunnyFuture(
-                birthday=condition.date,
-                status={BunnyManager.STATUS_MOTHER_FEEDS}
-            ))
+            condition.add_bunny(
+                BunnyFuture(
+                    birthday=condition.date,
+                    status={BunnyManager.STATUS_MOTHER_FEEDS}
+                )
+            )
 
 
 class FatherRabbitFuture(BaseRabbitFuture):
     def tomorrow_state(self, condition):
         if self.age(condition.date).days >= 180:
-            condition.add_father_rabbit(FatherRabbitFuture(
-                **self.__dict__ | {'status': {
-                    FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION,
-                    FatherRabbitManager.STATUS_RESTING
-                }}
-            ))
+            condition.add_father_rabbit(
+                FatherRabbitFuture(
+                    **self.__dict__ | {
+                        'status': {
+                            FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION,
+                            FatherRabbitManager.STATUS_RESTING
+                        }
+                    }
+                )
+            )
         else:
-            condition.add_father_rabbit(FatherRabbitFuture(
-                **self.__dict__ | {'status': {FatherRabbitManager.STATUS_RESTING}}
-            ))
+            condition.add_father_rabbit(
+                FatherRabbitFuture(
+                    **self.__dict__ | {'status': {FatherRabbitManager.STATUS_RESTING}}
+                )
+            )
