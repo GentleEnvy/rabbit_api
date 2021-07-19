@@ -79,8 +79,9 @@ def get_next_random_rabbit(
                     cage_id=cage.id
                 ),
                 MotherRabbit(
-                    status=random.choices(['F', 'P', ''], weights=[0.4, 0.4, 0.2], k=1)[
-                        0],
+                    status=random.choices(
+                        ['F', 'P', ''], weights=[0.4, 0.4, 0.2], k=1
+                    )[0],
                     last_childbirth=date.today() - timedelta(days=random.randint(3, 180)),
                     is_male=False,
                     is_ill=random.choices([True, False], weights=[0.05, 0.95], k=1)[0],
