@@ -1,3 +1,6 @@
+from rest_framework import status
+from rest_framework.response import Response
+
 from api.models import *
 from api.views.base import BaseView
 from api.views.model_views.utils import redirect_by_id
@@ -13,39 +16,47 @@ __all__ = [
 class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
     def get(self, request, *args, **kwargs):
-        return redirect_by_id(Rabbit, request, kwargs.get('id'), current_type__in=[
-            FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
-            FatherRabbit.CHAR_TYPE
-        ])
+        return redirect_by_id(
+            Rabbit, request, kwargs.get('id'), current_type__in=(
+                FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
+                FatherRabbit.CHAR_TYPE
+            )
+        )
 
 
-class FatteningRabbitDetailView(BaseDetailView):
-    model = FatteningRabbit
+class _BaseRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
+
+    def delete(self, request, *args, **kwargs):
+        instance_rabbit = self.get_object()
+        dead_rabbit = DeadRabbit.recast(instance_rabbit)
+        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
+        return Response(status.HTTP_204_NO_CONTENT)
+
+
+class FatteningRabbitDetailView(_BaseRabbitDetailView):
+    model = FatteningRabbit
+    queryset = FatteningRabbit.objects.all()
     retrieve_serializer = FatteningRabbitDetailSerializer
     update_serializer = FatteningRabbitDetailSerializer
-    queryset = FatteningRabbit.objects.all()
 
 
-class BunnyDetailView(BaseDetailView):
+class BunnyDetailView(_BaseRabbitDetailView):
     model = Bunny
-    lookup_url_kwarg = 'id'
+    queryset = Bunny.objects.all()
     retrieve_serializer = BunnyDetailSerializer
     update_serializer = BunnyDetailSerializer
-    queryset = Bunny.objects.all()
 
 
-class MotherRabbitDetailView(BaseDetailView):
+class MotherRabbitDetailView(_BaseRabbitDetailView):
     model = MotherRabbit
-    lookup_url_kwarg = 'id'
+    queryset = MotherRabbit.objects.prefetch_related('rabbit_set').all()
     retrieve_serializer = MotherRabbitDetailSerializer
     update_serializer = MotherRabbitDetailSerializer
-    queryset = MotherRabbit.objects.all()
 
 
-class FatherRabbitDetailView(BaseDetailView):
+class FatherRabbitDetailView(_BaseRabbitDetailView):
     model = FatherRabbit
-    lookup_url_kwarg = 'id'
+    queryset = FatherRabbit.objects.all()
     retrieve_serializer = FatherRabbitDetailSerializer
     update_serializer = FatherRabbitDetailSerializer
-    queryset = FatherRabbit.objects.all()
