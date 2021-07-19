@@ -83,3 +83,11 @@ class RabbitFilterer(BaseFilterer):
                 ), reverse=True
             )
         return queryset
+    
+    def order_by_plan(self, plan: Plan) -> list:
+        selected_rabbits = list(plan.fatteningrabbit_set.all())
+        none_weight_rabbits = self.queryset.filter(weight=None)
+        queryset = self.queryset.exclude(id__in=[r.id for r in none_weight_rabbits])
+        return selected_rabbits + list(none_weight_rabbits) + list(
+            queryset.order_by('-weight', 'cage__farm_number')
+        )
