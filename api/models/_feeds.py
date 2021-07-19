@@ -11,8 +11,8 @@ __all__ = ['FeedBatch']
 
 class FeedBatch(BaseModel):
     delivery_date = models.DateField(default=date.today())
-    total_bags_number = models.IntegerField(null=False, blank=False)
-    bags_left = models.IntegerField(null=False, blank=False)
+    total_bags_number = models.IntegerField()
+    bags_left = models.IntegerField()
 
     def clean(self):
         super().clean()
