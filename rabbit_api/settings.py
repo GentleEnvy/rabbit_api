@@ -25,7 +25,7 @@ INSTALLED_APPS = [
 
 # noinspection SpellCheckingInspection
 REST_FRAMEWORK = {
-    # FIXME: 'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination',
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
