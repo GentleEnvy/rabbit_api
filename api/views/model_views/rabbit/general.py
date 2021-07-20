@@ -41,9 +41,9 @@ class RabbitGeneralView(BaseGeneralView):
         if breed := params.get('breed'):
             filters['breed'] = list(map(int, breed.split(',')))
         if age_from := params.get('age_from'):
-            filters['age_from'] = datetime.utcnow() - timedelta(int(age_from))
+            filters['age_from'] = int(age_from)
         if age_to := params.get('age_to'):
-            filters['age_to'] = datetime.utcnow() - timedelta(int(age_to))
+            filters['age_to'] = int(age_to)
         if weight_from := params.get('weight_from'):
             filters['weight_from'] = float(weight_from)
         if weight_to := params.get('weight_to'):
