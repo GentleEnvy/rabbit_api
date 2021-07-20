@@ -28,7 +28,7 @@ class FatteningRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         fields = read_only_fields + ['weight']
         depth = 1
 
-    cage = _CageSerializer()
+    cage = _CageSerializer(read_only=True)
     status = serializers.SerializerMethodField()
     breed = serializers.SerializerMethodField()
 
@@ -49,7 +49,7 @@ class BunnyDetailSerializer(BaseReadOnlyRaiseSerializer):
         fields = read_only_fields + ['weight']
         depth = 1
 
-    cage = _CageSerializer()
+    cage = _CageSerializer(read_only=True)
     status = serializers.SerializerMethodField()
     breed = serializers.SerializerMethodField()
 
@@ -63,7 +63,6 @@ class BunnyDetailSerializer(BaseReadOnlyRaiseSerializer):
 # noinspection PyMethodMayBeStatic
 class _ReproductionRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
     class Meta:
-        model = Bunny
         read_only_fields = [
             'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status',
             'output', 'output_efficiency'
@@ -71,7 +70,7 @@ class _ReproductionRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         fields = read_only_fields + ['weight']
         depth = 1
 
-    cage = _CageSerializer()
+    cage = _CageSerializer(read_only=True)
     status = serializers.SerializerMethodField()
     breed = serializers.SerializerMethodField()
     output = serializers.SerializerMethodField()
@@ -101,6 +100,9 @@ class _ReproductionRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
 
 # noinspection PyMethodMayBeStatic
 class MotherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
+    class Meta(_ReproductionRabbitDetailSerializer.Meta):
+        model = MotherRabbit
+    
     def get_output_efficiency(self, rabbit):
         efficiency_children = rabbit.rabbit_set.filter(
             Q(
@@ -121,6 +123,9 @@ class MotherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
 
 # noinspection PyMethodMayBeStatic
 class FatherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
+    class Meta(_ReproductionRabbitDetailSerializer.Meta):
+        model = FatherRabbit
+    
     def get_output_efficiency(self, rabbit):
         efficiency_children = rabbit.rabbit_set.filter(
             Q(
