@@ -37,7 +37,7 @@ class RabbitGeneralView(BaseGeneralView):
         if is_male := params.get('is_male'):
             filters['is_male'] = bool(int(is_male))
         if type_ := params.get('type'):
-            filters['type'] = type_.split(',')
+            filters['type_'] = type_.split(',')
         if breed := params.get('breed'):
             filters['breed'] = list(map(int, breed.split(',')))
         if age_from := params.get('age_from'):
