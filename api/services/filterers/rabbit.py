@@ -7,11 +7,12 @@ __all__ = ['RabbitFilterer']
 
 
 class RabbitFilterer(BaseFilterer):
+    model = Rabbit
+    
     def filter(
-        self, is_male: bool = None, type_: list[str] = None,
-        breed: list[int] = None, age_from: int = None, age_to: int = None,
-        weight_from: float = None, weight_to: float = None, status: list[str] = None,
-        farm_number: list[int] = None
+        self, is_male: bool = None, type_: list[str] = None, breed: list[int] = None,
+        age_from: int = None, age_to: int = None, weight_from: float = None, weight_to:
+        float = None, status: list[str] = None, farm_number: list[int] = None
     ):
         queryset = self.queryset
         if is_male is not None:
