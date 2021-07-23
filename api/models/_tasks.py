@@ -8,8 +8,8 @@ from api.models._rabbits import *
 from api.models.base import BaseModel
 
 __all__ = [
-    'Task', 'ToReproductionTask', 'BunnyJiggingTask', 'VaccinationTask',
-    'SlaughterInspectionTask', 'SlaughterTask', 'MatingTask'
+    'Task', 'ToReproductionTask', 'SlaughterTask', 'MatingTask', 'BunnyJiggingTask',
+    'VaccinationTask', 'SlaughterInspectionTask', 'FatteningSlaughterTask'
 ]
 
 
@@ -51,10 +51,50 @@ class ToReproductionTask(Task):
                     raise ValidationError('The female cannot be jigged to FatteningCage')
 
 
+class SlaughterTask(Task):
+    rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
+    
+    def clean(self):
+        super().clean()
+        if self.rabbit.current_type == Rabbit.TYPE_DIED:
+            raise ValidationError("Can't kill a dead rabbit")
+
+
+class MatingTask(Task):
+    mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
+    father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
+    
+    def clean(self):
+        super().clean()
+        if self.mother_rabbit.current_type == Rabbit.TYPE_MOTHER:
+            raise ValidationError('This rabbit is not mother')
+        if self.father_rabbit.current_type == Rabbit.TYPE_FATHER:
+            raise ValidationError('This rabbit is not father')
+        
+        mother_status = self.mother_rabbit.manager.status
+        READY_FOR_FERTILIZATION = MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
+        if READY_FOR_FERTILIZATION not in mother_status:
+            raise ValidationError('The female is not ready for fertilization')
+        # MAYBE: forbid mating with STATUS_FEEDS_BUNNY
+        CONFIRMED_PREGNANT = MotherRabbitManager.STATUS_CONFIRMED_PREGNANT
+        if CONFIRMED_PREGNANT not in mother_status:
+            raise ValidationError('The female already pregnancy (confirmed)')
+        
+        READY_FOR_FERTILIZATION = FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION
+        if READY_FOR_FERTILIZATION not in self.father_rabbit.manager.status:
+            raise ValidationError('The male is not ready for fertilization')
+
+
 class BunnyJiggingTask(Task):
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
-    male_cage_to = models.ForeignKey(FatteningCage, on_delete=models.CASCADE, null=True)
-    female_cage_to = models.ForeignKey(FatteningCage, on_delete=models.CASCADE, null=True)
+    male_cage_to = models.ForeignKey(
+        FatteningCage, on_delete=models.CASCADE,
+        null=True, related_name='bunnyjiggingtask_by_male_set'
+    )
+    female_cage_to = models.ForeignKey(
+        FatteningCage, on_delete=models.CASCADE,
+        null=True, related_name='bunnyjiggingtask_by_female_set'
+    )
     
     def clean(self):
         super().clean()
@@ -118,15 +158,6 @@ class SlaughterInspectionTask(Task):
                 )
 
 
-class SlaughterTask(Task):
-    rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
-    
-    def clean(self):
-        super().clean()
-        if self.rabbit.current_type == Rabbit.TYPE_DIED:
-            raise ValidationError("Can't kill a dead rabbit")
-
-
 class FatteningSlaughterTask(Task):
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     
@@ -143,28 +174,3 @@ class FatteningSlaughterTask(Task):
                 raise ValidationError(
                     "There is fattening rabbit in this cage that don't ready to slaughter"
                 )
-
-
-class MatingTask(Task):
-    mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
-    father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
-    
-    def clean(self):
-        super().clean()
-        if self.mother_rabbit.current_type == Rabbit.TYPE_MOTHER:
-            raise ValidationError('This rabbit is not mother')
-        if self.father_rabbit.current_type == Rabbit.TYPE_FATHER:
-            raise ValidationError('This rabbit is not father')
-        
-        mother_status = self.mother_rabbit.manager.status
-        READY_FOR_FERTILIZATION = MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
-        if READY_FOR_FERTILIZATION not in mother_status:
-            raise ValidationError('The female is not ready for fertilization')
-        # MAYBE: forbid mating with STATUS_FEEDS_BUNNY
-        CONFIRMED_PREGNANT = MotherRabbitManager.STATUS_CONFIRMED_PREGNANT
-        if CONFIRMED_PREGNANT not in mother_status:
-            raise ValidationError('The female already pregnancy (confirmed)')
-        
-        READY_FOR_FERTILIZATION = FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION
-        if READY_FOR_FERTILIZATION not in self.father_rabbit.manager.status:
-            raise ValidationError('The male is not ready for fertilization')
