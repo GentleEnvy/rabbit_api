@@ -26,7 +26,7 @@ class Task(BaseModel):
                 raise ValidationError(
                     'The task cannot be completed until the user is specified'
                 )
-        else:  # completed
+        else:  # completed_at is None
             if self.is_confirmed is not None:
                 raise ValidationError("Can't confirm an uncompleted task")
 
