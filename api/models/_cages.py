@@ -114,7 +114,7 @@ class FatteningCage(Cage):
     def _clean_for_rabbits(rabbits: Iterable['api_models.Rabbit']):
         rabbits = list(rabbits)
         if len(rabbits) == 0:
-            raise ValidationError('rabbits is empty')
+            return
         for rabbit in rabbits[1:]:
             if rabbit.is_male != rabbits[0].is_male:
                 raise ValidationError('Rabbits in the same cage must be of the same sex')
