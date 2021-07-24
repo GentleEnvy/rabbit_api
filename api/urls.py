@@ -71,5 +71,9 @@ urlpatterns = [
     path('echo/', EchoView.as_view()),
     # auth
     path('auth/token/', AuthTokenView.as_view()),
-    path('auth/session/', AuthSessionView.as_view())
+    path('auth/session/', AuthSessionView.as_view()),
+    # task
+    *[
+        path('task/', TaskGeneralView.as_view())
+    ]
 ]
