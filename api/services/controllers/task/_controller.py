@@ -45,7 +45,7 @@ def _create_from_fattening_cage(controller):
     ).all():
         try:
             controller.task_model.objects.create(cage=fattening_cage)
-        except ValidationError:
+        except ValidationError as e:
             continue
 
 

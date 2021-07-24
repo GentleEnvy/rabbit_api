@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
+from model_utils.managers import InheritanceManager
 from multiselectfield import MultiSelectField
 
 import api.models as api_models
@@ -17,6 +18,8 @@ __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 class Cage(BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
+    
+    objects = InheritanceManager()
     
     CHAR_TYPE: str = None
     

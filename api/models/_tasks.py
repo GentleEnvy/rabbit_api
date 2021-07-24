@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+from model_utils.managers import InheritanceManager
 
 from api.managers import *
 from api.models._cages import *
@@ -14,10 +15,14 @@ __all__ = [
 
 
 class Task(BaseModel):
+    objects = InheritanceManager()
+    
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
-    completed_at = models.DateTimeField(null=True)
-    is_confirmed = models.BooleanField(null=True)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, null=True, blank=True
+    )
+    completed_at = models.DateTimeField(null=True, blank=True)
+    is_confirmed = models.BooleanField(null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -33,7 +38,7 @@ class Task(BaseModel):
 
 class ToReproductionTask(Task):
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
-    cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True)
+    cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -93,11 +98,11 @@ class BunnyJiggingTask(Task):
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
     male_cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE,
-        null=True, related_name='bunnyjiggingtask_by_male_set'
+        null=True, blank=True, related_name='bunnyjiggingtask_by_male_set'
     )
     female_cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE,
-        null=True, related_name='bunnyjiggingtask_by_female_set'
+        null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
     
     def clean(self):
