@@ -51,12 +51,23 @@ def find_optimal_partner(rabbit) -> dict:
         ):
             if relative is not None and d[min_rabbit.id] + 1 < d.get(relative.id, -1):
                 d[relative.id] = d[min_rabbit.id] + 1
+    if rabbit.is_male:
+        previous_partners = [child.mother.id for child in
+                             Rabbit.objects.filter(father=rabbit, current_type=Rabbit.TYPE_MOTHER)]
+    else:
+        previous_partners = [child.father.id for child in
+                             Rabbit.objects.filter(mother=rabbit, current_type=Rabbit.TYPE_FATHER)]
+
+    for partner in previous_partners:
+        d[partner] = float('inf')
+    previous_partners = Rabbit.objects.filter(pk__in=previous_partners)
     partners = Rabbit.objects.filter(
         is_male=(not is_male), current_type__in=(Rabbit.TYPE_MOTHER, Rabbit.TYPE_FATHER)
     )
+    partners = partners | previous_partners
     top_partners = {
         k: v for k, v in sorted(d.items(), key=lambda item: item[1])
-        if len(partners.all().filter(pk=k))
+        if len(partners.filter(pk=k))
     }
     
     if not len(top_partners):
