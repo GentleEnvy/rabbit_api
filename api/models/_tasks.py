@@ -17,6 +17,8 @@ __all__ = [
 class Task(BaseModel):
     objects = InheritanceManager()
     
+    CHAR_TYPE: str
+    
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, null=True, blank=True
@@ -37,6 +39,8 @@ class Task(BaseModel):
 
 
 class ToReproductionTask(Task):
+    CHAR_TYPE = 'R'
+    
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
     cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True, blank=True)
     
@@ -61,6 +65,8 @@ class ToReproductionTask(Task):
 
 
 class SlaughterTask(Task):
+    CHAR_TYPE = 'S'
+    
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     
     def clean(self):
@@ -70,6 +76,8 @@ class SlaughterTask(Task):
 
 
 class MatingTask(Task):
+    CHAR_TYPE = 'M'
+    
     mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
     father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
     
@@ -95,6 +103,8 @@ class MatingTask(Task):
 
 
 class BunnyJiggingTask(Task):
+    CHAR_TYPE = 'B'
+    
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
     male_cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE,
@@ -134,6 +144,8 @@ class BunnyJiggingTask(Task):
 
 # MAYBE: add vaccination tasks for father and mother rabbits
 class VaccinationTask(Task):
+    CHAR_TYPE = 'V'
+    
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     
     def clean(self):
@@ -150,6 +162,8 @@ class VaccinationTask(Task):
 
 # TODO: take into account the additional feed
 class SlaughterInspectionTask(Task):
+    CHAR_TYPE = 'I'
+    
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     
     def clean(self):
@@ -168,6 +182,8 @@ class SlaughterInspectionTask(Task):
 
 
 class FatteningSlaughterTask(Task):
+    CHAR_TYPE = 'F'
+    
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     
     def clean(self):

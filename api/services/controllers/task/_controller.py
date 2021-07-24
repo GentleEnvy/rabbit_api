@@ -2,7 +2,7 @@ from typing import Callable
 
 from django.core.exceptions import ValidationError
 
-from api.services.controllers.task.base import BaseTaskController
+from api.services.controllers.task.base import TaskController
 from api.services.filterers.cage import CageFilterer
 from api.models import *
 
@@ -49,7 +49,7 @@ def _create_from_fattening_cage(controller, tasks):
             continue
 
 
-class ToReproductionTaskController(BaseTaskController):
+class ToReproductionTaskController(TaskController):
     task_model = ToReproductionTask
     
     def _setup(self, tasks):
@@ -57,15 +57,15 @@ class ToReproductionTaskController(BaseTaskController):
             _setup_jigging_cage(task, task.rabbit.cage, 'cage_to', task.clean_cage_to)
 
 
-class SlaughterTaskController(BaseTaskController):
+class SlaughterTaskController(TaskController):
     task_model = SlaughterTask
 
 
-class MatingTaskController(BaseTaskController):
+class MatingTaskController(TaskController):
     task_model = MatingTask
 
 
-class BunnyJiggingTaskController(BaseTaskController):
+class BunnyJiggingTaskController(TaskController):
     task_model = BunnyJiggingTask
     
     def _create(self, tasks):
@@ -88,21 +88,21 @@ class BunnyJiggingTaskController(BaseTaskController):
             )
 
 
-class VaccinationTaskController(BaseTaskController):
+class VaccinationTaskController(TaskController):
     task_model = VaccinationTask
     
     def _create(self, tasks):
         _create_from_fattening_cage(self, tasks)
 
 
-class SlaughterInspectionTaskController(BaseTaskController):
+class SlaughterInspectionTaskController(TaskController):
     task_model = SlaughterInspectionTask
     
     def _create(self, tasks):
         _create_from_fattening_cage(self, tasks)
 
 
-class FatteningSlaughterTaskController(BaseTaskController):
+class FatteningSlaughterTaskController(TaskController):
     task_model = FatteningSlaughterTask
     
     def _create(self, tasks):

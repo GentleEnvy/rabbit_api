@@ -2,46 +2,51 @@ from abc import ABC
 from typing import final, Type
 
 from django.core.exceptions import ValidationError
-from django.db.models import QuerySet
+from model_utils.managers import InheritanceQuerySet
 
 from api.models import Task
 
-__all__ = ['BaseTaskController']
+__all__ = ['TaskController']
 
 
-class BaseTaskController(ABC):
-    task_model: Type[Task]
+class TaskController(ABC):
+    task_model: Type[Task] = Task
     
     @final
-    def update(self) -> None:
+    def update_anonymous(self) -> None:
+        self._clear(self.anonymous | self.in_progress)
+        self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
+    
+    @final
+    def update_in_progress(self) -> None:
         self._clear(self.anonymous | self.in_progress)
         self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
         self._setup(self.in_progress)
     
     @property
-    def anonymous(self) -> QuerySet:
+    def anonymous(self) -> InheritanceQuerySet:
         return self.task_model.objects.filter(user=None)
     
     @property
-    def in_progress(self) -> QuerySet:
+    def in_progress(self) -> InheritanceQuerySet:
         return self.task_model.objects.exclude(user=None).filter(completed_at=None)
     
     @property
-    def waiting_confirmation(self) -> QuerySet:
+    def waiting_confirmation(self) -> InheritanceQuerySet:
         return self.task_model.objects.exclude(completed_at=None).filter(
             is_confirmed=None
         )
     
     @staticmethod
-    def _clear(tasks: QuerySet) -> None:
+    def _clear(tasks: InheritanceQuerySet) -> None:
         for task in tasks.all():
             try:
                 task.full_clean()
             except ValidationError:
                 task.delete()
     
-    def _create(self, tasks: QuerySet) -> None:
+    def _create(self, tasks: InheritanceQuerySet) -> None:
         pass
     
-    def _setup(self, tasks: QuerySet) -> None:
+    def _setup(self, tasks: InheritanceQuerySet) -> None:
         pass
