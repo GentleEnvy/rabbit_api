@@ -1,6 +1,8 @@
 from datetime import date, timedelta, datetime
 import random
 
+from django.db.models import QuerySet
+
 from api.models import *
 
 DAYS_FOR_SAFE_FERTILIZATION = 3
@@ -53,10 +55,10 @@ def find_optimal_partner(rabbit) -> dict:
                 d[relative.id] = d[min_rabbit.id] + 1
     if rabbit.is_male:
         previous_partners = [child.mother.id for child in
-                             Rabbit.objects.filter(father=rabbit, current_type=Rabbit.TYPE_MOTHER)]
+                             Rabbit.objects.filter(father=rabbit)]
     else:
         previous_partners = [child.father.id for child in
-                             Rabbit.objects.filter(mother=rabbit, current_type=Rabbit.TYPE_FATHER)]
+                             Rabbit.objects.filter(mother=rabbit)]
 
     for partner in previous_partners:
         d[partner] = float('inf')
@@ -69,11 +71,18 @@ def find_optimal_partner(rabbit) -> dict:
         k: v for k, v in sorted(d.items(), key=lambda item: item[1])
         if len(partners.filter(pk=k))
     }
-    
+    # rabbit.cast.manager.output_efficiency
     if not len(top_partners):
         raise Exception('No suitable rabbits found')
     
     return top_partners
+
+
+def sort_rabbits_by_output_efficiency(rabbits: QuerySet) -> list:
+    sorted_rabbits = [
+        rabbit for rabbit in sorted(rabbits.all(), key=lambda rabbit: rabbit.cast.manager.output_efficiency)
+    ]
+    return sorted_rabbits
 
 
 def get_next_random_rabbit(
