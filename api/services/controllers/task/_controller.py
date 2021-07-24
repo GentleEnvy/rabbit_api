@@ -38,14 +38,14 @@ def _setup_jigging_cage(
     # TODO: not valid cages
 
 
-def _create_from_fattening_cage(controller):
+def _create_from_fattening_cage(controller, tasks):
     # noinspection SpellCheckingInspection
-    for fattening_cage in FatteningCage.objects.prefetch_related(
-        'fatteningrabbit_set'
-    ).all():
+    for fattening_cage in FatteningCage.objects.exclude(
+        id__in=[t.cage.id for t in tasks]
+    ).prefetch_related('fatteningrabbit_set').all():
         try:
             controller.task_model.objects.create(cage=fattening_cage)
-        except ValidationError as e:
+        except ValidationError:
             continue
 
 
@@ -68,8 +68,10 @@ class MatingTaskController(BaseTaskController):
 class BunnyJiggingTaskController(BaseTaskController):
     task_model = BunnyJiggingTask
     
-    def _create(self):
-        for mother_cage in MotherCage.objects.prefetch_related('bunny_set').all():
+    def _create(self, tasks):
+        for mother_cage in MotherCage.objects.exclude(
+            id__in=[t.cage_from.id for t in tasks]
+        ).prefetch_related('bunny_set').all():
             try:
                 self.task_model.objects.create(cage_from=mother_cage)
             except ValidationError:
@@ -89,19 +91,19 @@ class BunnyJiggingTaskController(BaseTaskController):
 class VaccinationTaskController(BaseTaskController):
     task_model = VaccinationTask
     
-    def _create(self):
-        _create_from_fattening_cage(self)
+    def _create(self, tasks):
+        _create_from_fattening_cage(self, tasks)
 
 
 class SlaughterInspectionTaskController(BaseTaskController):
     task_model = SlaughterInspectionTask
     
-    def _create(self):
-        _create_from_fattening_cage(self)
+    def _create(self, tasks):
+        _create_from_fattening_cage(self, tasks)
 
 
 class FatteningSlaughterTaskController(BaseTaskController):
     task_model = FatteningSlaughterTask
     
-    def _create(self):
-        _create_from_fattening_cage(self)
+    def _create(self, tasks):
+        _create_from_fattening_cage(self, tasks)

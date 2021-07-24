@@ -15,7 +15,7 @@ class BaseTaskController(ABC):
     @final
     def update(self) -> None:
         self._clear(self.anonymous | self.in_progress)
-        self._create()
+        self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
         self._setup(self.in_progress)
     
     @property
@@ -40,7 +40,7 @@ class BaseTaskController(ABC):
             except ValidationError:
                 task.delete()
     
-    def _create(self) -> None:
+    def _create(self, tasks: QuerySet) -> None:
         pass
     
     def _setup(self, tasks: QuerySet) -> None:
