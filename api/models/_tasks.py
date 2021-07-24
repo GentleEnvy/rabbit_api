@@ -39,15 +39,19 @@ class ToReproductionTask(Task):
         super().clean()
         if self.rabbit.current_type != Rabbit.TYPE_FATTENING:
             raise ValidationError('The rabbit type is not a FatteningRabbit')
+        if self.rabbit.is_male is None:
+            raise ValidationError(
+                'The sex of the rabbit changing the type must be determined'
+            )
     
     def clean_cage_to(self):
         if self.cage_to is not None:
             self.cage_to.full_clean()
             if self.rabbit.is_male:
-                if self.cage_to.CHAR_TYPE == MotherCage.CHAR_TYPE:
+                if self.cage_to.cast.CHAR_TYPE == MotherCage.CHAR_TYPE:
                     raise ValidationError('The male cannot be jigged to MotherCage')
             else:  # rabbit is female
-                if self.cage_to.CHAR_TYPE == FatteningCage.CHAR_TYPE:
+                if self.cage_to.cast.CHAR_TYPE == FatteningCage.CHAR_TYPE:
                     raise ValidationError('The female cannot be jigged to FatteningCage')
 
 
