@@ -70,8 +70,12 @@ urlpatterns = [
     # echo
     path('echo/', EchoView.as_view()),
     # auth
-    path('auth/token/', AuthTokenView.as_view()),
-    path('auth/session/', AuthSessionView.as_view()),
+    *[
+        path('auth/token/', AuthTokenView.as_view()),
+        path('auth/session/', AuthSessionView.as_view())
+    ],
+    # user
+    path('user/', UserListView.as_view()),
     # task
     *[
         # anonymous
