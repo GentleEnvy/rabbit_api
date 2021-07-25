@@ -76,18 +76,18 @@ urlpatterns = [
     *[
         # anonymous
         *[
-            path('task/anonymous/', None),  # FIXME
-            path('task/anonymous/<int:id>', None),  # FIXME
+            path('task/anonymous/', AnonymousTaskGeneralView.as_view()),  # FIXME
+            # path('task/anonymous/<int:id>', None),  # FIXME
         ],
         # in_progress
         *[
-            path('task/in_progress/', None),  # FIXME
-            path('task/in_progress/<int:id>', None),  # FIXME
+            # path('task/in_progress/', None),  # FIXME
+            # path('task/in_progress/<int:id>', None),  # FIXME
         ],
         # waiting_confirmation
         *[
-            path('task/waiting_confirmation/', None),  # FIXME
-            path('task/waiting_confirmation/<int:id>', None),  # FIXME
+            # path('task/waiting_confirmation/', None),  # FIXME
+            # path('task/waiting_confirmation/<int:id>', None),  # FIXME
         ],
     ]
 ]

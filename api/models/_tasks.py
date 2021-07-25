@@ -102,6 +102,7 @@ class MatingTask(Task):
             raise ValidationError('The male is not ready for fertilization')
 
 
+# noinspection SpellCheckingInspection
 class BunnyJiggingTask(Task):
     CHAR_TYPE = 'B'
     

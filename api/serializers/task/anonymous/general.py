@@ -7,53 +7,52 @@ __all__ = ['AnonymousTaskListSerializer']
 
 
 def _get_cage(cage: Cage):
-    model_to_dict(cage, fields=['farm_number', 'number', 'letter'])
+    return model_to_dict(cage, fields=['farm_number', 'number', 'letter'])
 
 
 # noinspection PyMethodMayBeStatic
 class _BaseTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['id', 'type', 'created_at']
+    
     type = serializers.SerializerMethodField()
     
     def get_type(self, task):
         return task.CHAR_TYPE
 
 
-# noinspection PyMethodMayBeStatic
 class ToReproductionTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = ToReproductionTask
-        fields = '__all__'
-    
-    cage_to = serializers.SerializerMethodField()
-    
-    def get_cage_to(self, task):
-        return _get_cage(task.cage_to)
 
 
 class SlaughterTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = SlaughterTask
-        fields = '__all__'
 
 
 class MatingTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = MatingTask
-        fields = '__all__'
 
 
 # noinspection PyMethodMayBeStatic
 class BunnyJiggingTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = BunnyJiggingTask
-        fields = '__all__'
+        fields = _BaseTaskSerializer.Meta.fields + ['cage_from']
+    
+    cage_from = serializers.SerializerMethodField()
+    
+    def get_cage_from(self, task):
+        return _get_cage(task.cage_from)
 
 
 # noinspection PyMethodMayBeStatic
 class VaccinationTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = VaccinationTask
-        fields = '__all__'
+        fields = _BaseTaskSerializer.Meta.fields + ['cage']
     
     cage = serializers.SerializerMethodField()
     
@@ -61,16 +60,28 @@ class VaccinationTaskSerializer(_BaseTaskSerializer):
         return _get_cage(task.cage)
 
 
+# noinspection PyMethodMayBeStatic
 class SlaughterInspectionTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = SlaughterInspectionTask
-        fields = '__all__'
+        fields = _BaseTaskSerializer.Meta.fields + ['cage']
+    
+    cage = serializers.SerializerMethodField()
+    
+    def get_cage(self, task):
+        return _get_cage(task.cage)
 
 
+# noinspection PyMethodMayBeStatic
 class FatteningSlaughterTaskSerializer(_BaseTaskSerializer):
-    class Meta:
+    class Meta(_BaseTaskSerializer.Meta):
         model = FatteningSlaughterTask
-        fields = '__all__'
+        fields = _BaseTaskSerializer.Meta.fields + ['cage']
+    
+    cage = serializers.SerializerMethodField()
+    
+    def get_cage(self, task):
+        return _get_cage(task.cage)
 
 
 _model__serializer = {
