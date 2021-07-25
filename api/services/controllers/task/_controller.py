@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Type
 
 from django.core.exceptions import ValidationError
 
@@ -14,7 +14,8 @@ __all__ = [
 
 
 def _setup_jigging_cage(
-    task: Task, cage_from: Cage, cage_to_attr: str, cleaner: Callable
+    task: Task, cage_from: Cage, cage_to_attr: str, cleaner: Callable,
+    cage_to_type: Type[Cage] = None
 ) -> None:
     if getattr(task, cage_to_attr) is not None:
         try:
@@ -27,7 +28,7 @@ def _setup_jigging_cage(
         Cage.objects.select_related('fatteningcage', 'mothercage')
     )
     # TODO: check same cage
-    for nearest_cage in filterer.order_by_nearest_to(cage_from):
+    for nearest_cage in filterer.order_by_nearest_to(cage_from, cage_to_type):
         setattr(task, cage_to_attr, nearest_cage)
         try:
             cleaner()
@@ -81,10 +82,12 @@ class BunnyJiggingTaskController(TaskController):
         task: BunnyJiggingTask
         for task in tasks:
             _setup_jigging_cage(
-                task, task.cage_from, 'male_cage_to', task.clean_male_cage_to
+                task, task.cage_from, 'male_cage_to', task.clean_male_cage_to,
+                FatteningCage
             )
             _setup_jigging_cage(
-                task, task.cage_from, 'female_cage_to', task.clean_female_cage_to
+                task, task.cage_from, 'female_cage_to', task.clean_female_cage_to,
+                FatteningCage
             )
 
 

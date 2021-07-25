@@ -85,7 +85,7 @@ urlpatterns = [
         ],
         # in_progress
         *[
-            # path('task/in_progress/', None),  # FIXME
+            path('task/in_progress/', InProgressTaskGeneralView.as_view()),
             # path('task/in_progress/<int:id>', None),  # FIXME
         ],
         # waiting_confirmation
