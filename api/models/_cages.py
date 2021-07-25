@@ -5,17 +5,17 @@ from typing import Union, Iterable
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.urls import reverse
 from model_utils.managers import InheritanceManager
 from multiselectfield import MultiSelectField
 
 import api.models as api_models
 from api.models.base import BaseModel
+from api.managers.cage.mixins import *
 
 __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 
 
-class Cage(BaseModel):
+class Cage(CageManagerMixin, BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
     
@@ -64,8 +64,8 @@ class Cage(BaseModel):
     def rabbits(self) -> set['api_models.Rabbit']:
         raise NotImplementedError
     
-    def get_absolute_url(self):
-        raise NotImplementedError
+    def __str__(self):
+        return f'{self.farm_number}->{self.number}-{self.letter}'
     
     def clean_for_jigging(self):
         if self.NEED_REPAIR in self.status:
@@ -74,7 +74,7 @@ class Cage(BaseModel):
             raise ValidationError('This cage needs cleaning')
 
 
-class FatteningCage(Cage):
+class FatteningCage(FatteningCageManagerMixin, Cage):
     CHAR_TYPE = 'F'
     
     @property
@@ -88,9 +88,6 @@ class FatteningCage(Cage):
             self.fatherrabbit_set.filter(current_type=api_models.Rabbit.TYPE_FATHER)
         )
         return rabbit_set
-    
-    def get_absolute_url(self):
-        return reverse('fattening_cage__detail__url', kwargs={'id': self.id})
     
     def clean(self):
         super().clean()
@@ -149,10 +146,10 @@ class FatteningCage(Cage):
                 )
 
 
-class MotherCage(Cage):
+class MotherCage(MotherCageManagerMixin, Cage):
     CHAR_TYPE = 'M'
     
-    is_parallel = models.BooleanField(default=False)
+    has_right_womb = models.BooleanField(default=False)
     
     @property
     def rabbits(self):
@@ -164,15 +161,20 @@ class MotherCage(Cage):
         )
         return rabbit_set
     
-    def get_absolute_url(self):
-        return reverse('mother_cage__detail__url', kwargs={'id': self.id})
-    
     def clean(self):
         super().clean()
         rabbits = list(self.rabbits)
         if len(rabbits) > 0:
             if len(rabbits) == 1:
                 self._clean_for_mother(rabbits[0])
+        if self.has_right_womb:
+            try:
+                MotherCage.objects.get(
+                    farm_number=self.farm_number, number=self.number,
+                    letter=chr(ord(self.letter) + 1)
+                )
+            except MotherCage.DoesNotExist:
+                raise ValidationError('There are no cages to the right of this cage')
     
     def clean_for_jigging_mother(self):
         self.clean_for_jigging()
