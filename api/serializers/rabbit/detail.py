@@ -1,4 +1,3 @@
-from django.db.models import Q
 from rest_framework import serializers
 
 from api.serializers.base import BaseReadOnlyRaiseSerializer
@@ -8,8 +7,6 @@ __all__ = [
     'FatteningRabbitDetailSerializer', 'BunnyDetailSerializer',
     'MotherRabbitDetailSerializer', 'FatherRabbitDetailSerializer'
 ]
-
-from api.utils.functions import diff_time
 
 
 class _CageSerializer(serializers.ModelSerializer):
@@ -27,14 +24,14 @@ class FatteningRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         ]
         fields = read_only_fields + ['weight']
         depth = 1
-
+    
     cage = _CageSerializer(read_only=True)
     status = serializers.SerializerMethodField()
     breed = serializers.SerializerMethodField()
-
+    
     def get_status(self, rabbit):
         return rabbit.cast.manager.status
-
+    
     def get_breed(self, rabbit):
         return rabbit.breed.title
 
@@ -48,14 +45,14 @@ class BunnyDetailSerializer(BaseReadOnlyRaiseSerializer):
         ]
         fields = read_only_fields + ['weight']
         depth = 1
-
+    
     cage = _CageSerializer(read_only=True)
     status = serializers.SerializerMethodField()
     breed = serializers.SerializerMethodField()
-
+    
     def get_status(self, rabbit):
         return rabbit.cast.manager.status
-
+    
     def get_breed(self, rabbit):
         return rabbit.breed.title
 
@@ -69,76 +66,33 @@ class _ReproductionRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
         ]
         fields = read_only_fields + ['weight']
         depth = 1
-
+    
     cage = _CageSerializer(read_only=True)
     status = serializers.SerializerMethodField()
     breed = serializers.SerializerMethodField()
     output = serializers.SerializerMethodField()
     output_efficiency = serializers.SerializerMethodField()
-
+    
     def get_status(self, rabbit):
         return rabbit.cast.manager.status
-
+    
     def get_breed(self, rabbit):
         return rabbit.breed.title
-
+    
     def get_output(self, rabbit):
-        children = rabbit.rabbit_set.all()
-        if len(children) == 0:
-            return 0
-        births = [children[0].birthday]
-        for child in children[1:]:
-            for birth in births:
-                if abs(diff_time(birth, child.birthday).days) > 2:
-                    births.append(child.birthday)
-                    break
-        return len(births)
-
+        return rabbit.manager.output
+    
     def get_output_efficiency(self, rabbit):
-        raise NotImplementedError
+        return rabbit.manager.output_efficiency
 
 
 # noinspection PyMethodMayBeStatic
 class MotherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
     class Meta(_ReproductionRabbitDetailSerializer.Meta):
         model = MotherRabbit
-    
-    def get_output_efficiency(self, rabbit):
-        efficiency_children = rabbit.rabbit_set.filter(
-            Q(
-                current_type__in=(c.CHAR_TYPE for c in
-                    (FatteningRabbit, MotherRabbit, FatherRabbit)
-                )
-            ) | Q(current_type=DeadRabbit.CHAR_TYPE) & Q(
-                deadrabbit__death_cause__in=(
-                    DeadRabbit.CAUSE_SLAUGHTER, DeadRabbit.CAUSE_EXTRA
-                )
-            )
-        ).count()
-        output = self.get_output(rabbit)
-        if output == 0:
-            return None
-        return efficiency_children / self.get_output(rabbit)
 
 
 # noinspection PyMethodMayBeStatic
 class FatherRabbitDetailSerializer(_ReproductionRabbitDetailSerializer):
     class Meta(_ReproductionRabbitDetailSerializer.Meta):
         model = FatherRabbit
-    
-    def get_output_efficiency(self, rabbit):
-        efficiency_children = rabbit.rabbit_set.filter(
-            Q(
-                current_type__in=(c.CHAR_TYPE for c in
-                    (FatteningRabbit, MotherRabbit, FatherRabbit)
-                )
-            ) | Q(current_type=DeadRabbit.CHAR_TYPE) & ~Q(
-                deadrabbit__death_cause__in=(
-                    DeadRabbit.CAUSE_ILLNESS, DeadRabbit.CAUSE_DISEASE
-                )
-            )
-        ).count()
-        output = self.get_output(rabbit)
-        if output == 0:
-            return None
-        return efficiency_children / self.get_output(rabbit)
