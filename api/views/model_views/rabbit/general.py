@@ -52,6 +52,10 @@ class RabbitGeneralView(BaseGeneralView):
             filters['status'] = status.split(',')
         if farm_number := params.get('farm_number'):
             filters['farm_number'] = list(map(int, farm_number.split(',')))
+        if cage_number_from := params.get('cage_number_from'):
+            filters['cage_number_from'] = int(cage_number_from)
+        if cage_number_to := params.get('cage_number_to'):
+            filters['cage_number_to'] = int(cage_number_to)
         filterer = RabbitFilterer(queryset)
         filterer.filter(**filters)
         if order_by := params.get('__order_by__'):
