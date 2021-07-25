@@ -90,7 +90,9 @@ urlpatterns = [
         ],
         # waiting_confirmation
         *[
-            # path('task/waiting_confirmation/', None),  # FIXME
+            path(
+                'task/waiting_confirmation/', WaitingConfirmationTaskGeneralView.as_view()
+            ),
             # path('task/waiting_confirmation/<int:id>', None),  # FIXME
         ],
     ]
