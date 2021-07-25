@@ -61,6 +61,9 @@ class Cage(CageManagerMixin, BaseModel):
     @property
     def rabbits(self) -> set['api_models.Rabbit']:
         raise NotImplementedError
+    
+    def __str__(self):
+        return f'{self.farm_number}->{self.number}-{self.letter}'
 
 
 class FatteningCage(FatteningCageManagerMixin, Cage):
