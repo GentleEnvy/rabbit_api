@@ -7,6 +7,8 @@ __all__ = ['RabbitFilterer']
 
 
 class RabbitFilterer(BaseFilterer):
+    model = Rabbit
+    
     def filter(
         self, is_male: bool = None, type_: list[str] = None,
         breed: list[int] = None, age_from: int = None, age_to: int = None,

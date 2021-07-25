@@ -70,6 +70,33 @@ urlpatterns = [
     # echo
     path('echo/', EchoView.as_view()),
     # auth
-    path('auth/token/', AuthTokenView.as_view()),
-    path('auth/session/', AuthSessionView.as_view())
+    *[
+        path('auth/token/', AuthTokenView.as_view()),
+        path('auth/session/', AuthSessionView.as_view())
+    ],
+    # user
+    path('user/', UserListView.as_view()),
+    # task
+    *[
+        # anonymous
+        *[
+            path('task/anonymous/', AnonymousTaskGeneralView.as_view()),
+            path('task/anonymous/<int:id>/', AnonymousTaskDetailView.as_view()),
+        ],
+        # in_progress
+        *[
+            path('task/in_progress/', InProgressTaskGeneralView.as_view()),
+            path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
+        ],
+        # waiting_confirmation
+        *[
+            path(
+                'task/waiting_confirmation/', WaitingConfirmationTaskGeneralView.as_view()
+            ),
+            path(
+                'task/waiting_confirmation/<int:id>/',
+                WaitingConfirmationTaskDetailView.as_view()
+            ),
+        ],
+    ]
 ]

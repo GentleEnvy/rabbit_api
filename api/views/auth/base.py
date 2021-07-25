@@ -17,6 +17,7 @@ class BaseAuthView(BaseView):
             {'user': self.serialize_user(user)} | self._make_json_response(user)
         )
     
+    # TODO: UserSerializer
     @staticmethod
     def serialize_user(user):
         # noinspection SpellCheckingInspection
