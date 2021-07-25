@@ -76,8 +76,8 @@ urlpatterns = [
     *[
         # anonymous
         *[
-            path('task/anonymous/', AnonymousTaskGeneralView.as_view()),  # FIXME
-            # path('task/anonymous/<int:id>', None),  # FIXME
+            path('task/anonymous/', AnonymousTaskGeneralView.as_view()),
+            path('task/anonymous/<int:id>/', AnonymousTaskDetailView.as_view()),
         ],
         # in_progress
         *[
