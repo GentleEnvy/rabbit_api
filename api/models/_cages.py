@@ -10,11 +10,12 @@ from multiselectfield import MultiSelectField
 
 import api.models as api_models
 from api.models.base import BaseModel
+from api.managers.cage.mixins import *
 
 __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 
 
-class Cage(BaseModel):
+class Cage(CageManagerMixin, BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
     
@@ -60,12 +61,9 @@ class Cage(BaseModel):
     @property
     def rabbits(self) -> set['api_models.Rabbit']:
         raise NotImplementedError
-    
-    def get_absolute_url(self):
-        raise NotImplementedError
 
 
-class FatteningCage(Cage):
+class FatteningCage(FatteningCageManagerMixin, Cage):
     CHAR_TYPE = 'F'
     
     @property
@@ -73,12 +71,9 @@ class FatteningCage(Cage):
         rabbit_set = set(self.fatteningrabbit_set.all())
         rabbit_set.update(self.fatherrabbit_set.all())
         return rabbit_set
-    
-    def get_absolute_url(self):
-        return reverse('fattening_cage__detail__url', kwargs={'id': self.id})
 
 
-class MotherCage(Cage):
+class MotherCage(MotherCageManagerMixin, Cage):
     CHAR_TYPE = 'M'
     
     has_right_womb = models.BooleanField(default=False)
@@ -99,6 +94,3 @@ class MotherCage(Cage):
                 )
             except MotherCage.DoesNotExist:
                 raise ValidationError('There are no cages to the right of this cage')
-    
-    def get_absolute_url(self):
-        return reverse('mother_cage__detail__url', kwargs={'id': self.id})

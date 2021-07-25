@@ -12,6 +12,10 @@ class CageManager(BaseManager):
 
 class MotherCageManager(CageManager):
     model: 'api_models.MotherCage'
+    
+    @property
+    def is_parallel(self) -> bool:
+        return not self.model.has_right_womb
 
 
 class FatteningCageManager(CageManager):
