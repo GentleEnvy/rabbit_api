@@ -93,7 +93,10 @@ urlpatterns = [
             path(
                 'task/waiting_confirmation/', WaitingConfirmationTaskGeneralView.as_view()
             ),
-            # path('task/waiting_confirmation/<int:id>/', None),  # FIXME
+            path(
+                'task/waiting_confirmation/<int:id>/',
+                WaitingConfirmationTaskDetailView.as_view()
+            ),
         ],
     ]
 ]
