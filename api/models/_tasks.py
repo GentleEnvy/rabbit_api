@@ -69,7 +69,7 @@ class SlaughterTask(Task):
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     
-    # MAYBE: forbid slaughtering a bunny
+    # TODO: forbid slaughtering a bunny
     def clean(self):
         super().clean()
         if self.rabbit.current_type == Rabbit.TYPE_DIED:
@@ -118,7 +118,6 @@ class BunnyJiggingTask(Task):
     )
     # in progress
     males = models.PositiveSmallIntegerField(null=True, blank=True)
-    females = models.PositiveSmallIntegerField(null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -129,16 +128,6 @@ class BunnyJiggingTask(Task):
             if BunnyManager.STATUS_NEED_JIGGING not in bunny.manager.status:
                 raise ValidationError(
                     "There is bunny in this cage that don't need jigging"
-                )
-        if self.males is not None:
-            if self.females is None:
-                raise ValidationError(
-                    'The males and females fields must be defined simultaneously'
-                )
-            if self.males + self.females != bunny_set.count():
-                raise ValidationError(
-                    'The sum of the males and females fields must match the number of '
-                    'bunnies in the cage'
                 )
     
     def clean_male_cage_to(self):
