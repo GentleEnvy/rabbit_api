@@ -69,6 +69,7 @@ class SlaughterTask(Task):
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     
+    # MAYBE: forbid slaughtering a bunny
     def clean(self):
         super().clean()
         if self.rabbit.current_type == Rabbit.TYPE_DIED:
@@ -182,6 +183,7 @@ class SlaughterInspectionTask(Task):
                 )
 
 
+# MAYBE: leave the rabbits to additional feeding
 class FatteningSlaughterTask(Task):
     CHAR_TYPE = 'F'
     
