@@ -116,6 +116,9 @@ class BunnyJiggingTask(Task):
         FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
+    # in progress
+    males = models.PositiveSmallIntegerField(null=True, blank=True)
+    females = models.PositiveSmallIntegerField(null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -126,6 +129,16 @@ class BunnyJiggingTask(Task):
             if BunnyManager.STATUS_NEED_JIGGING not in bunny.manager.status:
                 raise ValidationError(
                     "There is bunny in this cage that don't need jigging"
+                )
+        if self.males is not None:
+            if self.females is None:
+                raise ValidationError(
+                    'The males and females fields must be defined simultaneously'
+                )
+            if self.males + self.females != bunny_set.count():
+                raise ValidationError(
+                    'The sum of the males and females fields must match the number of '
+                    'bunnies in the cage'
                 )
     
     def clean_male_cage_to(self):
@@ -167,6 +180,8 @@ class SlaughterInspectionTask(Task):
     CHAR_TYPE = 'I'
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
+    # in progress
+    weights: dict[str, int] = models.JSONField(null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -181,6 +196,20 @@ class SlaughterInspectionTask(Task):
                 raise ValidationError(
                     "There is fattening rabbit in this cage that don't need inspection"
                 )
+        if self.weights is not None:
+            self.clean_weights(self.weights)
+    
+    @staticmethod
+    def clean_weights(weights):
+        if len(weights) == 0:
+            raise ValidationError('Weights cannot be empty')
+        for weight, delay in weights.items():
+            try:
+                float(weight)
+            except ValueError:
+                raise ValidationError('The weights keys must be convertible to float')
+            if not isinstance(delay, int):
+                raise ValidationError('The weights values must be integers')
 
 
 # MAYBE: leave the rabbits to additional feeding
