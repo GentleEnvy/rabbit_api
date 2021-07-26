@@ -7,11 +7,14 @@ __all__ = ['RabbitFilterer']
 
 
 class RabbitFilterer(BaseFilterer):
+    model = Rabbit
+    
     def filter(
-        self, is_male: bool = None, type_: tuple[str] = None,
-        breed: tuple[int] = None, age_from: int = None, age_to: int = None,
-        weight_from: float = None, weight_to: float = None, status: tuple[str] = None,
-        farm_number: tuple[int] = None
+        self, is_male: bool = None, type_: list[str] = None,
+        breed: list[int] = None, age_from: int = None, age_to: int = None,
+        weight_from: float = None, weight_to: float = None, status: list[str] = None,
+        farm_number: list[int] = None, cage_number_from: int = None,
+        cage_number_to: int = None
     ):
         queryset = self.queryset
         if is_male is not None:
@@ -38,11 +41,14 @@ class RabbitFilterer(BaseFilterer):
                 rabbit.id for rabbit in queryset
                 if
                 (
-                    status is None or
-                    any(s in rabbit.cast.manager.status for s in status)
+                    status is None or any(s in rabbit.cast.manager.status for s in status)
                 ) and (
-                    farm_number is None or
-                    rabbit.cast.cage.farm_number in farm_number
+                    farm_number is None or rabbit.cast.cage.farm_number in farm_number
+                ) and (
+                    cage_number_from is None or
+                    rabbit.cast.cage.number >= cage_number_from
+                ) and (
+                    cage_number_to is None or rabbit.cast.cage.number <= cage_number_to
                 )
             ]
         )
@@ -58,8 +64,9 @@ class RabbitFilterer(BaseFilterer):
         if order in ('weight', '-weight'):
             return queryset.order_by(order)
         if order == 'sex':
-            return list(queryset.exclude(is_male=None).order_by('-is_male')) + \
-                   list(queryset.filter(is_male=None))
+            return list(
+                queryset.exclude(is_male=None).order_by('-is_male')
+            ) + list(queryset.filter(is_male=None))
         if order == 'farm_number':
             return sorted(queryset, key=lambda r: r.cast.cage.farm_number)
         if order == 'cage_number':

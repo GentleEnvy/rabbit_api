@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from api.models import *
+
+admin.site.register(TypeGroup)
+
+admin.site.register(MotherCage)
+admin.site.register(FatteningCage)

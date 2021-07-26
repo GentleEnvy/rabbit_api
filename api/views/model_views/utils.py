@@ -13,6 +13,8 @@ def redirect_by_id(model, request, id, **filters):
         instance = model.objects.get(id=id, **filters)
     except (FieldDoesNotExist, MultipleObjectsReturned, APIException) as e:
         return exception_handler(e, {'request', request})
+    if hasattr(instance, 'cast'):
+        instance = instance.cast
     if query_params := request.query_params:
-        return redirect(f'{instance.cast.get_absolute_url()}?{urlencode(query_params)}')
-    return redirect(instance.cast.get_absolute_url())
+        return redirect(f'{instance.get_absolute_url()}?{urlencode(query_params)}')
+    return redirect(instance.get_absolute_url())
