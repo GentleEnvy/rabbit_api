@@ -50,3 +50,6 @@ class TaskController(ABC):
     
     def _setup(self, tasks: InheritanceQuerySet) -> None:
         pass
+    
+    def execute(self, task: Task) -> None:
+        raise NotImplementedError

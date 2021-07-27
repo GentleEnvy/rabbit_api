@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from model_utils.managers import QueryManager
 from multiselectfield import MultiSelectField
 
 from api.managers.mixins import *
@@ -24,9 +25,9 @@ _is_valid_cage = {'status': []}
 
 class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     CHAR_TYPE: str = None
-
+    
     history_model = RabbitHistory
-
+    
     birthday = models.DateTimeField(default=timezone.now)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
@@ -56,7 +57,11 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
         ),
         blank=True, default='', max_choices=3
     )
-
+    
+    @classmethod
+    def all_current(cls):
+        return QueryManager(current_type=cls.CHAR_TYPE).all()
+    
     @classmethod
     def recast(cls, rabbit: Rabbit):
         if cls is Rabbit:
@@ -71,19 +76,19 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit
-
+    
     @property
     def cast(self) -> Union[DeadRabbit, _RabbitInCage]:
         for rabbit_class in (
-                DeadRabbit, FatteningRabbit, Bunny, MotherRabbit, FatherRabbit
+            DeadRabbit, FatteningRabbit, Bunny, MotherRabbit, FatherRabbit
         ):
             if self.current_type == rabbit_class.CHAR_TYPE:
                 return getattr(self, rabbit_class.__name__.lower())
         raise AttributeError('Incorrect current_type')
-
+    
     def get_absolute_url(self) -> str:
         raise NotImplementedError
-
+    
     def save(self, *args, **kwargs):
         if self.__class__ is Rabbit:
             raise NotImplementedError("Instance can't be saved as Rabbit (base class)")
@@ -92,9 +97,9 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
 
 class DeadRabbit(Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
-
+    
     history_model = DeadRabbitHistory
-
+    
     death_day = models.DateTimeField(default=timezone.now)
     death_cause = models.CharField(
         choices=(
@@ -108,11 +113,11 @@ class DeadRabbit(Rabbit):
         ),
         max_length=1
     )
-
+    
     @classmethod
     def recast(cls, rabbit) -> DeadRabbit:
         return super().recast(rabbit)
-
+    
     def get_absolute_url(self):
         raise AttributeError
 
@@ -123,9 +128,9 @@ class DeadRabbit(Rabbit):
 class _RabbitInCage(Rabbit):
     class Meta(Rabbit.Meta):
         abstract = True
-
+    
     # cage: Cage
-
+    
     def get_absolute_url(self):
         raise NotImplementedError
 
@@ -134,21 +139,21 @@ class _RabbitInCage(Rabbit):
 #   - the rabbit is attached to the plan only if it has the STATUS_READY_TO_SLAUGHTER
 class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
-
+    
     history_model = FatteningRabbitHistory
-
+    
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
     plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
-
+    
     @classmethod
     def recast(cls, rabbit) -> FatteningRabbit:
         return super().recast(rabbit)
-
+    
     def get_absolute_url(self):
         return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
-
+    
     def clean(self):
         super().clean()
         if self.is_male is None:
@@ -157,37 +162,37 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
 
 class Bunny(BunnyManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
-
+    
     history_model = BunnyHistory
-
+    
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-
+    
     @classmethod
     def recast(cls, _):
         raise NotImplementedError("It's forbidden to recast to Bunny")
-
+    
     def get_absolute_url(self):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
 
 
 class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
-
+    
     history_model = MotherRabbitHistory
-
+    
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-
+    
     @classmethod
     def recast(cls, rabbit) -> MotherRabbit:
         return super().recast(rabbit)
-
+    
     def get_absolute_url(self):
         return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
-
+    
     def clean(self):
         super().clean()
         if self.is_male is None:
@@ -198,20 +203,20 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
 
 class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
-
+    
     history_model = FatherRabbitHistory
-
+    
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-
+    
     @classmethod
     def recast(cls, rabbit) -> FatherRabbit:
         return super().recast(rabbit)
-
+    
     def get_absolute_url(self):
         return reverse('father_rabbit__detail__url', kwargs={'id': self.id})
-
+    
     def clean(self):
         super().clean()
         if self.is_male is None:
