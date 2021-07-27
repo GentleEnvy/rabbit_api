@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 from django.db.models import QuerySet
 
@@ -16,11 +17,7 @@ class AvoidInbreedingService:
         self.top_range = top_range
     
     def find_optimal_partners(self, rabbit) -> dict:
-        try:
-            self.validate_rabbit(rabbit)
-        except ValueError:
-            # ToDo: правильно обработать
-            pass
+        self.validate_rabbit(rabbit)
         
         rabbit = rabbit.cast
         
@@ -61,17 +58,13 @@ class AvoidInbreedingService:
             k: v for k, v in sorted(d.items(), key=lambda item: item[1], reverse=True)
             if len(partners.filter(pk=k))
         }
-        if not len(top_partners):
-            raise LookupError('No suitable rabbits found')
+        # if not len(top_partners):
+        #     raise LookupError('No suitable rabbits found')
         
         return top_partners
     
     def find_previous_partners(self, rabbit) -> list:
-        try:
-            self.validate_rabbit(rabbit)
-        except ValueError:
-            # ToDo: правильно обработать
-            pass
+        self.validate_rabbit(rabbit)
         
         if rabbit.is_male:
             previous_partners = [child.mother.id for child in
@@ -82,16 +75,20 @@ class AvoidInbreedingService:
         return previous_partners
     
     def validate_rabbit(self, rabbit):
+        if rabbit.current_type not in (Rabbit.TYPE_MOTHER, Rabbit.TYPE_FATHER):
+            raise ValueError(
+                f'Expected mother or father rabbit, but given '
+                f'{re.sub(r"(?<!^)(?=[A-Z])", " ", type(rabbit.cast).__name__).lower()}'
+            )
         if rabbit.current_type == Rabbit.TYPE_MOTHER:
             mother_rabbit: MotherRabbit = rabbit.cast
             if mother_rabbit.manager.last_fertilization is not None and (
                 mother_rabbit.manager.last_fertilization - datetime.today()
             ).days < self.days_for_safe_fertilization:
+                # MAYBE: delete
                 raise ValueError('This rabbit is pregnant, no partner should be found')
         if rabbit.warning_status:
             raise ValueError('This rabbit is ill')
-        if rabbit.current_type == Rabbit.TYPE_BUNNY:
-            raise ValueError('This rabbit is too young to breed')
     
     @staticmethod
     def sort_rabbits_by_output_efficiency(rabbits: QuerySet) -> list:
