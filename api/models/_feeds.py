@@ -8,17 +8,24 @@ from django.utils import timezone
 
 from api.models.base import BaseModel
 
-__all__ = ['FeedBatch']
+__all__ = ['CommonFeeds', 'NursingMotherFeeds']
 
 
-class FeedBatch(BaseModel):
-    delivery_date = models.DateField(default=timezone.now)
-    total_common_bags_number = models.IntegerField(default=0)
-    common_bags_left = models.IntegerField(default=0)
-    total_mother_bags_number = models.IntegerField(default=0)
-    mother_bags_left = models.IntegerField(default=0)
+class CommonFeeds(BaseModel):
+    date = models.DateField(default=timezone.now)
+    stocks_change = models.IntegerField(default=0)
 
     def clean(self):
         super().clean()
-        if self.delivery_date > date.today():
-            raise ValidationError('Wrong date of delivery input')
+        if self.date > date.today():
+            raise ValidationError('Wrong date of common feeds stocks change input')
+
+
+class NursingMotherFeeds(BaseModel):
+    date = models.DateField(default=timezone.now)
+    stocks_change = models.IntegerField(default=0)
+
+    def clean(self):
+        super().clean()
+        if self.date > date.today():
+            raise ValidationError('Wrong date of mother feeds stocks change input')
