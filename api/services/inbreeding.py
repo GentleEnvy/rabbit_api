@@ -9,12 +9,16 @@ from api.models import *
 
 class AvoidInbreedingService:
     DAYS_FOR_SAFE_FERTILIZATION = 3
+    DAYS_FOR_READY_MATING = 110
     TOP_RANGE = 10
     
-    def __init__(
-        self, days_for_safe_fertilization=DAYS_FOR_SAFE_FERTILIZATION, top_range=TOP_RANGE
+    def __init__(self,
+        days_for_safe_fertilization=DAYS_FOR_SAFE_FERTILIZATION,
+        top_range=TOP_RANGE,
+        days_for_ready_mating=DAYS_FOR_READY_MATING
     ):
         self.days_for_safe_fertilization = days_for_safe_fertilization
+        self.days_for_ready_mating = days_for_ready_mating
         self.top_range = top_range
     
     def find_optimal_partners(self, rabbit) -> dict:
