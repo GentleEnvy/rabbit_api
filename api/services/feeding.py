@@ -1,6 +1,6 @@
 from datetime import date, timedelta
+from django.db.models import Sum
 
-from api.managers import MotherRabbitManager
 from api.models import *
 from api.models import CommonFeeds, NursingMotherFeeds
 
@@ -29,23 +29,23 @@ class FeedingService:
     def next_delivery_date(self) -> (date, date):
         common_feeding = 0
         mother_feeding = 0
-        for rabbit in Rabbit.objects.all():
-            if (rabbit.cast.manager.age.days >= self.milk_age_for_bunny
-                or rabbit.current_type in [
+        for rabbit in Rabbit.objects.exclude(current_type=Rabbit.TYPE_DIED):
+            if (
+                rabbit.cast.manager.age.days >= self.milk_age_for_bunny or
+                rabbit.current_type in [
                     Rabbit.TYPE_FATHER,
                     Rabbit.TYPE_FATTENING,
-                    Rabbit.TYPE_MOTHER]
-            ) \
-                and 'FB' not in rabbit.cast.manager.status \
-                and rabbit.current_type != Rabbit.TYPE_DIED:
+                    Rabbit.TYPE_MOTHER
+                ]
+            ) and (
+                'FB' not in rabbit.cast.manager.status
+            ):
                 common_feeding += 1
             if 'FB' in rabbit.cast.manager.status:
                 mother_feeding += 1
         
-        common_feed_bags = sum(
-            record.stocks_change for record in CommonFeeds.objects.all())
-        mother_feed_bags = sum(
-            record.stocks_change for record in NursingMotherFeeds.objects.all())
+        common_feed_bags = CommonFeeds.objects.aggregate(Sum('stocks_change'))
+        mother_feed_bags = NursingMotherFeeds.objects.aggregate(Sum('stocks_change'))
         
         days_left_for_common_feeds = (common_feed_bags * self.feed_bag_weight) / \
                                      (common_feeding * self.normal_daily_consumption)
