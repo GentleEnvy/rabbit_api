@@ -10,7 +10,7 @@ __all__ = ['BeforeSlaughterInspection', 'PregnancyInspection']
 class BeforeSlaughterInspection(BaseModel):
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     time = models.DateTimeField(default=timezone.now)
-    delay = models.IntegerField(null=True, blank=True)
+    delay = models.IntegerField(null=True, blank=True)  # TODO: not null
 
 
 class PregnancyInspection(BaseModel):

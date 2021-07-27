@@ -87,6 +87,14 @@ urlpatterns = [
         *[
             path('task/in_progress/', InProgressTaskGeneralView.as_view()),
             path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
+            path(
+                'task/in_progress/bunny_jigging/<int:id>/',
+                InProgressBunnyJiggingTaskDetailView.as_view()
+            ),
+            path(
+                'task/in_progress/slaughter_inspection/<int:id>/',
+                InProgressSlaughterInspectionTaskDetailView.as_view()
+            ),
         ],
         # waiting_confirmation
         *[

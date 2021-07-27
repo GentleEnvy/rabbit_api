@@ -69,6 +69,7 @@ class SlaughterTask(Task):
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     
+    # TODO: forbid slaughtering a bunny
     def clean(self):
         super().clean()
         if self.rabbit.current_type == Rabbit.TYPE_DIED:
@@ -115,6 +116,8 @@ class BunnyJiggingTask(Task):
         FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
+    # in progress
+    males = models.PositiveSmallIntegerField(null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -166,6 +169,8 @@ class SlaughterInspectionTask(Task):
     CHAR_TYPE = 'I'
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
+    # in progress
+    weights: dict[str, int] = models.JSONField(null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -180,8 +185,23 @@ class SlaughterInspectionTask(Task):
                 raise ValidationError(
                     "There is fattening rabbit in this cage that don't need inspection"
                 )
+        if self.weights is not None:
+            self.clean_weights(self.weights)
+    
+    @staticmethod
+    def clean_weights(weights):
+        if len(weights) == 0:
+            raise ValidationError('Weights cannot be empty')
+        for weight, delay in weights.items():
+            try:
+                float(weight)
+            except ValueError:
+                raise ValidationError('The weights keys must be convertible to float')
+            if not isinstance(delay, int):
+                raise ValidationError('The weights values must be integers')
 
 
+# MAYBE: leave the rabbits to additional feeding
 class FatteningSlaughterTask(Task):
     CHAR_TYPE = 'F'
     

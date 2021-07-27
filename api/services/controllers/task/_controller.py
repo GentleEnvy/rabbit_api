@@ -56,14 +56,34 @@ class ToReproductionTaskController(TaskController):
     def _setup(self, tasks):
         for task in tasks:
             _setup_jigging_cage(task, task.rabbit.cage, 'cage_to', task.clean_cage_to)
+    
+    def execute(self, task: ToReproductionTask):
+        rabbit = task.rabbit
+        if rabbit.is_male:
+            casted_rabbit = FatherRabbit.recast(rabbit)
+        else:  # rabbit is female
+            casted_rabbit = MotherRabbit.recast(rabbit)
+        casted_rabbit.cage = task.cage_to.cast
+        casted_rabbit.save()
 
 
 class SlaughterTaskController(TaskController):
     task_model = SlaughterTask
+    
+    def execute(self, task: SlaughterTask):
+        dead_rabbit = DeadRabbit.recast(task.rabbit)
+        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
+        dead_rabbit.save()
 
 
 class MatingTaskController(TaskController):
     task_model = MatingTask
+    
+    def execute(self, task: MatingTask):
+        Mating.objects.create(
+            time=task.completed_at, mother_rabbit=task.mother_rabbit,
+            father_rabbit=task.father_rabbit
+        )
 
 
 class BunnyJiggingTaskController(TaskController):
@@ -89,6 +109,18 @@ class BunnyJiggingTaskController(TaskController):
                 task, task.cage_from, 'female_cage_to', task.clean_female_cage_to,
                 FatteningCage
             )
+    
+    def execute(self, task: BunnyJiggingTask):
+        bunnies = task.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY)
+        fattening_rabbits = list(map(FatteningRabbit.recast, bunnies))
+        for male in fattening_rabbits[:task.males]:
+            male.is_male = True
+            male.cage = task.male_cage_to
+        for female in fattening_rabbits[task.males:]:
+            female.is_male = False
+            female.cage = task.female_cage_to
+        for fattening_rabbit in fattening_rabbits:
+            fattening_rabbit.save()
 
 
 class VaccinationTaskController(TaskController):
@@ -96,6 +128,14 @@ class VaccinationTaskController(TaskController):
     
     def _create(self, tasks):
         _create_from_fattening_cage(self, tasks)
+    
+    def execute(self, task: VaccinationTask):
+        fattening_rabbits = task.cage.fatteningrabbit_set.filter(
+            current_type=Rabbit.TYPE_FATTENING
+        )
+        for fattening_rabbit in fattening_rabbits:
+            fattening_rabbit.is_vaccinated = True
+            fattening_rabbit.save()
 
 
 class SlaughterInspectionTaskController(TaskController):
@@ -103,6 +143,20 @@ class SlaughterInspectionTaskController(TaskController):
     
     def _create(self, tasks):
         _create_from_fattening_cage(self, tasks)
+    
+    def execute(self, task: SlaughterInspectionTask):
+        weights = task.weights
+        fattening_rabbits = task.cage.fatteningrabbit_set.filter(
+            current_type=Rabbit.TYPE_FATTENING
+        )
+        for (weight, delay), fattening_rabbit in zip(weights.items(), fattening_rabbits):
+            weight = float(weight)
+            fattening_rabbit.weight = weight
+            fattening_rabbit.save()
+            if delay is not None:
+                BeforeSlaughterInspection.objects.create(
+                    rabbit=fattening_rabbit, time=task.completed_at, delay=delay
+                )
 
 
 class FatteningSlaughterTaskController(TaskController):
@@ -110,3 +164,12 @@ class FatteningSlaughterTaskController(TaskController):
     
     def _create(self, tasks):
         _create_from_fattening_cage(self, tasks)
+    
+    def execute(self, task: FatteningSlaughterTask):
+        fattening_rabbits = task.cage.fatteningrabbit_set.filter(
+            current_type=Rabbit.TYPE_FATTENING
+        )
+        for fattening_rabbit in fattening_rabbits:
+            dead_rabbit = DeadRabbit.recast(fattening_rabbit)
+            dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
+            dead_rabbit.save()
