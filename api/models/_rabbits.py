@@ -58,9 +58,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
         blank=True, default='', max_choices=3
     )
     
-    @classmethod
-    def all_current(cls):
-        return QueryManager(current_type=cls.CHAR_TYPE).all()
+    all_current: QueryManager
     
     @classmethod
     def recast(cls, rabbit: Rabbit):
@@ -114,6 +112,8 @@ class DeadRabbit(Rabbit):
         max_length=1
     )
     
+    all_current = QueryManager(current_type=CHAR_TYPE)
+    
     @classmethod
     def recast(cls, rabbit) -> DeadRabbit:
         return super().recast(rabbit)
@@ -147,6 +147,8 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     )
     plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
     
+    all_current = QueryManager(current_type=CHAR_TYPE)
+    
     @classmethod
     def recast(cls, rabbit) -> FatteningRabbit:
         return super().recast(rabbit)
@@ -169,6 +171,8 @@ class Bunny(BunnyManagerMixin, _RabbitInCage):
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
     
+    all_current = QueryManager(current_type=CHAR_TYPE)
+    
     @classmethod
     def recast(cls, _):
         raise NotImplementedError("It's forbidden to recast to Bunny")
@@ -185,6 +189,8 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
+    
+    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> MotherRabbit:
@@ -209,6 +215,8 @@ class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
+    
+    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> FatherRabbit:

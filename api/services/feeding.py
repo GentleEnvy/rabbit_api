@@ -28,7 +28,7 @@ class FeedingService:
             current_type__in=(Rabbit.TYPE_FATHER, Rabbit.TYPE_FATTENING)
         ).count()
         feeding_mothers_amount = 0
-        for mother in MotherRabbit.all_current():
+        for mother in MotherRabbit.all_current.all():
             if MotherRabbitManager.STATUS_FEEDS_BUNNY not in mother.manager.status:
                 common_rabbits_amount += 1
             else:  # FEEDS_BUNNY not in mother status
