@@ -106,5 +106,7 @@ urlpatterns = [
                 WaitingConfirmationTaskDetailView.as_view()
             ),
         ],
-    ]
+    ],
+    # inbreeding
+    path('inbreeding/', InbreedingView.as_view())
 ]

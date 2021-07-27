@@ -58,11 +58,11 @@ class AvoidInbreedingService:
             current_type__in=(Rabbit.TYPE_MOTHER, Rabbit.TYPE_FATHER)
         )
         top_partners = {
-            k: v for k, v in sorted(d.items(), key=lambda item: item[1])
+            k: v for k, v in sorted(d.items(), key=lambda item: item[1], reverse=True)
             if len(partners.filter(pk=k))
         }
         if not len(top_partners):
-            raise Exception('No suitable rabbits found')
+            raise LookupError('No suitable rabbits found')
         
         return top_partners
     
