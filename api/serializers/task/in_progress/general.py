@@ -83,7 +83,7 @@ class _MatingTaskSerializer(_BaseTaskSerializer):
     
     @_cage_serializer
     def get_cage_to(self, task):
-        return task.father_rabbot.cage
+        return task.father_rabbit.cage
 
 
 class _BunnyJiggingTaskSerializer(_BaseTaskSerializer):

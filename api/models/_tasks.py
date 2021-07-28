@@ -86,6 +86,8 @@ class MatingTask(Task):
         super().clean()
         self.clean_mother_rabbit(self.mother_rabbit)
         self.clean_father_rabbit(self.father_rabbit)
+        # TODO: check the uniqueness (mother_rabbit, father_rabbit) for
+        #   anonymous | in_progress
     
     @classmethod
     def clean_mother_rabbit(cls, mother_rabbit: MotherRabbit):

@@ -112,5 +112,10 @@ urlpatterns = [
                 WaitingConfirmationTaskDetailView.as_view()
             ),
         ],
+    ],
+    # birth
+    *[
+        # general
+        path('birth/', BirthGeneralView.as_view())
     ]
 ]
