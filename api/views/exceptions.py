@@ -18,7 +18,7 @@ def _cast_rest_framework_validation_error(exception: RestFrameworkValidationErro
 
 def _cast_django_validation_error(exception: DjangoValidationError):
     return APIException(
-        status=int(exception.code or 400),
+        status=int(getattr(exception, 'code', None) or 400),
         message=f'ValidationError: {exception.messages}'  # FIXME: to standard
     )
 

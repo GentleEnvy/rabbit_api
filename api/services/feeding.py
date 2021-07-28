@@ -1,15 +1,18 @@
 from datetime import date, timedelta
 
+from django.db.models import Sum
+
 from api.managers import MotherRabbitManager
 from api.models import *
-from api.models import FeedBatch
+from api.models import CommonFeeds, NursingMotherFeeds
 
 
 class FeedingService:
     FEED_BAG_WEIGHT = 25000
-    NORMAL_DAILY_CONSUMPTION = 200
-    INCREASED_DAILY_CONSUMPTION = 250
+    NORMAL_DAILY_CONSUMPTION = 120
+    INCREASED_DAILY_CONSUMPTION = 200
     DAYS_FOR_PROGNOSTICATION = 14
+    MILK_AGE_FOR_BUNNY = 14
     
     def __init__(
         self,
@@ -17,32 +20,46 @@ class FeedingService:
         normal_daily_consumption=NORMAL_DAILY_CONSUMPTION,
         increased_daily_consumption=INCREASED_DAILY_CONSUMPTION,
         days_for_prognostication=DAYS_FOR_PROGNOSTICATION,
+        milk_age_for_bunny=MILK_AGE_FOR_BUNNY,
     ):
         self.feed_bag_weight = feed_bag_weight
         self.normal_daily_consumption = normal_daily_consumption
         self.increased_daily_consumption = increased_daily_consumption
         self.days_for_plan = days_for_prognostication
+        self.milk_age_for_bunny = milk_age_for_bunny
     
-    def next_delivery_date(self):
-        common_rabbits_amount = Rabbit.objects.filter(
-            current_type__in=(Rabbit.TYPE_FATHER, Rabbit.TYPE_FATTENING)
-        ).count()
-        feeding_mothers_amount = 0
-        for mother in MotherRabbit.all_current():
-            if MotherRabbitManager.STATUS_FEEDS_BUNNY not in mother.manager.status:
-                common_rabbits_amount += 1
-            else:  # FEEDS_BUNNY not in mother status
-                feeding_mothers_amount += 1
+    def next_delivery_date(self) -> (date, date):
+        common_feeding = 0
+        mother_feeding = 0
+        FEEDS_BUNNY = MotherRabbitManager.STATUS_FEEDS_BUNNY
+        for rabbit in Rabbit.objects.exclude(current_type=Rabbit.TYPE_DIED):
+            if (
+                rabbit.cast.manager.age.days >= self.milk_age_for_bunny or
+                rabbit.current_type in [
+                    Rabbit.TYPE_FATHER,
+                    Rabbit.TYPE_FATTENING,
+                    Rabbit.TYPE_MOTHER
+                ]
+            ) and (
+                FEEDS_BUNNY not in rabbit.cast.manager.status
+            ):
+                common_feeding += 1
+            if FEEDS_BUNNY in rabbit.cast.manager.status:
+                mother_feeding += 1
         
-        last_feed_batch = FeedBatch.objects.last()
-        days_left_common = last_feed_batch.common_bags_left * self.feed_bag_weight // (
-            common_rabbits_amount * self.normal_daily_consumption
+        common_feed_bags = CommonFeeds.objects.aggregate(Sum('stocks_change'))
+        mother_feed_bags = NursingMotherFeeds.objects.aggregate(Sum('stocks_change'))
+        
+        days_left_for_common_feeds = (common_feed_bags * self.feed_bag_weight) / (
+            common_feeding * self.normal_daily_consumption
         )
-        days_left_mother = last_feed_batch.mother_bags_left * self.feed_bag_weight // (
-            feeding_mothers_amount * self.normal_daily_consumption
+        days_left_for_mother_feeds = (mother_feed_bags * self.feed_bag_weight) / (
+            mother_feeding * self.normal_daily_consumption
         )
-        return date.today() + timedelta(
-            days_left_common if days_left_common < days_left_mother else days_left_mother
+        
+        return (
+            date.today() + timedelta(days_left_for_common_feeds),
+            date.today() + timedelta(days_left_for_mother_feeds)
         )
     
     # TODO: calculate amount of feeding rabbits for each day using prognosis

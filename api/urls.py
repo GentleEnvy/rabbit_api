@@ -28,8 +28,14 @@ urlpatterns = [
                     name='mother_rabbit__detail__url'
                 ),
                 path(
+                    'rabbit/mother/<int:id>/partners/', MotherRabbitPartnersView.as_view()
+                ),
+                path(
                     'rabbit/father/<int:id>/', FatherRabbitDetailView.as_view(),
                     name='father_rabbit__detail__url'
+                ),
+                path(
+                    'rabbit/father/<int:id>/partners/', FatherRabbitPartnersView.as_view()
                 )
             ]
         ],
@@ -106,7 +112,5 @@ urlpatterns = [
                 WaitingConfirmationTaskDetailView.as_view()
             ),
         ],
-    ],
-    # inbreeding
-    path('inbreeding/', InbreedingView.as_view())
+    ]
 ]
