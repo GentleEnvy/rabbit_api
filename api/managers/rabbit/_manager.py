@@ -179,20 +179,27 @@ class MotherRabbitManager(RabbitManager):
     @property
     def last_births(self) -> Optional[date]:
         try:
-            return api_models.Rabbit.objects.filter(
-                mother__rabbit=self.model
+            return api_models.Bunny.objects.filter(
+                mother=self.model
             ).latest('birthday').birthday
         except api_models.Rabbit.DoesNotExist:
             return None
     
     @property
-    def last_fertilization(self) -> Optional[datetime]:
+    def last_mating(self) -> Optional['api_models.Mating']:
         try:
             return api_models.Mating.objects.filter(
                 mother_rabbit=self.model
-            ).latest('time').time
+            ).latest('time')
         except api_models.Mating.DoesNotExist:
             return None
+    
+    @property
+    def last_fertilization(self) -> Optional[datetime]:
+        last_mating = self.last_mating
+        if last_mating is None:
+            return None
+        return last_mating.time
     
     @property
     def output(self) -> int:
