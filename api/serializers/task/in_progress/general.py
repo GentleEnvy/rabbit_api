@@ -134,12 +134,7 @@ _model__serializer = {
 }
 
 
+# noinspection PyAbstractClass
 class InProgressTaskListSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return _model__serializer[type(instance)]().to_representation(instance)
-    
-    def update(self, instance, validated_data):
-        raise AttributeError
-    
-    def create(self, validated_data):
-        raise AttributeError

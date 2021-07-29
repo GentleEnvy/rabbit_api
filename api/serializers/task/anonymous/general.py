@@ -7,7 +7,7 @@ __all__ = ['AnonymousTaskListSerializer']
 
 
 # noinspection PyMethodMayBeStatic
-class AnonymousTaskListSerializer(serializers.ModelSerializer):
+class _DefaultTaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['id', 'type', 'created_at', 'cage']
@@ -31,3 +31,9 @@ class AnonymousTaskListSerializer(serializers.ModelSerializer):
         if isinstance(task, BunnyJiggingTask):
             return task.cage_from
         return task.cage
+
+
+# noinspection PyAbstractClass
+class AnonymousTaskListSerializer(serializers.Serializer):
+    def to_representation(self, instance):
+    
