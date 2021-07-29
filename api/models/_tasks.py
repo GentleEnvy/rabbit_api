@@ -7,7 +7,6 @@ from model_utils.managers import InheritanceManager
 from api.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
-from api.models._plans import *
 from api.models.base import BaseModel
 
 __all__ = [
@@ -196,13 +195,12 @@ class VaccinationTask(Task):
                 raise ValidationError('This rabbit already been vaccinated')
 
 
-# TODO: take into account the additional feed
 class SlaughterInspectionTask(Task):
     CHAR_TYPE = 'I'
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
-    weights: list = ArrayField(models.FloatField())
+    weights: list[float] = ArrayField(models.FloatField())
     
     def clean(self):
         super().clean()
@@ -239,8 +237,4 @@ class SlaughterInspectionTask(Task):
 class SlaughterTask(Task):
     CHAR_TYPE = 'S'
     
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
-    
-    def clean(self):
-        super().clean()
-        self.plan.full_clean()
+    rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
