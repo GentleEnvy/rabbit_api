@@ -12,3 +12,5 @@ admin.site.register(DeadRabbit)
 admin.site.register(FatteningRabbit)
 admin.site.register(MotherRabbit)
 admin.site.register(FatherRabbit)
+
+admin.site.register(Breed)
