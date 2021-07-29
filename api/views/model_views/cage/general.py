@@ -2,7 +2,7 @@ from django.db.models import Q, QuerySet
 
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import CageListSerializer
-from api.models import Cage
+from api.models import Cage, FatteningCage
 
 __all__ = ['CageGeneralView']
 
@@ -17,15 +17,16 @@ class CageGeneralView(BaseGeneralView):
         'mothercage__motherrabbit_set', 'mothercage__bunny_set',
         'fatteningcage__fatteningrabbit_set', 'fatteningcage__fatherrabbit_set'
     )
-
+    
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
-
+        
         if farm_number := params.get('farm_number'):
             queryset = queryset.filter(farm_number__in=farm_number.split(','))
         if is_parallel := params.get('is_parallel'):
-            queryset = queryset.filter(is_parallel=bool(int(is_parallel)))
+            is_parallel = bool(int(is_parallel))
+            queryset = Cage.objects.filter(mothercage__has_right_womb=not is_parallel)
         if status := params.get('status'):
             status = status.split(',')
             if len(status) == 1:
@@ -36,14 +37,14 @@ class CageGeneralView(BaseGeneralView):
                 raise ValueError('Too many statuses')
         elif status == '':
             queryset = queryset.filter(status=[])
-
+        
         if type_ := params.get('type'):
             type_ = type_.split(',')
         if number_rabbits_from := params.get('number_rabbits_from'):
             number_rabbits_from = int(number_rabbits_from)
         if number_rabbits_to := params.get('number_rabbits_to'):
             number_rabbits_to = int(number_rabbits_to)
-
+        
         queryset = queryset.filter(
             id__in=[
                 cage.id for cage in queryset
@@ -56,16 +57,20 @@ class CageGeneralView(BaseGeneralView):
                         number_rabbits_to >= len(cage.cast.rabbits)
                     ) and (
                         type_ is None or
-                        cage.cast.CHAR_TYPE in type_
-                    )
+                        cage.cast.CHAR_TYPE in type_)
+                    # ) and (
+                    #     is_parallel is None or
+                    #     cage.CHAR_TYPE == FatteningCage.CHAR_TYPE or
+                    #     is_parallel == cage.cast.manager.is_parallel
+                    # )
                 )
             ]
         )
-
+        
         if order_by := params.get('__order_by__'):
             return self._order_queryset(queryset, order_by)
         return queryset
-
+    
     @staticmethod
     def _order_queryset(queryset: QuerySet, order_by: str):
         if order_by in ('farm_number', '-farm_number'):
