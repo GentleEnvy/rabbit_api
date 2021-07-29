@@ -8,7 +8,7 @@ __all__ = ['diff_time', 'to_datetime']
 
 
 def diff_time(
-        reduced: Union[date, datetime], deductible: Union[date, datetime]
+    reduced: Union[date, datetime], deductible: Union[date, datetime]
 ) -> timedelta:
     if type(reduced) is date:
         reduced = to_datetime(reduced)

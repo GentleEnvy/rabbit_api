@@ -9,7 +9,7 @@ class PlanUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
         fields = ['rabbits']
-
+    
     rabbits = serializers.PrimaryKeyRelatedField(
         many=True, queryset=FatteningRabbit.objects.all(), source='fatteningrabbit_set'
     )

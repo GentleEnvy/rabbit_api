@@ -12,7 +12,8 @@ class AvoidInbreedingService:
     DAYS_FOR_READY_MATING = 110
     TOP_RANGE = 10
     
-    def __init__(self,
+    def __init__(
+        self,
         days_for_safe_fertilization=DAYS_FOR_SAFE_FERTILIZATION,
         top_range=TOP_RANGE,
         days_for_ready_mating=DAYS_FOR_READY_MATING
@@ -63,8 +64,7 @@ class AvoidInbreedingService:
             k: v for k, v in sorted(d.items(), key=lambda item: item[1], reverse=True)
             if len(partners.filter(pk=k))
         }
-        # if not len(top_partners):
-        #     raise LookupError('No suitable rabbits found')
+        # TODO: validate partners
         
         return top_partners
     
@@ -92,7 +92,9 @@ class AvoidInbreedingService:
                 mother_rabbit.manager.last_fertilization - datetime.today()
             ).days < self.days_for_safe_fertilization:
                 # MAYBE: delete
-                raise ValidationError('This rabbit is pregnant, no partner should be found')
+                raise ValidationError(
+                    'This rabbit is pregnant, no partner should be found'
+                )
         else:  # rabbit is FatherRabbit
             MatingTask.clean_father_rabbit(rabbit)
         if rabbit.warning_status:

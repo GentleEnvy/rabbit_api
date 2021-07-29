@@ -9,7 +9,7 @@ __all__ = ['EchoView']
 # noinspection PyMethodMayBeStatic
 class EchoView(BaseView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request, *args, **kwargs):
         return Response(
             {

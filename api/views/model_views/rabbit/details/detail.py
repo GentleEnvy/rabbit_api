@@ -26,7 +26,7 @@ class RabbitDetailView(BaseView):
 
 class _BaseRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
-
+    
     def delete(self, request, *args, **kwargs):
         instance_rabbit = self.get_object()
         dead_rabbit = DeadRabbit.recast(instance_rabbit)

@@ -10,7 +10,7 @@ __all__ = ['BaseView']
 
 class BaseView(GenericAPIView):
     model: Model
-
+    
     def handle_exception(self, exc):
         try:
             try:

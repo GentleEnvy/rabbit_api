@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Callable, Type
 
 from django.core.exceptions import ValidationError
@@ -7,9 +8,9 @@ from api.services.filterers.cage import CageFilterer
 from api.models import *
 
 __all__ = [
-    'ToReproductionTaskController', 'SlaughterTaskController', 'MatingTaskController',
+    'ToReproductionTaskController', 'ToFatteningTaskController', 'MatingTaskController',
     'BunnyJiggingTaskController', 'VaccinationTaskController',
-    'SlaughterInspectionTaskController', 'FatteningSlaughterTaskController'
+    'SlaughterInspectionTaskController', 'SlaughterTaskController'
 ]
 
 
@@ -67,13 +68,17 @@ class ToReproductionTaskController(TaskController):
         casted_rabbit.save()
 
 
-class SlaughterTaskController(TaskController):
-    task_model = SlaughterTask
+class ToFatteningTaskController(TaskController):
+    task_model = ToFatteningTask
     
-    def execute(self, task: SlaughterTask):
-        dead_rabbit = DeadRabbit.recast(task.rabbit)
-        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
-        dead_rabbit.save()
+    def _setup(self, tasks):
+        for task in tasks:
+            _setup_jigging_cage(task, task.rabbit.cage, 'cage_to', task.clean_cage_to)
+    
+    def execute(self, task: ToReproductionTask):
+        casted_rabbit = FatteningRabbit.recast(task.rabbit)
+        casted_rabbit.cage = task.cage_to
+        casted_rabbit.save()
 
 
 class MatingTaskController(TaskController):
@@ -145,31 +150,31 @@ class SlaughterInspectionTaskController(TaskController):
         _create_from_fattening_cage(self, tasks)
     
     def execute(self, task: SlaughterInspectionTask):
-        weights = task.weights
         fattening_rabbits = task.cage.fatteningrabbit_set.filter(
             current_type=Rabbit.TYPE_FATTENING
         )
-        for (weight, delay), fattening_rabbit in zip(weights.items(), fattening_rabbits):
-            weight = float(weight)
-            fattening_rabbit.weight = weight
-            fattening_rabbit.save()
-            if delay is not None:
-                BeforeSlaughterInspection.objects.create(
-                    rabbit=fattening_rabbit, time=task.completed_at, delay=delay
-                )
+        for rabbit, weight in zip(fattening_rabbits, task.weights):
+            rabbit.weight = weight
+            rabbit.save()
 
 
-class FatteningSlaughterTaskController(TaskController):
-    task_model = FatteningSlaughterTask
+class SlaughterTaskController(TaskController):
+    task_model = SlaughterTask
     
     def _create(self, tasks):
-        _create_from_fattening_cage(self, tasks)
+        exclude_rabbit_ids = [task.rabbit.id for task in tasks]
+        for plan in Plan.objects.prefetch_related('fatteningrabbit_set').filter(
+            date__lte=datetime.utcnow()
+        ).all():
+            for fattening_rabbit in plan.fatteningrabbit_set.exclude(
+                id__in=exclude_rabbit_ids
+            ):
+                try:
+                    SlaughterTask.objects.create(rabbit=fattening_rabbit)
+                except ValidationError:
+                    continue
     
-    def execute(self, task: FatteningSlaughterTask):
-        fattening_rabbits = task.cage.fatteningrabbit_set.filter(
-            current_type=Rabbit.TYPE_FATTENING
-        )
-        for fattening_rabbit in fattening_rabbits:
-            dead_rabbit = DeadRabbit.recast(fattening_rabbit)
-            dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
-            dead_rabbit.save()
+    def execute(self, task: SlaughterTask):
+        dead_rabbit = DeadRabbit.recast(task.rabbit)
+        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
+        dead_rabbit.save()

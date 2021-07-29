@@ -9,11 +9,11 @@ __all__ = ['BaseHistoryModel', 'BaseHistoricalModel']
 class BaseHistoryModel(BaseModel):
     class Meta(BaseModel.Meta):
         abstract = True
-
+    
     historical_name: str
     time_name: str = 'time'
     replace_fields: dict = {}
-
+    
     def save(self, *args, **kwargs):
         models.Model.save(self, *args, **kwargs)
 
@@ -21,9 +21,9 @@ class BaseHistoryModel(BaseModel):
 class BaseHistoricalModel(ListenDiffModel):
     class Meta(ListenDiffModel.Meta):
         abstract = True
-
+    
     history_model: BaseHistoryModel
-
+    
     @property
     def listening_fields(self) -> tuple[str, ...]:
         history_fields = {field.name for field in self.history_model._meta.fields}
@@ -34,7 +34,7 @@ class BaseHistoricalModel(ListenDiffModel):
         if self.history_model.time_name in history_fields:
             history_fields.remove(self.history_model.time_name)
         return tuple(history_fields)
-
+    
     def save(self, *args, **kwargs):
         diff = self.diff
         history_fields = {field.name for field in self.history_model._meta.fields}

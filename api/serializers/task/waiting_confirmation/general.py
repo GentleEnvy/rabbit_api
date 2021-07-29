@@ -1,10 +1,11 @@
-from api.serializers.task.anonymous.general import AnonymousTaskListSerializer
+from api.serializers.task.anonymous.general import _BaseTaskListSerializer
+
 
 __all__ = ['WaitingConfirmationTaskListSerializer']
 
 
 # TODO: base serializer
 # noinspection PyMethodMayBeStatic
-class WaitingConfirmationTaskListSerializer(AnonymousTaskListSerializer):
-    class Meta(AnonymousTaskListSerializer.Meta):
-        fields = AnonymousTaskListSerializer.Meta.fields + ['user']
+class WaitingConfirmationTaskListSerializer(_BaseTaskListSerializer):
+    class Meta(_BaseTaskListSerializer.Meta):
+        fields = _BaseTaskListSerializer.Meta.fields + ['user']

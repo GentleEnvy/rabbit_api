@@ -14,7 +14,7 @@ __all__ = [
 
 class _BaseRecastView(BaseView):
     model: Rabbit
-
+    
     # noinspection PyMethodMayBeStatic
     def post(self, request, id):
         rabbit = Rabbit.objects.get(id=id)
@@ -26,7 +26,7 @@ class _BaseRecastView(BaseView):
             setattr(casted_rabbit, field_name, field_value)
         casted_rabbit.save()
         return Response(status=HTTPStatus.NO_CONTENT)
-
+    
     def _recast(self, rabbit):
         return self.model.recast(rabbit)
 
@@ -34,7 +34,7 @@ class _BaseRecastView(BaseView):
 class DeadRabbitRecastView(_BaseRecastView):
     model = DeadRabbit
     serializer_class = DeadRabbitRecastSerializer
-
+    
     def _recast(self, rabbit):
         if rabbit.current_type == FatteningRabbit.CHAR_TYPE:
             raise ValidationError({'current_type': 'Rabbit already dead'})
@@ -44,7 +44,7 @@ class DeadRabbitRecastView(_BaseRecastView):
 class FatteningRabbitRecastView(_BaseRecastView):
     model = FatteningRabbit
     serializer_class = FatteningRabbitRecastSerializer
-
+    
     def _recast(self, rabbit):
         if rabbit.current_type == FatteningRabbit.CHAR_TYPE:
             raise ValidationError({'current_type': 'Rabbit already fattening'})
@@ -53,7 +53,7 @@ class FatteningRabbitRecastView(_BaseRecastView):
 
 class ReproductionRabbitRecastView(BaseView):
     serializer_class = MotherRabbitRecastSerializer
-
+    
     # noinspection PyMethodMayBeStatic
     def post(self, request, id):
         rabbit = Rabbit.objects.get(id=id)

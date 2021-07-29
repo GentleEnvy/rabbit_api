@@ -31,19 +31,19 @@ class APIException(Exception):
         RestFrameworkValidationError: _cast_rest_framework_validation_error,
         DjangoValidationError: _cast_django_validation_error
     }
-
+    
     SUPPORT_TO_CAST_EXCEPTIONS: Final[tuple[Exception]] = tuple(__EXCEPTIONS__CAST)
-
+    
     @classmethod
     def cast_exception(cls, exception: Exception) -> APIException:
         if caster := cls.__EXCEPTIONS__CAST.get(type(exception)):
             return caster(exception)
         raise ValueError(f'Casting is not supported for {type(exception)}')
-
+    
     def __init__(self, status: int = 500, message: str = 'Critical server error'):
         self.status: Final[int] = status
         self.message: Final[str] = message
-
+    
     def to_response(self) -> Response:
         return Response(
             status=self.status,
@@ -55,7 +55,7 @@ class APIError(Exception):
     def __init__(self, code: int = None, message: str = None):
         self.code: Final[Optional[int]] = code
         self.message: Final[Optional[str]] = message
-
+    
     def serialize(self) -> dict[str, dict[str, Union[int, str]]]:
         json = {'error': {}}
         if self.code is not None:

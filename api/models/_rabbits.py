@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Final, Union
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
 from model_utils.managers import QueryManager
 from multiselectfield import MultiSelectField
 
@@ -28,7 +28,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     
     history_model = RabbitHistory
     
-    birthday = models.DateTimeField(default=timezone.now)
+    birthday = models.DateTimeField(default=datetime.utcnow)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -98,7 +98,7 @@ class DeadRabbit(Rabbit):
     
     history_model = DeadRabbitHistory
     
-    death_day = models.DateTimeField(default=timezone.now)
+    death_day = models.DateTimeField(default=datetime.utcnow)
     death_cause = models.CharField(
         choices=(
             (CAUSE_SLAUGHTER := 'S', 'CAUSE_SLAUGHTER'),
