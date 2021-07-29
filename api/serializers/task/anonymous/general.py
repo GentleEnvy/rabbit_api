@@ -24,7 +24,7 @@ class AnonymousTaskListSerializer(serializers.ModelSerializer):
         )
     
     def _get_cage(self, task):
-        if isinstance(task, (ToReproductionTask, SlaughterTask)):
+        if isinstance(task, (ToReproductionTask, ToFatteningTask, SlaughterTask)):
             return task.rabbit.cage
         if isinstance(task, MatingTask):
             return task.mother_rabbit.cage  # MAYBE: task.father_rabbit.cage
