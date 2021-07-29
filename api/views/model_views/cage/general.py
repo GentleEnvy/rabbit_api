@@ -2,7 +2,7 @@ from django.db.models import Q, QuerySet
 
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import CageListSerializer
-from api.models import Cage, FatteningCage
+from api.models import Cage
 
 __all__ = ['CageGeneralView']
 
@@ -57,12 +57,8 @@ class CageGeneralView(BaseGeneralView):
                         number_rabbits_to >= len(cage.cast.rabbits)
                     ) and (
                         type_ is None or
-                        cage.cast.CHAR_TYPE in type_)
-                    # ) and (
-                    #     is_parallel is None or
-                    #     cage.CHAR_TYPE == FatteningCage.CHAR_TYPE or
-                    #     is_parallel == cage.cast.manager.is_parallel
-                    # )
+                        cage.cast.CHAR_TYPE in type_
+                    )
                 )
             ]
         )

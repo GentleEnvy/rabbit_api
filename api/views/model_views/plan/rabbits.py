@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from api.managers import FatteningRabbitManager
 from api.models import FatteningRabbit, Plan
 from api.serializers import RabbitListSerializer

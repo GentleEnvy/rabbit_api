@@ -16,7 +16,7 @@ class InProgressTaskUpdateSerializer(serializers.ModelSerializer):
         fields = ['completed_at']
         extra_kwargs = {
             'completed_at': {
-                'required': False, 'allow_null': False, 'default': datetime.now
+                'required': False, 'allow_null': False, 'default': datetime.utcnow
             }
         }
 

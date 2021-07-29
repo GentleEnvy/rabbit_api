@@ -14,10 +14,6 @@ class InProgressTaskGeneralView(BaseGeneralView):
     queryset = TaskController().in_progress.select_subclasses()
     
     def get(self, request, *args, **kwargs):
-        for task_controller in (
-            ToReproductionTaskController, SlaughterTaskController, MatingTaskController,
-            BunnyJiggingTaskController, VaccinationTaskController,
-            SlaughterInspectionTaskController, FatteningSlaughterTaskController
-        ):
+        for task_controller in all_controllers:
             task_controller().update_in_progress()  # MAYBE: update by button
         return super().get(request, *args, **kwargs)

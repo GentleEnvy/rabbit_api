@@ -3,7 +3,6 @@ from datetime import timedelta, date, datetime
 from typing import Optional
 
 from django.db.models import Q
-from django.utils.timezone import now
 
 from api.utils.functions import diff_time, to_datetime
 from api.managers.base import *
@@ -51,7 +50,7 @@ class RabbitManager(BaseManager):
     
     @property
     def age(self) -> timedelta:
-        return diff_time(now(), self.model.birthday)
+        return diff_time(datetime.utcnow(), self.model.birthday)
     
     @property
     @abstractmethod
@@ -99,13 +98,13 @@ class FatteningRabbitManager(RabbitManager):
                     last_inspection_with_delay.time + timedelta(
                         last_inspection_with_delay.delay + 10
                     )
-                ) > now():
+                ) > datetime.utcnow():
                     return {self.STATUS_READY_TO_SLAUGHTER}
                 return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
             # is underweight
             if to_datetime(
                 last_inspection.time + timedelta(last_inspection.delay)
-            ) > now():
+            ) > datetime.utcnow():
                 return {self.STATUS_NEED_INSPECTION}
             # continue to fattening on delay
         # younger than 80 days
@@ -134,6 +133,8 @@ class MotherRabbitManager(RabbitManager):
     STATUS_CONFIRMED_PREGNANT = 'CP'
     STATUS_FEEDS_BUNNY = 'FB'
     
+    __READY_FOR_FERTILIZATION_AGE = 110
+    
     @property
     def status(self):
         PregnancyInspection = api_models.PregnancyInspection
@@ -146,14 +147,18 @@ class MotherRabbitManager(RabbitManager):
                     statuses.add(self.STATUS_FEEDS_BUNNY)
                     break
         
-        if self.age.days < 150:
+        if self.age.days < self.__READY_FOR_FERTILIZATION_AGE:
             return statuses
         
         # age >= 150
         last_births = self.last_births
         last_fertilization = self.last_fertilization
-        if last_fertilization is None or diff_time(now(), last_fertilization).days >= 40:
-            if last_births is None or to_datetime(last_births + timedelta(3)) > now():
+        if last_fertilization is None or diff_time(
+            datetime.utcnow(), last_fertilization
+        ).days >= 40:
+            if last_births is None or to_datetime(
+                last_births + timedelta(3)
+            ) > datetime.utcnow():
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_fertilization is not None and isn't overdue
@@ -172,7 +177,7 @@ class MotherRabbitManager(RabbitManager):
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_births is not None and last_births > last_fertilization
-        if to_datetime(last_births + timedelta(3)) > now():
+        if to_datetime(last_births + timedelta(3)) > datetime.utcnow():
             statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         return statuses
     
@@ -182,7 +187,7 @@ class MotherRabbitManager(RabbitManager):
             return api_models.Bunny.objects.filter(
                 mother=self.model
             ).latest('birthday').birthday
-        except api_models.Rabbit.DoesNotExist:
+        except api_models.Bunny.DoesNotExist:
             return None
     
     @property
@@ -221,10 +226,12 @@ class FatherRabbitManager(RabbitManager):
     STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_RESTING = 'R'
     
+    __READY_FOR_FERTILIZATION_AGE = 110
+    
     @property
     def status(self):
         statuses = set()
-        if self.age.days >= 180:
+        if self.age.days >= self.__READY_FOR_FERTILIZATION_AGE:
             statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         rabbits_in_cage = self.model.cage.cast.rabbits
         if len(rabbits_in_cage) == 1:

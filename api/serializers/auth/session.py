@@ -6,9 +6,9 @@ __all__ = ['AuthSessionSerializer']
 
 class AuthSessionSerializer(AuthTokenSerializer):
     token = serializers.HiddenField(default=None)
-
+    
     def update(self, instance, validated_data):
         raise AttributeError
-
+    
     def create(self, validated_data):
         raise AttributeError

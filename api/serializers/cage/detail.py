@@ -9,5 +9,5 @@ class CageUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cage
         fields = ['status']
-
+    
     status = serializers.MultipleChoiceField(choices=Cage.STATUS_CHOICES)

@@ -11,7 +11,7 @@ class BaseManager(ABC):
 
 class BaseManagerMixin:
     _manager: Type[BaseManager]
-
+    
     @property
     def manager(self):
         return self._manager(self)

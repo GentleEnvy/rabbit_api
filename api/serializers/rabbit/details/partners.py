@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
-from api.managers import FatherRabbitManager
 from api.models import *
 
 __all__ = ['MotherRabbitPartnerSerializer', 'FatherRabbitPartnerSerializer']

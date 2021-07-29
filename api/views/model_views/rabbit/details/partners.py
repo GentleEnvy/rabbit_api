@@ -1,6 +1,5 @@
 from typing import Optional
 
-from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
 

@@ -40,8 +40,8 @@ class _MatingTaskListSerializer(_BaseTaskListSerializer):
     class Meta(_BaseTaskListSerializer.Meta):
         fields = _BaseTaskListSerializer.Meta.fields + ['mother_cage', 'father_cage']
     
-    mother_cage = OnlyNumberCageSerializer(source='mother_rabbit__cage')
-    father_cage = OnlyNumberCageSerializer(source='father_rabbit__cage')
+    mother_cage = OnlyNumberCageSerializer(source='mother_rabbit.cage')
+    father_cage = OnlyNumberCageSerializer(source='father_rabbit.cage')
 
 
 _model__serializer = {

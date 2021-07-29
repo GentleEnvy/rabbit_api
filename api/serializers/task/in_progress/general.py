@@ -10,6 +10,7 @@ def _cage_serializer(get_cage):
     def serialize_cage(*args, **kwargs):
         cage = get_cage(*args, **kwargs)
         return model_to_dict(cage, fields=['farm_number', 'number', 'letter'])
+    
     return serialize_cage
 
 
