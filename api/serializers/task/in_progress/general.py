@@ -122,7 +122,7 @@ class _SlaughterInspectionTaskSerializer(_CageTaskSerializer):
 
 class _FatteningSlaughterTaskSerializer(_CageTaskSerializer):
     class Meta(_CageTaskSerializer.Meta):
-        model = FatteningSlaughterTask
+        model = ...  # TEMP
 
 
 _model__serializer = {

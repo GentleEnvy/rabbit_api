@@ -40,5 +40,5 @@ class InProgressSlaughterInspectionTaskUpdateSerializer(InProgressTaskUpdateSeri
         }
     
     def validate_weights(self, weights):
-        self.Meta.model.clean_weights(weights)
+        self.instance.clean_weights(weights)
         return weights
