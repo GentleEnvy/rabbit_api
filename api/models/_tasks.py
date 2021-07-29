@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
@@ -6,11 +7,12 @@ from model_utils.managers import InheritanceManager
 from api.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
+from api.models._plans import *
 from api.models.base import BaseModel
 
 __all__ = [
-    'Task', 'ToReproductionTask', 'SlaughterTask', 'MatingTask', 'BunnyJiggingTask',
-    'VaccinationTask', 'SlaughterInspectionTask', 'FatteningSlaughterTask'
+    'Task', 'ToReproductionTask', 'ToFatteningTask', 'MatingTask', 'BunnyJiggingTask',
+    'VaccinationTask', 'SlaughterInspectionTask', 'SlaughterTask'
 ]
 
 
@@ -52,28 +54,50 @@ class ToReproductionTask(Task):
             raise ValidationError(
                 'The sex of the rabbit changing the type must be determined'
             )
+        if self.cage_to is not None:
+            self.clean_cage_to()
     
     def clean_cage_to(self):
-        if self.cage_to is not None:
-            self.cage_to.full_clean()
-            if self.rabbit.is_male:
-                if self.cage_to.cast.CHAR_TYPE == MotherCage.CHAR_TYPE:
-                    raise ValidationError('The male cannot be jigged to MotherCage')
-            else:  # rabbit is female
-                if self.cage_to.cast.CHAR_TYPE == FatteningCage.CHAR_TYPE:
-                    raise ValidationError('The female cannot be jigged to FatteningCage')
+        # TODO: check that the cage is not occupied by another task
+        if self.rabbit.is_male:
+            if self.cage_to.cast.CHAR_TYPE == MotherCage.CHAR_TYPE:
+                raise ValidationError('The male cannot be jigged to MotherCage')
+        else:  # rabbit is female
+            if self.cage_to.cast.CHAR_TYPE == FatteningCage.CHAR_TYPE:
+                raise ValidationError('The female cannot be jigged to FatteningCage')
+        for neighbour in self.cage_to.cast.rabbits:
+            if neighbour != self.rabbit:
+                raise ValidationError(
+                    'The cage for the reproduction rabbit must be empty'
+                )
 
 
-class SlaughterTask(Task):
-    CHAR_TYPE = 'S'
+class ToFatteningTask(Task):
+    CHAR_TYPE = 'F'
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
+    cage_to = models.ForeignKey(
+        FatteningCage, on_delete=models.CASCADE, null=True, blank=True
+    )
     
-    # TODO: forbid slaughtering a bunny
     def clean(self):
         super().clean()
-        if self.rabbit.current_type == Rabbit.TYPE_DIED:
-            raise ValidationError("Can't kill a dead rabbit")
+        if self.rabbit.current_type not in (Rabbit.TYPE_MOTHER, Rabbit.TYPE_FATHER):
+            raise ValidationError('The rabbit type is not a MotherRabbit or FatherRabbit')
+        if self.cage_to is not None:
+            self.clean_cage_to()
+    
+    def clean_cage_to(self):
+        for neighbour in self.cage_to.cast.rabbits:
+            if neighbour.is_male != self.rabbit.is_male:
+                raise ValidationError(
+                    'Fattening rabbits in the same cage must be of the same sex'
+                )
+            if neighbour.is_vaccinated != self.rabbit.is_vaccinated:
+                raise ValidationError(
+                    'Fattening rabbits in the same cage must have the same status of '
+                    'vaccinated'
+                )
 
 
 class MatingTask(Task):
@@ -178,7 +202,7 @@ class SlaughterInspectionTask(Task):
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
-    weights: dict[str, int] = models.JSONField(null=True, blank=True)
+    weights: list = ArrayField(models.FloatField())
     
     def clean(self):
         super().clean()
@@ -194,37 +218,29 @@ class SlaughterInspectionTask(Task):
                     "There is fattening rabbit in this cage that don't need inspection"
                 )
         if self.weights is not None:
-            self.clean_weights(self.weights)
+            self.clean_weights(self.weights, __fattening_rabbits=fattening_set)
     
-    @staticmethod
-    def clean_weights(weights):
+    def clean_weights(self, weights, __fattening_rabbits=None):
         if len(weights) == 0:
             raise ValidationError('Weights cannot be empty')
-        for weight, delay in weights.items():
-            try:
-                float(weight)
-            except ValueError:
-                raise ValidationError('The weights keys must be convertible to float')
-            if not isinstance(delay, int):
-                raise ValidationError('The weights values must be integers')
+        if __fattening_rabbits is None:
+            fattening_set = self.cage.fatteningrabbit_set.filter(
+                current_type=Rabbit.TYPE_FATTENING
+            )
+        else:
+            fattening_set = __fattening_rabbits
+        if len(weights) != fattening_set.count():
+            raise ValidationError(
+                'The length of the list of weights must match the number of rabbits in '
+                'the cage'
+            )
 
 
-# MAYBE: leave the rabbits to additional feeding
-class FatteningSlaughterTask(Task):
-    CHAR_TYPE = 'F'
+class SlaughterTask(Task):
+    CHAR_TYPE = 'S'
     
-    cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     
     def clean(self):
         super().clean()
-        fattening_set = self.cage.fatteningrabbit_set.filter(
-            current_type=Rabbit.TYPE_FATTENING
-        )
-        if fattening_set.count() == 0:
-            raise ValidationError('There are no fattening rabbits in this cage')
-        for fattening_rabbit in fattening_set.all():
-            READY_TO_SLAUGHTER = FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER
-            if READY_TO_SLAUGHTER not in fattening_rabbit.cast.manager.status:
-                raise ValidationError(
-                    "There is fattening rabbit in this cage that don't ready to slaughter"
-                )
+        self.plan.full_clean()
