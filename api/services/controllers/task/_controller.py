@@ -30,14 +30,15 @@ def _setup_jigging_cage(
     )
     # TODO: check same cage
     for nearest_cage in filterer.order_by_nearest_to(cage_from, cage_to_type):
-        setattr(task, cage_to_attr, nearest_cage)
         try:
+            nearest_cage.clean_for_task()
+            setattr(task, cage_to_attr, nearest_cage)
             cleaner()
         except ValidationError:
             continue
         task.save()
         break
-    # TODO: not valid cages
+    raise ValidationError('There are no suitable cages')
 
 
 def _create_from_fattening_cage(controller, tasks):

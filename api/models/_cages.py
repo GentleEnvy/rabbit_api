@@ -5,6 +5,7 @@ from typing import Union, Iterable
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import Q
 from model_utils.managers import InheritanceManager
 from multiselectfield import MultiSelectField
 
@@ -72,6 +73,20 @@ class Cage(CageManagerMixin, BaseModel):
             raise ValidationError('This cage needs repair')
         if self.NEED_CLEAN in self.status:
             raise ValidationError('This cage needs cleaning')
+    
+    def clean_for_task(self):
+        id = self.id
+        if api_models.Task.objects.filter(
+            Q(is_confirmed=None) & (
+                Q(toreproductiontask__cage_to__id=id) |
+                Q(tofatteningtask__cage_to__id=id) |
+                Q(bunnyjiggingtask__male_cage_to__id=id) |
+                Q(bunnyjiggingtask__female_cage_to__id=id) |
+                Q(vaccinationtask__cage__id=id) |
+                Q(slaughterinspectiontask__cage__id=id)
+            )
+        ).count() > 0:
+            raise ValidationError('This cage already belongs to other Task')
 
 
 class FatteningCage(FatteningCageManagerMixin, Cage):
