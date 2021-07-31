@@ -8,7 +8,7 @@ from api.serializers.recast import *
 from api.views.base import BaseView
 
 __all__ = [
-    'DeadRabbitRecastView', 'FatteningRabbitRecastView', 'ReproductionRabbitRecastView'
+    'FatteningRabbitRecastView', 'ReproductionRabbitRecastView'
 ]
 
 
@@ -29,16 +29,6 @@ class _BaseRecastView(BaseView):
     
     def _recast(self, rabbit):
         return self.model.recast(rabbit)
-
-
-class DeadRabbitRecastView(_BaseRecastView):
-    model = DeadRabbit
-    serializer_class = DeadRabbitRecastSerializer
-    
-    def _recast(self, rabbit):
-        if rabbit.current_type == FatteningRabbit.CHAR_TYPE:
-            raise ValidationError({'current_type': 'Rabbit already dead'})
-        return super()._recast(rabbit)
 
 
 class FatteningRabbitRecastView(_BaseRecastView):
