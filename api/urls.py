@@ -28,15 +28,35 @@ urlpatterns = [
                     name='mother_rabbit__detail__url'
                 ),
                 path(
-                    'rabbit/mother/<int:id>/partners/', MotherRabbitPartnersView.as_view()
-                ),
-                path(
                     'rabbit/father/<int:id>/', FatherRabbitDetailView.as_view(),
                     name='father_rabbit__detail__url'
                 ),
-                path(
-                    'rabbit/father/<int:id>/partners/', FatherRabbitPartnersView.as_view()
-                )
+                # partners
+                *[
+                    path(
+                        'rabbit/mother/<int:id>/partners/',
+                        MotherRabbitPartnersView.as_view()
+                    ),
+                    path(
+                        'rabbit/father/<int:id>/partners/',
+                        FatherRabbitPartnersView.as_view()
+                    )
+                ],
+                # recast
+                *[
+                    path(
+                        'rabbit/fattening/<int:id>/recast/',
+                        FatteningRabbitRecastView.as_view()
+                    ),
+                    path(
+                        'rabbit/mother/<int:id>/recast/',
+                        MotherRabbitRecastView.as_view()
+                    ),
+                    path(
+                        'rabbit/father/<int:id>/recast/',
+                        FatherRabbitRecastView.as_view()
+                    )
+                ],
             ],
             # death
             path('rabbit/death/', RabbitDeathView.as_view())
@@ -57,14 +77,6 @@ urlpatterns = [
     ],
     # operation
     path('operation/', OperationGeneralView.as_view()),
-    # recast
-    *[
-        path('rabbit/<int:id>/recast_to_fattening/', FatteningRabbitRecastView.as_view()),
-        path(
-            'rabbit/<int:id>/recast_to_reproduction/',
-            ReproductionRabbitRecastView.as_view()
-        )
-    ],
     # breed
     path('breed/', BreedGeneralView.as_view()),
     # plan

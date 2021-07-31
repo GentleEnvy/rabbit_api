@@ -43,6 +43,7 @@ class ToReproductionTask(Task):
     CHAR_TYPE = 'R'
     
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
+    # in progress
     cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True, blank=True)
     
     def clean(self):
@@ -75,6 +76,7 @@ class ToFatteningTask(Task):
     CHAR_TYPE = 'F'
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
+    # in progress
     cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -139,6 +141,7 @@ class BunnyJiggingTask(Task):
     CHAR_TYPE = 'B'
     
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
+    # in progress
     male_cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_male_set'
@@ -147,7 +150,6 @@ class BunnyJiggingTask(Task):
         FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
-    # in progress
     males = models.PositiveSmallIntegerField(null=True, blank=True)
     
     def clean(self):
