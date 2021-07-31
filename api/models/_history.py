@@ -23,6 +23,7 @@ class RabbitHistory(BaseHistoryModel):
     is_vaccinated = models.BooleanField(**_field_kwargs)
     current_type = models.TextField(**_field_kwargs)
     warning_status = models.TextField(**_field_kwargs)
+    weight = models.FloatField(**_field_kwargs)
 
 
 class DeadRabbitHistory(RabbitHistory):
