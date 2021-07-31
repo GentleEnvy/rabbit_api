@@ -11,7 +11,7 @@ class AnonymousTaskGeneralView(BaseTaskGeneralView):
     model = Task
     list_serializer = AnonymousTaskListSerializer
     # noinspection SpellCheckingInspection
-    queryset = TaskController().anonymous.select_subclasses()
+    queryset = TaskController().anonymous.all()
     
     def get(self, request, *args, **kwargs):
         for task_controller in all_controllers:

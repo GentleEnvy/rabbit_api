@@ -8,6 +8,6 @@ __all__ = ['AnonymousTaskDetailView']
 
 class AnonymousTaskDetailView(BaseDetailView):
     model = Task
-    queryset = TaskController().anonymous.select_subclasses()
+    queryset = TaskController().anonymous.all()
     lookup_url_kwarg = 'id'
     update_serializer = AnonymousTaskUpdateSerializer

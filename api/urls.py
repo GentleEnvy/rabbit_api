@@ -88,27 +88,37 @@ urlpatterns = [
     *[
         # anonymous
         *[
+            # general
             path('task/anonymous/', AnonymousTaskGeneralView.as_view()),
+            # detail
             path('task/anonymous/<int:id>/', AnonymousTaskDetailView.as_view()),
         ],
         # in_progress
         *[
+            # general
             path('task/in_progress/', InProgressTaskGeneralView.as_view()),
-            path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
-            path(
-                'task/in_progress/bunny_jigging/<int:id>/',
-                InProgressBunnyJiggingTaskDetailView.as_view()
-            ),
-            path(
-                'task/in_progress/slaughter_inspection/<int:id>/',
-                InProgressSlaughterInspectionTaskDetailView.as_view()
-            ),
+            # detail
+            *[
+                path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
+                path(
+                    'task/in_progress/bunny_jigging/<int:id>/',
+                    InProgressBunnyJiggingTaskDetailView.as_view()
+                ),
+                path(
+                    'task/in_progress/slaughter_inspection/<int:id>/',
+                    InProgressSlaughterInspectionTaskDetailView.as_view()
+                )
+            ],
+            # update
+            path('task/in_progress/update/', InProgressUpdateTaskGeneralView.as_view())
         ],
         # waiting_confirmation
         *[
+            # general
             path(
                 'task/waiting_confirmation/', WaitingConfirmationTaskGeneralView.as_view()
             ),
+            # detail
             path(
                 'task/waiting_confirmation/<int:id>/',
                 WaitingConfirmationTaskDetailView.as_view()

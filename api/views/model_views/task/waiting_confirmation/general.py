@@ -10,4 +10,4 @@ __all__ = ['WaitingConfirmationTaskGeneralView']
 class WaitingConfirmationTaskGeneralView(BaseTaskGeneralView):
     model = Task
     list_serializer = WaitingConfirmationTaskListSerializer
-    queryset = TaskController().waiting_confirmation.select_subclasses()
+    queryset = TaskController().waiting_confirmation.all()
