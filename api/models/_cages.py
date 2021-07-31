@@ -93,9 +93,8 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
         super().clean()
         rabbits = list(self.rabbits)
         if len(rabbits) > 0:
-            if len(rabbits) == 1:
-                rabbit = rabbits[0]
-                self._clean_for_father(rabbit)
+            if rabbits[0].current_type == api_models.Rabbit.TYPE_FATHER:
+                self._clean_for_father(rabbits[0])
             else:
                 self._clean_for_fattening(self.rabbits)
     
@@ -106,15 +105,26 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
         ).count() > 0:
             raise ValidationError('Father rabbit is already sitting in this cage')
     
-    def clean_for_jigging_rabbits(self, rabbits: Iterable['api_models.Rabbit']):
-        self.clean_for_jigging()
-        self._clean_for_rabbits(rabbits)
-    
-    @staticmethod
-    def _clean_for_rabbits(rabbits: Iterable['api_models.Rabbit']):
+    def clean_for_jigging_bunnies(self, rabbits: Iterable['api_models.Rabbit']):
         rabbits = list(rabbits)
         if len(rabbits) == 0:
             return
+        self.clean_for_jigging()
+        if len(self.rabbits) > 0:
+            raise ValidationError('The cage for jigging bunnies should be empty')
+        self._clean_for_rabbits(rabbits)
+        for bunny in rabbits[1:]:
+            if bunny.birthday.date() != rabbits[0].birthday.date():
+                raise ValidationError(
+                    'Bunnies in the same cage must be born on the same day'
+                )
+            if bunny.mother != rabbits[0].mother or bunny.father != rabbits[0].father:
+                raise ValidationError(
+                    'Bunnies in the came cage must have the same parents'
+                )
+    
+    @staticmethod
+    def _clean_for_rabbits(rabbits: list['api_models.Rabbit']):
         for rabbit in rabbits[1:]:
             if rabbit.is_male != rabbits[0].is_male:
                 raise ValidationError('Rabbits in the same cage must be of the same sex')
@@ -122,12 +132,6 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
                 raise ValidationError(
                     'Rabbits in the same cage must be born on the same day'
                 )
-            if rabbit.birthday.date() != rabbits[0].birthday.date():
-                raise ValidationError(
-                    'Rabbits in the same cage must be of the same vaccinate status'
-                )
-            if rabbit.mother != rabbits[0].mother or rabbit.father != rabbits[0].father:
-                raise ValidationError('Rabbits in one cage must have the same parents')
     
     def _clean_for_father(self, father: 'api_models.Rabbit'):
         if father.current_type != api_models.Rabbit.TYPE_FATHER:
@@ -135,15 +139,21 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
         if self.fatherrabbit_set.exclude(id=father.id).filter(
             current_type=api_models.Rabbit.TYPE_FATHER
         ).count() > 0:
-            raise ValidationError('Father rabbit is already sitting in this cage')
+            raise ValidationError('Other father rabbit is already sitting in this cage')
+        if self.fatteningrabbit_set.exclude(id=father.id).filter(
+            current_type=api_models.Rabbit.TYPE_FATTENING
+        ).count() > 0:
+            raise ValidationError(
+                'Other fattening rabbit is already sitting in this cage'
+            )
     
     def _clean_for_fattening(self, rabbits: Iterable['api_models.Rabbit']):
-        self._clean_for_rabbits(rabbits)
         for rabbit in rabbits:
             if rabbit.current_type != api_models.Rabbit.TYPE_FATTENING:
                 raise ValidationError(
                     'Only fattening rabbits can sit in this cage'
                 )
+        self._clean_for_rabbits(list(rabbits))
 
 
 class MotherCage(MotherCageManagerMixin, Cage):

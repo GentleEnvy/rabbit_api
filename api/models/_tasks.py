@@ -163,13 +163,17 @@ class BunnyJiggingTask(Task):
     
     def clean_male_cage_to(self):
         if self.male_cage_to is not None:
-            self.male_cage_to.clean_for_jigging_rabbits(
+            if self.male_cage_to == self.female_cage_to:
+                raise ValidationError('Males and females cannot sit in the same cage')
+            self.male_cage_to.clean_for_jigging_bunnies(
                 self.__bunny_set().filter(is_male=True)
             )
     
     def clean_female_cage_to(self):
         if self.female_cage_to is not None:
-            self.female_cage_to.clean_for_jigging_rabbits(
+            if self.female_cage_to == self.male_cage_to:
+                raise ValidationError('Females and males cannot sit in the same cage')
+            self.female_cage_to.clean_for_jigging_bunnies(
                 self.__bunny_set().filter(is_male=False)
             )
     
