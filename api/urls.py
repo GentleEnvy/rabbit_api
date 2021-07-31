@@ -37,7 +37,9 @@ urlpatterns = [
                 path(
                     'rabbit/father/<int:id>/partners/', FatherRabbitPartnersView.as_view()
                 )
-            ]
+            ],
+            # death
+            path('rabbit/death/', RabbitDeathView.as_view())
         ],
         # cage
         *[
