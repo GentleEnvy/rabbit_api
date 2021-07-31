@@ -37,7 +37,9 @@ urlpatterns = [
                 path(
                     'rabbit/father/<int:id>/partners/', FatherRabbitPartnersView.as_view()
                 )
-            ]
+            ],
+            # death
+            path('rabbit/death/', RabbitDeathView.as_view())
         ],
         # cage
         *[
@@ -116,7 +118,10 @@ urlpatterns = [
     # birth
     *[
         # general
-        path('birth/', BirthGeneralView.as_view()),
+        *[
+            path('birth/confirmed/', BirthConfirmedGeneralView.as_view()),
+            path('birth/unconfirmed/', BirthUnconfirmedGeneralView.as_view())
+        ],
         # detail
         *[
             path('birth/confirmed/<int:id>/', BirthConfirmedDetailView.as_view()),
