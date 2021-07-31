@@ -116,7 +116,10 @@ urlpatterns = [
     # birth
     *[
         # general
-        path('birth/', BirthGeneralView.as_view()),
+        *[
+            path('birth/confirmed/', BirthConfirmedGeneralView.as_view()),
+            path('birth/unconfirmed/', BirthUnconfirmedGeneralView.as_view())
+        ],
         # detail
         *[
             path('birth/confirmed/<int:id>/', BirthConfirmedDetailView.as_view()),
