@@ -29,7 +29,7 @@ class FeedingService:
         self.days_for_plan = days_for_prognostication
         self.milk_age_for_bunny = milk_age_for_bunny
     
-    def days_left_for_feed_stocks(self) -> int:
+    def get_expected_stock(self) -> int:
         feeding_rabbits = self._rabbits_with_prognosis()
         days_left = 0
         feed_left = self._feeds_model.objects.aggregate(
