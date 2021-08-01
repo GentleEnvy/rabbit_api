@@ -40,7 +40,7 @@ class APIException(Exception):
             return caster(exception)
         raise ValueError(f'Casting is not supported for {type(exception)}')
     
-    def __init__(self, status: int = 500, message: str = 'Critical server error'):
+    def __init__(self, message: str = 'Critical server error', status: int = 500):
         self.status: Final[int] = status
         self.message: Final[str] = message
     
@@ -52,7 +52,7 @@ class APIException(Exception):
 
 
 class APIError(Exception):
-    def __init__(self, code: int = None, message: str = None):
+    def __init__(self, message: str = None, code: int = None):
         self.code: Final[Optional[int]] = code
         self.message: Final[Optional[str]] = message
     
