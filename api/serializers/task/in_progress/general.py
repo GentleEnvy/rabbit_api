@@ -119,9 +119,16 @@ class _VaccinationTaskSerializer(_CageTaskSerializer):
         model = VaccinationTask
 
 
+# noinspection PyMethodMayBeStatic
 class _SlaughterInspectionTaskSerializer(_CageTaskSerializer):
     class Meta(_CageTaskSerializer.Meta):
         model = SlaughterInspectionTask
+        fields = _CageTaskSerializer.Meta.fields + ['number_rabbits']
+    
+    number_rabbits = serializers.SerializerMethodField()
+    
+    def get_number_rabbits(self, task: SlaughterInspectionTask):
+        return len(task.cage.rabbits)
 
 
 # noinspection PyMethodMayBeStatic

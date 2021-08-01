@@ -222,17 +222,17 @@ class SlaughterInspectionTask(Task):
                     "There is fattening rabbit in this cage that don't need inspection"
                 )
         if self.weights is not None:
-            self.clean_weights(self.weights, __fattening_rabbits=fattening_set)
+            self.clean_weights(self.weights, _fattening_rabbits=fattening_set)
     
-    def clean_weights(self, weights, __fattening_rabbits=None):
+    def clean_weights(self, weights, _fattening_rabbits=None):
         if len(weights) == 0:
             raise ValidationError('Weights cannot be empty')
-        if __fattening_rabbits is None:
+        if _fattening_rabbits is None:
             fattening_set = self.cage.fatteningrabbit_set.filter(
                 current_type=Rabbit.TYPE_FATTENING
             )
         else:
-            fattening_set = __fattening_rabbits
+            fattening_set = _fattening_rabbits
         if len(weights) != fattening_set.count():
             raise ValidationError(
                 'The length of the list of weights must match the number of rabbits in '

@@ -89,7 +89,7 @@ class FatteningRabbitManager(RabbitManager):
     @property
     def last_weighting(self) -> Optional[datetime]:
         try:
-            return api_models.RabbitHistory.objects.exclude(weight=None).filter(
+            return api_models.FatteningRabbitHistory.objects.exclude(weight=None).filter(
                 rabbit=self.model
             ).latest('time').time
         except api_models.RabbitHistory.DoesNotExist:
