@@ -1,19 +1,15 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from rest_framework.generics import *
 from rest_framework import serializers
 
+from api.serializers.base import EmptySerializer
 from api.views.base import *
 
-
-class _EmptySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = get_user_model()
-        fields = []
+__all__ = ['BaseGeneralView', 'BaseDetailView']
 
 
 class BaseGeneralView(ListCreateAPIView, BaseView):
-    _EmptySerializer = _EmptySerializer
+    _EmptySerializer = EmptySerializer
     
     create_serializer: serializers.ModelSerializer = None
     list_serializer: serializers.ModelSerializer = None
@@ -32,7 +28,7 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
 
 
 class BaseDetailView(RetrieveUpdateAPIView, BaseView):
-    _EmptySerializer = _EmptySerializer
+    _EmptySerializer = EmptySerializer
     
     retrieve_serializer: serializers.ModelSerializer = None
     update_serializer: serializers.ModelSerializer = None
