@@ -4,7 +4,7 @@ from django.db.models import Sum, Q
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 
-from api.models import CommonFeeds, NursingMotherFeeds
+from api.models import *
 from api.serializers.feeds import *
 from api.views.base import BaseView
 
@@ -18,14 +18,14 @@ class _BaseFeedsView(CreateModelMixin, BaseView):
 
 
 class FatteningFeedsView(_BaseFeedsView):
-    queryset = CommonFeeds.objects.aggregate(
-        Sum('stocks_change', filter=Q(date__lte=datetime.utcnow()))
+    queryset = FatteningFeeds.objects.aggregate(
+        stocks__sum=Sum('stocks', filter=Q(time__lte=datetime.utcnow()))
     )
     serializer_class = FatteningFeedsCreateSerializer
 
 
 class MotherFeedsView(_BaseFeedsView):
-    queryset = NursingMotherFeeds.objects.aggregate(
-        Sum('stocks_change', filter=Q(date__lte=datetime.utcnow()))
+    queryset = MotherFeeds.objects.aggregate(
+        stocks__sum=Sum('stocks', filter=Q(time__lte=datetime.utcnow()))
     )
     serializer_class = MotherFeedsCreateSerializer
