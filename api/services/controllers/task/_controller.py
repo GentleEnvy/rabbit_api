@@ -45,7 +45,7 @@ def _create_from_fattening_cage(controller, tasks):
     # noinspection SpellCheckingInspection
     for fattening_cage in FatteningCage.objects.exclude(
         id__in=[t.cage.id for t in tasks]
-    ).prefetch_related('fatteningrabbit_set').all():
+    ):
         try:
             controller.task_model.objects.create(cage=fattening_cage)
         except ValidationError:
@@ -164,7 +164,7 @@ class SlaughterTaskController(TaskController):
     
     def _create(self, tasks):
         exclude_rabbit_ids = [task.rabbit.id for task in tasks]
-        for plan in Plan.objects.prefetch_related('fatteningrabbit_set').filter(
+        for plan in Plan.objects.filter(
             date__lte=datetime.utcnow()
         ).all():
             for fattening_rabbit in plan.fatteningrabbit_set.exclude(
