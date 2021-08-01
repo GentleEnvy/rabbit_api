@@ -3,25 +3,46 @@ from django.db.models import Model
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from api.views.exceptions import *
+from api.exceptions import *
 
 __all__ = ['BaseView']
 
 
+# noinspection PyBroadException
 class BaseView(GenericAPIView):
     model: Model
     
-    def handle_exception(self, exc):
+    @classmethod
+    def as_view(cls, **init_kwargs):
+        def view(*args, **kwargs):
+            try:
+                return view_function(*args, **kwargs)
+            except Exception:
+                return CriticalError().to_response()
+        
+        view_function = super().as_view(**init_kwargs)
+        return view
+    
+    def handle_exception(self, exception):
         try:
             try:
-                return super().handle_exception(exc)
-            except APIError as error:
-                return Response(error.serialize())
-            except APIException as exception:
-                return exception.to_response()
-            except APIException.SUPPORT_TO_CAST_EXCEPTIONS as exception_to_cast:
-                return APIException.cast_exception(exception_to_cast).to_response()
+                return super().handle_exception(exception)
+            except APIWarning as e:
+                api_error = e
+            except ClientError as e:
+                api_error = e
+            except CriticalError as e:
+                api_error = e
+            except tuple(ClientError.EXCEPTION__CAST.keys()) as exception_to_cast:
+                api_error = ClientError.cast_exception(exception_to_cast)
+            except tuple(CriticalError.EXCEPTION__CAST.keys()) as exception_to_cast:
+                api_error = CriticalError.cast_exception(exception_to_cast)
+            
+            error = api_error
+            
         except Exception as e:
-            if settings.DEBUG:
-                raise e
-            return Response(status=400, data=str(e))
+            error = e
+        
+        if settings.DEBUG and isinstance(error, (CriticalError, ClientError)):
+            raise error
+        return error.to_response()
