@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from api.models import *
+from api.serializers.base import EmptySerializer
 from api.views.base import BaseView
 from api.views.exceptions import APIException
 
@@ -14,19 +15,20 @@ __all__ = [
 
 class _BaseRecastView(BaseView):
     lookup_url_kwarg = 'id'
+    serializer_class = EmptySerializer
     task_model: Type[Task]
     
-    def get(self, request, _):
+    def get(self, request, **_):
         return Response({'waiting_recast': self._get_task_or_none() is not None})
     
-    def post(self, request, _):
+    def post(self, request, **_):
         rabbit = self.get_object()
         if self._get_task_or_none(rabbit) is not None:
             raise APIException('The rabbit is already waiting recast', status=400)
         self.task_model.objects.create(rabbit=rabbit)
         return Response(status=status.HTTP_201_CREATED)
     
-    def delete(self, request, _):
+    def delete(self, request, **_):
         task = self._get_task_or_none()
         if task is None:
             raise APIException('The rabbit does not waiting recast', status=400)
