@@ -24,4 +24,4 @@ class BaseView(GenericAPIView):
         except Exception as e:
             if settings.DEBUG:
                 raise e
-            return Response(status=400, data=str(e))
+            return Response(status=500, data=str(e))
