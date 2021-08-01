@@ -10,17 +10,11 @@ __all__ = ['APIException', 'APIError']
 
 
 def _cast_rest_framework_validation_error(exception: RestFrameworkValidationError):
-    return APIException(
-        status=int(exception.status_code),
-        message=str(exception.detail)
-    )
+    return APIException(message=str(exception.get_full_details()), status=400)
 
 
 def _cast_django_validation_error(exception: DjangoValidationError):
-    return APIException(
-        status=int(getattr(exception, 'code', None) or 400),
-        message=f'ValidationError: {exception.messages}'  # FIXME: to standard
-    )
+    return APIException(message=str(exception.messages), status=400)
 
 
 class APIException(Exception):
@@ -40,21 +34,18 @@ class APIException(Exception):
             return caster(exception)
         raise ValueError(f'Casting is not supported for {type(exception)}')
     
-    def __init__(self, status: int = 500, message: str = 'Critical server error'):
+    def __init__(self, status: int = 500, message: str = 'Critical server exception'):
         self.status: Final[int] = status
         self.message: Final[str] = message
     
     def to_response(self) -> Response:
-        return Response(
-            status=self.status,
-            data=self.message
-        )
+        return Response(data=self.message, status=self.status)
 
 
-class APIError(Exception):
-    def __init__(self, code: int = None, message: str = None):
-        self.code: Final[Optional[int]] = code
-        self.message: Final[Optional[str]] = message
+class APIError(APIException):
+    def __init__(self, status=400, message='Critical server error', code: str = None):
+        super().__init__(status, message)
+        self.code: Final[Optional[str]] = code
     
     def serialize(self) -> dict[str, dict[str, Union[int, str]]]:
         json = {'error': {}}
