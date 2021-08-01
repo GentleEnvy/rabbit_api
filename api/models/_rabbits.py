@@ -122,21 +122,16 @@ class DeadRabbit(Rabbit):
         raise AttributeError
 
 
-# TODO: add validation:
-#   - reproduction rabbits are sitting in a cage alone
-#   - only brothers or only sisters sit in the same cage (max 6)
 class _RabbitInCage(Rabbit):
     class Meta(Rabbit.Meta):
         abstract = True
     
-    # cage: Cage
+    cage: Cage
     
     def get_absolute_url(self):
         raise NotImplementedError
 
 
-# TODO: add validation:
-#   - the rabbit is attached to the plan only if it has the STATUS_READY_TO_SLAUGHTER
 class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
     
@@ -160,6 +155,16 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
         super().clean()
         if self.is_male is None:
             raise ValidationError('The sex of the FatteningRabbit must be determined')
+        if self.plan is not None:
+            self.clean_for_plan()
+    
+    def clean_for_plan(self):
+        from api.managers import FatteningRabbitManager
+        READY_TO_SLAUGHTER = FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER
+        if READY_TO_SLAUGHTER not in self.manager.status:
+            raise ValidationError(
+                'The fattening rabbit in the plan must have the status READY_TO_SLAUGHTER'
+            )
 
 
 class Bunny(BunnyManagerMixin, _RabbitInCage):

@@ -85,16 +85,18 @@ class _MatingTaskSerializer(_BaseTaskSerializer):
         return task.father_rabbit.cage
 
 
+# noinspection PyMethodMayBeStatic
 class _BunnyJiggingTaskSerializer(_BaseTaskSerializer):
     class Meta(_BaseTaskSerializer.Meta):
         model = BunnyJiggingTask
         fields = _BaseTaskSerializer.Meta.fields + [
-            'cage_from', 'male_cage_to', 'female_cage_to'
+            'cage_from', 'male_cage_to', 'female_cage_to', 'number_bunnies'
         ]
     
     cage_from = serializers.SerializerMethodField()
     male_cage_to = serializers.SerializerMethodField()
     female_cage_to = serializers.SerializerMethodField()
+    number_bunnies = serializers.SerializerMethodField()
     
     @_cage_serializer
     def get_cage_from(self, task):
@@ -107,6 +109,9 @@ class _BunnyJiggingTaskSerializer(_BaseTaskSerializer):
     @_cage_serializer
     def get_female_cage_to(self, task):
         return task.female_cage_to
+    
+    def get_number_bunnies(self, task):
+        return task.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY).count()
 
 
 class _VaccinationTaskSerializer(_CageTaskSerializer):
@@ -114,9 +119,16 @@ class _VaccinationTaskSerializer(_CageTaskSerializer):
         model = VaccinationTask
 
 
+# noinspection PyMethodMayBeStatic
 class _SlaughterInspectionTaskSerializer(_CageTaskSerializer):
     class Meta(_CageTaskSerializer.Meta):
         model = SlaughterInspectionTask
+        fields = _CageTaskSerializer.Meta.fields + ['number_rabbits']
+    
+    number_rabbits = serializers.SerializerMethodField()
+    
+    def get_number_rabbits(self, task: SlaughterInspectionTask):
+        return len(task.cage.rabbits)
 
 
 # noinspection PyMethodMayBeStatic

@@ -11,7 +11,7 @@ _task__controller = {controller.task_model: controller for controller in all_con
 
 class WaitingConfirmationTaskDetailView(BaseDetailView):
     model = Task
-    queryset = TaskController().waiting_confirmation.select_subclasses()
+    queryset = TaskController().waiting_confirmation.all()
     lookup_url_kwarg = 'id'
     update_serializer = WaitingConfirmationTaskUpdateSerializer
     

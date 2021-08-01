@@ -12,7 +12,7 @@ __all__ = [
 
 class InProgressTaskDetailView(BaseDetailView):
     model = Task
-    queryset = TaskController().in_progress.select_subclasses().filter(
+    queryset = TaskController().in_progress.filter(
         bunnyjiggingtask=None, slaughterinspectiontask=None
     )
     lookup_url_kwarg = 'id'

@@ -43,6 +43,7 @@ class ToReproductionTask(Task):
     CHAR_TYPE = 'R'
     
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
+    # in progress
     cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True, blank=True)
     
     def clean(self):
@@ -75,6 +76,7 @@ class ToFatteningTask(Task):
     CHAR_TYPE = 'F'
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
+    # in progress
     cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -139,6 +141,7 @@ class BunnyJiggingTask(Task):
     CHAR_TYPE = 'B'
     
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
+    # in progress
     male_cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_male_set'
@@ -147,7 +150,6 @@ class BunnyJiggingTask(Task):
         FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
-    # in progress
     males = models.PositiveSmallIntegerField(null=True, blank=True)
     
     def clean(self):
@@ -163,13 +165,17 @@ class BunnyJiggingTask(Task):
     
     def clean_male_cage_to(self):
         if self.male_cage_to is not None:
-            self.male_cage_to.clean_for_jigging_rabbits(
+            if self.male_cage_to == self.female_cage_to:
+                raise ValidationError('Males and females cannot sit in the same cage')
+            self.male_cage_to.clean_for_jigging_bunnies(
                 self.__bunny_set().filter(is_male=True)
             )
     
     def clean_female_cage_to(self):
         if self.female_cage_to is not None:
-            self.female_cage_to.clean_for_jigging_rabbits(
+            if self.female_cage_to == self.male_cage_to:
+                raise ValidationError('Females and males cannot sit in the same cage')
+            self.female_cage_to.clean_for_jigging_bunnies(
                 self.__bunny_set().filter(is_male=False)
             )
     
@@ -200,7 +206,7 @@ class SlaughterInspectionTask(Task):
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
-    weights: list[float] = ArrayField(models.FloatField())
+    weights: list[float] = ArrayField(models.FloatField(), null=True, blank=True)
     
     def clean(self):
         super().clean()
@@ -216,17 +222,17 @@ class SlaughterInspectionTask(Task):
                     "There is fattening rabbit in this cage that don't need inspection"
                 )
         if self.weights is not None:
-            self.clean_weights(self.weights, __fattening_rabbits=fattening_set)
+            self.clean_weights(self.weights, _fattening_rabbits=fattening_set)
     
-    def clean_weights(self, weights, __fattening_rabbits=None):
+    def clean_weights(self, weights, _fattening_rabbits=None):
         if len(weights) == 0:
             raise ValidationError('Weights cannot be empty')
-        if __fattening_rabbits is None:
+        if _fattening_rabbits is None:
             fattening_set = self.cage.fatteningrabbit_set.filter(
                 current_type=Rabbit.TYPE_FATTENING
             )
         else:
-            fattening_set = __fattening_rabbits
+            fattening_set = _fattening_rabbits
         if len(weights) != fattening_set.count():
             raise ValidationError(
                 'The length of the list of weights must match the number of rabbits in '

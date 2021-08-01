@@ -19,23 +19,25 @@ class TaskController(ABC):
     
     @final
     def update_in_progress(self) -> None:
-        self._clear(self.anonymous | self.in_progress)
-        self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
+        # self._clear(self.anonymous | self.in_progress)
+        # self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
         self._setup(self.in_progress)
     
     @property
     def anonymous(self) -> InheritanceQuerySet:
-        return self.task_model.objects.filter(user=None)
+        return self.task_model.objects.select_subclasses().filter(user=None)
     
     @property
     def in_progress(self) -> InheritanceQuerySet:
-        return self.task_model.objects.exclude(user=None).filter(completed_at=None)
+        return self.task_model.objects.select_subclasses().exclude(user=None).filter(
+            completed_at=None
+        )
     
     @property
     def waiting_confirmation(self) -> InheritanceQuerySet:
-        return self.task_model.objects.exclude(completed_at=None).filter(
-            is_confirmed=None
-        )
+        return self.task_model.objects.select_subclasses().exclude(
+            completed_at=None
+        ).filter(is_confirmed=None)
     
     @staticmethod
     def _clear(tasks: InheritanceQuerySet) -> None:

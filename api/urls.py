@@ -28,15 +28,35 @@ urlpatterns = [
                     name='mother_rabbit__detail__url'
                 ),
                 path(
-                    'rabbit/mother/<int:id>/partners/', MotherRabbitPartnersView.as_view()
-                ),
-                path(
                     'rabbit/father/<int:id>/', FatherRabbitDetailView.as_view(),
                     name='father_rabbit__detail__url'
                 ),
-                path(
-                    'rabbit/father/<int:id>/partners/', FatherRabbitPartnersView.as_view()
-                )
+                # partners
+                *[
+                    path(
+                        'rabbit/mother/<int:id>/partners/',
+                        MotherRabbitPartnersView.as_view()
+                    ),
+                    path(
+                        'rabbit/father/<int:id>/partners/',
+                        FatherRabbitPartnersView.as_view()
+                    )
+                ],
+                # recast
+                *[
+                    path(
+                        'rabbit/fattening/<int:id>/recast/',
+                        FatteningRabbitRecastView.as_view()
+                    ),
+                    path(
+                        'rabbit/mother/<int:id>/recast/',
+                        MotherRabbitRecastView.as_view()
+                    ),
+                    path(
+                        'rabbit/father/<int:id>/recast/',
+                        FatherRabbitRecastView.as_view()
+                    )
+                ],
             ],
             # death
             path('rabbit/death/', RabbitDeathView.as_view())
@@ -57,15 +77,6 @@ urlpatterns = [
     ],
     # operation
     path('operation/', OperationGeneralView.as_view()),
-    # recast
-    *[
-        path('rabbit/<int:id>/recast_to_dead/', DeadRabbitRecastView.as_view()),
-        path('rabbit/<int:id>/recast_to_fattening/', FatteningRabbitRecastView.as_view()),
-        path(
-            'rabbit/<int:id>/recast_to_reproduction/',
-            ReproductionRabbitRecastView.as_view()
-        )
-    ],
     # breed
     path('breed/', BreedGeneralView.as_view()),
     # plan
@@ -88,27 +99,37 @@ urlpatterns = [
     *[
         # anonymous
         *[
+            # general
             path('task/anonymous/', AnonymousTaskGeneralView.as_view()),
+            # detail
             path('task/anonymous/<int:id>/', AnonymousTaskDetailView.as_view()),
         ],
         # in_progress
         *[
+            # general
             path('task/in_progress/', InProgressTaskGeneralView.as_view()),
-            path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
-            path(
-                'task/in_progress/bunny_jigging/<int:id>/',
-                InProgressBunnyJiggingTaskDetailView.as_view()
-            ),
-            path(
-                'task/in_progress/slaughter_inspection/<int:id>/',
-                InProgressSlaughterInspectionTaskDetailView.as_view()
-            ),
+            # detail
+            *[
+                path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
+                path(
+                    'task/in_progress/bunny_jigging/<int:id>/',
+                    InProgressBunnyJiggingTaskDetailView.as_view()
+                ),
+                path(
+                    'task/in_progress/slaughter_inspection/<int:id>/',
+                    InProgressSlaughterInspectionTaskDetailView.as_view()
+                )
+            ],
+            # update
+            path('task/in_progress/update/', InProgressUpdateTaskGeneralView.as_view())
         ],
         # waiting_confirmation
         *[
+            # general
             path(
                 'task/waiting_confirmation/', WaitingConfirmationTaskGeneralView.as_view()
             ),
+            # detail
             path(
                 'task/waiting_confirmation/<int:id>/',
                 WaitingConfirmationTaskDetailView.as_view()

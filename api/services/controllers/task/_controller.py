@@ -30,21 +30,22 @@ def _setup_jigging_cage(
     )
     # TODO: check same cage
     for nearest_cage in filterer.order_by_nearest_to(cage_from, cage_to_type):
-        setattr(task, cage_to_attr, nearest_cage)
         try:
+            nearest_cage.clean_for_task()
+            setattr(task, cage_to_attr, nearest_cage)
             cleaner()
         except ValidationError:
             continue
         task.save()
         break
-    # TODO: not valid cages
+    raise ValidationError('There are no suitable cages')
 
 
 def _create_from_fattening_cage(controller, tasks):
     # noinspection SpellCheckingInspection
     for fattening_cage in FatteningCage.objects.exclude(
         id__in=[t.cage.id for t in tasks]
-    ).prefetch_related('fatteningrabbit_set').all():
+    ):
         try:
             controller.task_model.objects.create(cage=fattening_cage)
         except ValidationError:
@@ -163,7 +164,7 @@ class SlaughterTaskController(TaskController):
     
     def _create(self, tasks):
         exclude_rabbit_ids = [task.rabbit.id for task in tasks]
-        for plan in Plan.objects.prefetch_related('fatteningrabbit_set').filter(
+        for plan in Plan.objects.filter(
             date__lte=datetime.utcnow()
         ).all():
             for fattening_rabbit in plan.fatteningrabbit_set.exclude(
