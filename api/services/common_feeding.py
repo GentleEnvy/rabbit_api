@@ -31,8 +31,8 @@ class CommonFeeding(FeedingService):
             ) + len(
                 rabbits_for_each_day[day].father_rabbits
             )
-            for mother_rabbit in rabbits_for_each_day[day].mother_rabbits:
-                if 'FB' not in mother_rabbit.status:
+            for rabbit in rabbits_for_each_day[day].mother_rabbits:
+                if 'FB' not in rabbit.status:
                     rabbits_count += 1
             feeding_rabbits_for_each_day.append(rabbits_count)
         return feeding_rabbits_for_each_day

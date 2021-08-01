@@ -9,7 +9,7 @@ class MotherFeeding(FeedingService):
     def days_left_for_feed_stocks(self) -> int:
         feeding_mothers = self.mothers_with_prognosis()
         days_left = 0
-        feed_left = CommonFeeds.objects.aggregate(
+        feed_left = NursingMotherFeeds.objects.aggregate(
             Sum('stocks_change')
         ).get('stocks_change__sum') * self.feed_bag_weight
         while feed_left > 0 and days_left < self.days_for_plan:
@@ -27,8 +27,8 @@ class MotherFeeding(FeedingService):
         feeding_mothers_for_each_day = []
         for day in range(self.days_for_plan):
             mothers_count = 0
-            for mother_rabbit in mothers_for_each_day[day].mother_rabbits:
-                if 'FB' in mother_rabbit.status:
+            for rabbit in mothers_for_each_day[day].mother_rabbits:
+                if 'FB' in rabbit.status:
                     mothers_count += 1
             feeding_mothers_for_each_day.append(mothers_count)
         return feeding_mothers_for_each_day
