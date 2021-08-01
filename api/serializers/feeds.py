@@ -1,17 +1,17 @@
 from rest_framework import serializers
 
-from api.models import CommonFeeds, NursingMotherFeeds
+from api.models import *
 
 __all__ = ['FatteningFeedsCreateSerializer', 'MotherFeedsCreateSerializer']
 
 
 class FatteningFeedsCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CommonFeeds
-        fields = ['date', 'stocks_field']
+        model = FatteningFeeds
+        fields = ['time', 'stocks']
 
 
 class MotherFeedsCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NursingMotherFeeds
-        fields = ['date', 'stocks_field']
+        model = MotherFeeds
+        fields = ['time', 'stocks']
