@@ -30,7 +30,7 @@ class FeedingService:
         self.milk_age_for_bunny = milk_age_for_bunny
     
     def get_expected_stock(self) -> int:
-        feeding_rabbits = self._rabbits_with_prognosis()
+        feeding_rabbits = self._rabbits_with_prognosis(self.days_for_plan)
         days_left = 0
         feed_left = self._feeds_model.objects.aggregate(
             Sum('stocks')
@@ -41,12 +41,24 @@ class FeedingService:
         
         return days_left
     
-    def _get_predictions(self):
+    def _get_predictions(self, days: int):
         predictor = PredictionRabbitService()
         return predictor.predict(
-            days=self.days_for_plan,
+            days=days,
             every_day=True
         )
     
-    def _rabbits_with_prognosis(self) -> list[int]:
+    def predict_bags_need_in_future(self):
+        days_left = self.get_expected_stock()
+        feeding_rabbits_for_each_day = self._rabbits_with_prognosis(
+            days_left + self.days_for_plan
+        )[days_left:]
+        total_feeds_needed_weight = 0
+        for day in range(self.days_for_plan):
+            rabbits = feeding_rabbits_for_each_day[day]
+            total_feeds_needed_weight += rabbits * self.normal_daily_consumption
+        bags_need = total_feeds_needed_weight // self.feed_bag_weight + 1
+        return bags_need
+        
+    def _rabbits_with_prognosis(self, days: int) -> list[int]:
         raise NotImplementedError

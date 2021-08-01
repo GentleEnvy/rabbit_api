@@ -8,8 +8,8 @@ __all__ = ['MotherFeedingService']
 class MotherFeedingService(FeedingService):
     _feeds_model = MotherFeeds
     
-    def _rabbits_with_prognosis(self):
-        mothers_for_each_day = self._get_predictions()
+    def _rabbits_with_prognosis(self, days: int):
+        mothers_for_each_day = self._get_predictions(days)
         feeding_mothers_for_each_day = []
         for day in range(self.days_for_plan):
             mothers_count = 0
@@ -18,3 +18,5 @@ class MotherFeedingService(FeedingService):
                     mothers_count += 1
             feeding_mothers_for_each_day.append(mothers_count)
         return feeding_mothers_for_each_day
+    
+    
