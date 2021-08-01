@@ -1,9 +1,16 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from api.models import Cage
 
-__all__ = ['BaseReadOnlyRaiseSerializer', 'BaseSupportsCageSerializer']
+__all__ = ['EmptySerializer', 'BaseReadOnlyRaiseSerializer', 'BaseSupportsCageSerializer']
+
+
+class EmptySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = []
 
 
 class BaseReadOnlyRaiseSerializer(serializers.ModelSerializer):
