@@ -14,10 +14,10 @@ class _EmptySerializer(serializers.ModelSerializer):
 
 class BaseGeneralView(ListCreateAPIView, BaseView):
     _EmptySerializer = _EmptySerializer
-
+    
     create_serializer: serializers.ModelSerializer = None
     list_serializer: serializers.ModelSerializer = None
-
+    
     def get_serializer_class(self):
         request = self.request
         if request.method.upper() == 'POST':
@@ -33,11 +33,11 @@ class BaseGeneralView(ListCreateAPIView, BaseView):
 
 class BaseDetailView(RetrieveUpdateAPIView, BaseView):
     _EmptySerializer = _EmptySerializer
-
+    
     retrieve_serializer: serializers.ModelSerializer = None
     update_serializer: serializers.ModelSerializer = None
     destroy_serializer: serializers.ModelSerializer = None
-
+    
     def get_serializer_class(self):
         request = self.request
         if request.method.upper() == 'GET':

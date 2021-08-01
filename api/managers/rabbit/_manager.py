@@ -3,7 +3,6 @@ from datetime import timedelta, date, datetime
 from typing import Optional
 
 from django.db.models import Q
-from django.utils.timezone import now
 
 from api.utils.functions import diff_time, to_datetime
 from api.managers.base import *
@@ -51,7 +50,7 @@ class RabbitManager(BaseManager):
     
     @property
     def age(self) -> timedelta:
-        return diff_time(now(), self.model.birthday)
+        return diff_time(datetime.utcnow(), self.model.birthday)
     
     @property
     @abstractmethod
@@ -64,65 +63,51 @@ class FatteningRabbitManager(RabbitManager):
     
     STATUS_NEED_VACCINATION = 'NV'
     STATUS_NEED_INSPECTION = 'NI'
-    # noinspection SpellCheckingInspection
-    STATUS_WITHOUT_COCCIDIOSTATIC = 'WC'
     STATUS_READY_TO_SLAUGHTER = 'RS'
+    
+    __NEED_INSPECTION_AGE = 80
     
     @property
     def status(self):
-        BeforeSlaughterInspection = api_models.BeforeSlaughterInspection
         if not self.model.is_vaccinated:
             return {self.STATUS_NEED_VACCINATION}
         # vaccinated
-        if (age := self.age.days) >= 80:
-            try:
-                last_inspection = BeforeSlaughterInspection.objects.filter(
-                    time__gte=self.model.birthday + timedelta(80),
-                    rabbit=self.model
-                ).latest('time')
-            except BeforeSlaughterInspection.DoesNotExist:
+        if self.age.days >= self.__NEED_INSPECTION_AGE:
+            last_weighting = self.last_weighting
+            if last_weighting is None:
                 return {self.STATUS_NEED_INSPECTION}
-            # recently there was an inspection
-            if last_inspection.delay is None:
-                try:
-                    last_inspection_with_delay = BeforeSlaughterInspection.objects.filter(
-                        time__gte=self.model.birthday + timedelta(80),
-                        rabbit=self.model
-                    ).exclude(delay=None).latest('time')
-                except BeforeSlaughterInspection.DoesNotExist:
-                    # not underweight
-                    if age >= 90:
-                        return {self.STATUS_READY_TO_SLAUGHTER}
-                    return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
-                # was underweight
-                if to_datetime(
-                    last_inspection_with_delay.time + timedelta(
-                        last_inspection_with_delay.delay + 10
-                    )
-                ) > now():
-                    return {self.STATUS_READY_TO_SLAUGHTER}
-                return {self.STATUS_WITHOUT_COCCIDIOSTATIC}
-            # is underweight
-            if to_datetime(
-                last_inspection.time + timedelta(last_inspection.delay)
-            ) > now():
+            # last_weighting is not None
+            if last_weighting < self.model.birthday + timedelta(
+                self.__NEED_INSPECTION_AGE
+            ):
                 return {self.STATUS_NEED_INSPECTION}
-            # continue to fattening on delay
-        # younger than 80 days
+            # weighed later __NEED_INSPECTION_AGE
+            return {self.STATUS_READY_TO_SLAUGHTER}
+        # age < __NEED_INSPECTION_AGE
         return set()
+    
+    @property
+    def last_weighting(self) -> Optional[datetime]:
+        try:
+            return api_models.FatteningRabbitHistory.objects.exclude(weight=None).filter(
+                rabbit=self.model
+            ).latest('time').time
+        except api_models.RabbitHistory.DoesNotExist:
+            return None
 
 
 class BunnyManager(RabbitManager):
     model: 'api_models.Bunny'
     
     STATUS_NEED_JIGGING = 'NJ'
-    STATUS_MOTHER_FEEDS = 'MF'
+    
+    __NEED_JIGGING_AGE = 45
     
     @property
     def status(self):
-        if self.age.days >= 45:
+        if self.age.days >= self.__NEED_JIGGING_AGE:
             return {self.STATUS_NEED_JIGGING}
-        return {self.STATUS_MOTHER_FEEDS}
+        return set()
 
 
 class MotherRabbitManager(RabbitManager):
@@ -130,9 +115,10 @@ class MotherRabbitManager(RabbitManager):
     
     STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_UNCONFIRMED_PREGNANT = 'UP'
-    STATUS_NEED_INSPECTION = 'NI'
     STATUS_CONFIRMED_PREGNANT = 'CP'
     STATUS_FEEDS_BUNNY = 'FB'
+    
+    __READY_FOR_FERTILIZATION_AGE = 110
     
     @property
     def status(self):
@@ -146,14 +132,18 @@ class MotherRabbitManager(RabbitManager):
                     statuses.add(self.STATUS_FEEDS_BUNNY)
                     break
         
-        if self.age.days < 150:
+        if self.age.days < self.__READY_FOR_FERTILIZATION_AGE:
             return statuses
         
-        # age >= 150
+        # age >= __READY_FOR_FERTILIZATION_AGE
         last_births = self.last_births
         last_fertilization = self.last_fertilization
-        if last_fertilization is None or diff_time(now(), last_fertilization).days >= 40:
-            if last_births is None or to_datetime(last_births + timedelta(3)) > now():
+        if last_fertilization is None or diff_time(
+            datetime.utcnow(), last_fertilization
+        ).days >= 40:
+            if last_births is None or to_datetime(
+                last_births + timedelta(3)
+            ) < datetime.utcnow():
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_fertilization is not None and isn't overdue
@@ -163,7 +153,6 @@ class MotherRabbitManager(RabbitManager):
                     mother_rabbit=self.model, time__gte=last_fertilization
                 ).latest('time')
             except PregnancyInspection.DoesNotExist:
-                statuses.add(self.STATUS_NEED_INSPECTION)
                 statuses.add(self.STATUS_UNCONFIRMED_PREGNANT)
                 return statuses
             if last_pregnancy_inspection.is_pregnant:
@@ -172,27 +161,34 @@ class MotherRabbitManager(RabbitManager):
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_births is not None and last_births > last_fertilization
-        if to_datetime(last_births + timedelta(3)) > now():
+        if to_datetime(last_births + timedelta(3)) > datetime.utcnow():
             statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
         return statuses
     
     @property
     def last_births(self) -> Optional[date]:
         try:
-            return api_models.Rabbit.objects.filter(
-                mother__rabbit=self.model
+            return api_models.Bunny.objects.filter(
+                mother=self.model
             ).latest('birthday').birthday
-        except api_models.Rabbit.DoesNotExist:
+        except api_models.Bunny.DoesNotExist:
+            return None
+    
+    @property
+    def last_mating(self) -> Optional['api_models.Mating']:
+        try:
+            return api_models.Mating.objects.filter(
+                mother_rabbit=self.model
+            ).latest('time')
+        except api_models.Mating.DoesNotExist:
             return None
     
     @property
     def last_fertilization(self) -> Optional[datetime]:
-        try:
-            return api_models.Mating.objects.filter(
-                mother_rabbit=self.model
-            ).latest('time').time
-        except api_models.Mating.DoesNotExist:
+        last_mating = self.last_mating
+        if last_mating is None:
             return None
+        return last_mating.time
     
     @property
     def output(self) -> int:
@@ -212,17 +208,14 @@ class FatherRabbitManager(RabbitManager):
     model: 'api_models.FatherRabbit'
     
     STATUS_READY_FOR_FERTILIZATION = 'RF'
-    STATUS_RESTING = 'R'
+    
+    __READY_FOR_FERTILIZATION_AGE = 110
     
     @property
     def status(self):
-        statuses = set()
-        if self.age.days >= 180:
-            statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
-        rabbits_in_cage = self.model.cage.cast.rabbits
-        if len(rabbits_in_cage) == 1:
-            statuses.add(self.STATUS_RESTING)
-        return statuses
+        if self.age.days >= self.__READY_FOR_FERTILIZATION_AGE:
+            return {self.STATUS_READY_FOR_FERTILIZATION}
+        return set()
     
     @property
     def output(self) -> int:

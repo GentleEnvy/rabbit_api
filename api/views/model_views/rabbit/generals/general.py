@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -34,6 +32,7 @@ class RabbitGeneralView(BaseGeneralView):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         filters = {}
+        
         if is_male := params.get('is_male'):
             filters['is_male'] = bool(int(is_male))
         if type_ := params.get('type'):

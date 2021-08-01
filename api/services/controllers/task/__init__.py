@@ -1,7 +1,7 @@
 from api.services.controllers.task._controller import *
 
 all_controllers = (
-    ToReproductionTaskController, SlaughterTaskController, MatingTaskController,
+    ToReproductionTaskController, ToFatteningTaskController, MatingTaskController,
     BunnyJiggingTaskController, VaccinationTaskController,
-    SlaughterInspectionTaskController, FatteningSlaughterTaskController
+    SlaughterInspectionTaskController, SlaughterTaskController
 )

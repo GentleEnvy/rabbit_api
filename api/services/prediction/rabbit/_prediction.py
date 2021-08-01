@@ -1,8 +1,7 @@
 from typing import Final
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.forms import model_to_dict
-from django.utils.timezone import now
 
 from api.models import *
 from api.services.prediction.rabbit._condition import PredictionCondition
@@ -14,8 +13,8 @@ __all__ = ['PredictionRabbitService']
 def _get_initial_condition() -> PredictionCondition:
     def __get_rabbits_by_current_type(model_class):
         return set(model_class.objects.filter(current_type=model_class.CHAR_TYPE))
-
-    predict_condition = PredictionCondition(now().date())
+    
+    predict_condition = PredictionCondition(datetime.utcnow().date())
     for bunny in __get_rabbits_by_current_type(Bunny):
         predict_condition.add_bunny(
             BunnyFuture(
@@ -51,7 +50,7 @@ def _get_initial_condition() -> PredictionCondition:
 class PredictionRabbitService:
     def __init__(self):
         self.initial_condition: Final[PredictionCondition] = _get_initial_condition()
-
+    
     def predict(self, days: int, every_day: bool = False) -> list[PredictionCondition]:
         conditions = []
         last_condition = None
@@ -72,7 +71,7 @@ class PredictionRabbitService:
             else:
                 last_condition = new_conditional
             current_conditional = new_conditional
-
+        
         if not every_day:
             conditions.append(last_condition)
         return conditions

@@ -1,2 +1,2 @@
-from api.serializers.rabbit.general import *
-from api.serializers.rabbit.detail import *
+from api.serializers.rabbit.generals import *
+from api.serializers.rabbit.details import *

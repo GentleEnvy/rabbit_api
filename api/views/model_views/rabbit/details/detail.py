@@ -27,12 +27,6 @@ class RabbitDetailView(BaseView):
 class _BaseRabbitDetailView(BaseDetailView):
     lookup_url_kwarg = 'id'
 
-    def delete(self, request, *args, **kwargs):
-        instance_rabbit = self.get_object()
-        dead_rabbit = DeadRabbit.recast(instance_rabbit)
-        dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
-        return Response(status.HTTP_204_NO_CONTENT)
-
 
 class FatteningRabbitDetailView(_BaseRabbitDetailView):
     model = FatteningRabbit

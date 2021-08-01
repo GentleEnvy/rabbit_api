@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Final, Union
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
 from model_utils.managers import QueryManager
 from multiselectfield import MultiSelectField
 
@@ -28,7 +28,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     
     history_model = RabbitHistory
     
-    birthday = models.DateTimeField(default=timezone.now)
+    birthday = models.DateTimeField(default=datetime.utcnow)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -58,9 +58,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
         blank=True, default='', max_choices=3
     )
     
-    @classmethod
-    def all_current(cls):
-        return QueryManager(current_type=cls.CHAR_TYPE).all()
+    all_current: QueryManager
     
     @classmethod
     def recast(cls, rabbit: Rabbit):
@@ -100,7 +98,7 @@ class DeadRabbit(Rabbit):
     
     history_model = DeadRabbitHistory
     
-    death_day = models.DateTimeField(default=timezone.now)
+    death_day = models.DateTimeField(default=datetime.utcnow)
     death_cause = models.CharField(
         choices=(
             (CAUSE_SLAUGHTER := 'S', 'CAUSE_SLAUGHTER'),
@@ -114,6 +112,8 @@ class DeadRabbit(Rabbit):
         max_length=1
     )
     
+    all_current = QueryManager(current_type=CHAR_TYPE)
+    
     @classmethod
     def recast(cls, rabbit) -> DeadRabbit:
         return super().recast(rabbit)
@@ -122,21 +122,16 @@ class DeadRabbit(Rabbit):
         raise AttributeError
 
 
-# TODO: add validation:
-#   - reproduction rabbits are sitting in a cage alone
-#   - only brothers or only sisters sit in the same cage (max 6)
 class _RabbitInCage(Rabbit):
     class Meta(Rabbit.Meta):
         abstract = True
     
-    # cage: Cage
+    cage: Cage
     
     def get_absolute_url(self):
         raise NotImplementedError
 
 
-# TODO: add validation:
-#   - the rabbit is attached to the plan only if it has the STATUS_READY_TO_SLAUGHTER
 class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
     
@@ -146,6 +141,8 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
     plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> FatteningRabbit:
@@ -158,6 +155,16 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
         super().clean()
         if self.is_male is None:
             raise ValidationError('The sex of the FatteningRabbit must be determined')
+        if self.plan is not None:
+            self.clean_for_plan()
+    
+    def clean_for_plan(self):
+        from api.managers import FatteningRabbitManager
+        READY_TO_SLAUGHTER = FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER
+        if READY_TO_SLAUGHTER not in self.manager.status:
+            raise ValidationError(
+                'The fattening rabbit in the plan must have the status READY_TO_SLAUGHTER'
+            )
 
 
 class Bunny(BunnyManagerMixin, _RabbitInCage):
@@ -168,6 +175,8 @@ class Bunny(BunnyManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
+    
+    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, _):
@@ -185,6 +194,8 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
+    
+    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> MotherRabbit:
@@ -209,6 +220,8 @@ class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
+    
+    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> FatherRabbit:

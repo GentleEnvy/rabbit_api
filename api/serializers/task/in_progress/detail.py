@@ -16,7 +16,7 @@ class InProgressTaskUpdateSerializer(serializers.ModelSerializer):
         fields = ['completed_at']
         extra_kwargs = {
             'completed_at': {
-                'required': False, 'allow_null': False, 'default': datetime.now
+                'required': False, 'allow_null': False, 'default': datetime.utcnow
             }
         }
 
@@ -24,10 +24,9 @@ class InProgressTaskUpdateSerializer(serializers.ModelSerializer):
 class InProgressBunnyJiggingTaskUpdateSerializer(InProgressTaskUpdateSerializer):
     class Meta(InProgressTaskUpdateSerializer.Meta):
         model = BunnyJiggingTask
-        fields = InProgressTaskUpdateSerializer.Meta.fields + ['males', 'females']
+        fields = InProgressTaskUpdateSerializer.Meta.fields + ['males']
         extra_kwargs = InProgressTaskUpdateSerializer.Meta.extra_kwargs | {
-            'males': {'required': True, 'allow_null': False},
-            'females': {'required': True, 'allow_null': False}
+            'males': {'required': True, 'allow_null': False}
         }
 
 
@@ -40,5 +39,5 @@ class InProgressSlaughterInspectionTaskUpdateSerializer(InProgressTaskUpdateSeri
         }
     
     def validate_weights(self, weights):
-        self.Meta.model.clean_weights(weights)
+        self.instance.clean_weights(weights)
         return weights
