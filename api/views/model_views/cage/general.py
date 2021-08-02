@@ -1,8 +1,9 @@
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Prefetch, Count
 
+from api.exceptions import ClientError
 from api.views.model_views.base import BaseGeneralView
 from api.serializers import CageListSerializer
-from api.models import Cage
+from api.models import *
 
 __all__ = ['CageGeneralView']
 
@@ -11,11 +12,20 @@ class CageGeneralView(BaseGeneralView):
     model = Cage
     list_serializer = CageListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Cage.objects.select_related(
-        'mothercage', 'fatteningcage'
-    ).prefetch_related(
-        'mothercage__motherrabbit_set', 'mothercage__bunny_set',
-        'fatteningcage__fatteningrabbit_set', 'fatteningcage__fatherrabbit_set'
+    queryset = Cage.objects.select_subclasses().annotate(
+        number_rabbits=Count(
+            'mothercage__motherrabbit',
+            filter=Q(mothercage__motherrabbit__current_type=Rabbit.TYPE_MOTHER)
+        ) + Count(
+            'mothercage__bunny',
+            filter=Q(mothercage__bunny__current_type=Rabbit.TYPE_BUNNY)
+        ) + Count(
+            'fatteningcage__fatteningrabbit',
+            filter=Q(fatteningcage__fatteningrabbit__current_type=Rabbit.TYPE_FATTENING)
+        ) + Count(
+            'fatteningcage__fatherrabbit',
+            filter=Q(fatteningcage__fatherrabbit__current_type=Rabbit.TYPE_FATHER)
+        )
     )
     
     def filter_queryset(self, queryset):
@@ -34,7 +44,7 @@ class CageGeneralView(BaseGeneralView):
             elif len(status) == 2:
                 queryset = queryset.filter(Q(status=status) | Q(status=status[::-1]))
             else:
-                raise ValueError('Too many statuses')
+                raise ClientError('Too many statuses')
         elif status == '':
             queryset = queryset.filter(status=[])
         
@@ -51,13 +61,12 @@ class CageGeneralView(BaseGeneralView):
                 if (
                     (
                         number_rabbits_from is None or
-                        number_rabbits_from <= len(cage.cast.rabbits)
+                        number_rabbits_from <= len(cage.number_rabbits)
                     ) and (
                         number_rabbits_to is None or
-                        number_rabbits_to >= len(cage.cast.rabbits)
+                        number_rabbits_to >= len(cage.number_rabbits)
                     ) and (
-                        type_ is None or
-                        cage.cast.CHAR_TYPE in type_
+                        type_ is None or cage.CHAR_TYPE in type_
                     )
                 )
             ]
