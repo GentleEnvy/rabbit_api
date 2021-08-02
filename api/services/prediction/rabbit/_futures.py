@@ -42,11 +42,7 @@ class BunnyFuture(BaseRabbitFuture):
             fattening_rabbit = FatteningRabbitFuture(**self.__dict__ | {'status': set()})
             condition.add_fattening_rabbit(fattening_rabbit)
         else:
-            condition.add_bunny(
-                BunnyFuture(
-                    **self.__dict__ | {'status': {BunnyManager.STATUS_MOTHER_FEEDS}}
-                )
-            )
+            condition.add_bunny(BunnyFuture(**self.__dict__))
 
 
 class FatteningRabbitFuture(BaseRabbitFuture):
@@ -58,7 +54,7 @@ class FatteningRabbitFuture(BaseRabbitFuture):
         age = self.age(condition.date).days
         if age >= 80:
             if age < 90:
-                fattening_status.add(FatteningRabbitManager.STATUS_WITHOUT_COCCIDIOSTATIC)
+                fattening_status.add(FatteningRabbitManager.STATUS_NEED_INSPECTION)
             else:  # age >= 90
                 fattening_status.add(FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER)
         # age < 80
@@ -150,12 +146,7 @@ class MotherRabbitFuture(BaseRabbitFuture):
     @staticmethod
     def _birth(condition: 'cond.PredictionCondition', count: int):
         for _ in range(count):
-            condition.add_bunny(
-                BunnyFuture(
-                    birthday=condition.date,
-                    status={BunnyManager.STATUS_MOTHER_FEEDS}
-                )
-            )
+            condition.add_bunny(BunnyFuture(birthday=condition.date, status=set()))
 
 
 class FatherRabbitFuture(BaseRabbitFuture):
@@ -164,16 +155,9 @@ class FatherRabbitFuture(BaseRabbitFuture):
             condition.add_father_rabbit(
                 FatherRabbitFuture(
                     **self.__dict__ | {
-                        'status': {
-                            FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION,
-                            FatherRabbitManager.STATUS_RESTING
-                        }
+                        'status': {FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION}
                     }
                 )
             )
         else:
-            condition.add_father_rabbit(
-                FatherRabbitFuture(
-                    **self.__dict__ | {'status': {FatherRabbitManager.STATUS_RESTING}}
-                )
-            )
+            condition.add_father_rabbit(FatherRabbitFuture(**self.__dict__))
