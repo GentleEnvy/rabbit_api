@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db.models import Model
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
 
 from api.exceptions import *
 
@@ -21,7 +21,7 @@ class BaseView(GenericAPIView):
                 return CriticalError().to_response()
         
         view_function = super().as_view(**init_kwargs)
-        return view
+        return csrf_exempt(view)
     
     def handle_exception(self, exception):
         try:
