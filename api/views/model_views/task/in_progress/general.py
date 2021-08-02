@@ -1,3 +1,7 @@
+from rest_framework import status
+from rest_framework.response import Response
+
+from api.exceptions import APIWarning
 from api.models import Task
 from api.serializers import InProgressTaskListSerializer
 from api.services.controllers import *
@@ -17,5 +21,10 @@ class InProgressTaskGeneralView(BaseTaskGeneralView):
 # noinspection PyMethodMayBeStatic
 class InProgressUpdateTaskGeneralView(BaseView):
     def post(self, request, *args, **kwargs):
-        for task_controller in all_controllers:
-            task_controller().update_in_progress()
+        try:
+            for task_controller in all_controllers:
+                task_controller().update_in_progress()
+        except OverflowError as e:
+            # TODO: log
+            raise APIWarning(str(e), code='overflow')
+        return Response(status=status.HTTP_202_ACCEPTED)

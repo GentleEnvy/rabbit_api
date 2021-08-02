@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from api.models import *
 from api.serializers.base import EmptySerializer
 from api.views.base import BaseView
-from api.views.exceptions import APIException
+from api.exceptions import *
 
 __all__ = [
     'FatteningRabbitRecastView', 'MotherRabbitRecastView', 'FatherRabbitRecastView'
@@ -24,14 +24,14 @@ class _BaseRecastView(BaseView):
     def post(self, request, **_):
         rabbit = self.get_object()
         if self._get_task_or_none(rabbit) is not None:
-            raise APIException('The rabbit is already waiting recast', status=400)
+            raise ClientError('The rabbit is already waiting recast')
         self.task_model.objects.create(rabbit=rabbit)
         return Response(status=status.HTTP_201_CREATED)
     
     def delete(self, request, **_):
         task = self._get_task_or_none()
         if task is None:
-            raise APIException('The rabbit does not waiting recast', status=400)
+            raise ClientError('The rabbit does not waiting recast')
         task.delete()
         return Response(status.HTTP_204_NO_CONTENT)
     

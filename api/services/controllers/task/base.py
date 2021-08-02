@@ -19,8 +19,6 @@ class TaskController(ABC):
     
     @final
     def update_in_progress(self) -> None:
-        # self._clear(self.anonymous | self.in_progress)
-        # self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
         self._setup(self.in_progress)
     
     @property

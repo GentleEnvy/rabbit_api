@@ -16,12 +16,7 @@ class CageFilterer(BaseFilterer):
         pass
     
     def order_by_nearest_to(self, cage: Cage, cage_type: Type[Cage] = Cage) -> list[Cage]:
-        # noinspection PyUnresolvedReferences
-        cages = list(
-            self.queryset.select_subclasses().order_by(
-                'farm_number', 'number', 'letter'
-            )
-        )
+        cages = list(self.queryset.order_by('farm_number', 'number', 'letter'))
         index = cages.index(cage)
         ordered_cages = []
         increment_index = index
