@@ -15,15 +15,20 @@ class BaseView(GenericAPIView):
     @classmethod
     def as_view(cls, **init_kwargs):
         def view(*args, **kwargs):
-            try:
-                return view_function(*args, **kwargs)
-            except Exception:
-                return CriticalError().to_response()
+            return view_function(*args, **kwargs)
+            # FIXME: .accepted_renderer not set on Response
+            # try:
+            #     return view_function(*args, **kwargs)
+            # except Exception:
+            #     return CriticalError().to_response()
         
         view_function = super().as_view(**init_kwargs)
         return csrf_exempt(view)
     
     def handle_exception(self, exception):
+        if settings.DEBUG:
+            raise exception
+        
         try:
             try:
                 return super().handle_exception(exception)
@@ -41,7 +46,7 @@ class BaseView(GenericAPIView):
             error = api_error
             
         except Exception as e:
-            error = e
+            error = CriticalError(str(e))
         
         if settings.DEBUG and isinstance(error, (CriticalError, ClientError)):
             raise error
