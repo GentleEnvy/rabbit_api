@@ -26,7 +26,8 @@ class _BaseFeedsView(CreateModelMixin, BaseView):
         return Response(
             {
                 'all_stocks': aggregator['stocks__sum'] or 0,
-                'expected_stock': feeding_service.get_expected_stock()
+                'expected_stock': feeding_service.get_expected_stock(),
+                'predict_bags': feeding_service.predict_bags_need_in_future()
             }
         )
     

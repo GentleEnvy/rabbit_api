@@ -41,14 +41,7 @@ class FeedingService:
         
         return days_left
     
-    def _get_predictions(self, days: int):
-        predictor = PredictionRabbitService()
-        return predictor.predict(
-            days=days,
-            every_day=True
-        )
-    
-    def predict_bags_need_in_future(self):
+    def predict_bags_need_in_future(self) -> int:
         days_left = self.get_expected_stock()
         feeding_rabbits_for_each_day = self._rabbits_with_prognosis(
             days_left + self.days_for_plan
@@ -59,6 +52,14 @@ class FeedingService:
             total_feeds_needed_weight += rabbits * self.normal_daily_consumption
         bags_need = total_feeds_needed_weight // self.feed_bag_weight + 1
         return bags_need
-        
+    
+    @staticmethod
+    def _get_predictions(days: int):
+        predictor = PredictionRabbitService()
+        return predictor.predict(
+            days=days,
+            every_day=True
+        )
+    
     def _rabbits_with_prognosis(self, days: int) -> list[int]:
         raise NotImplementedError
