@@ -10,9 +10,9 @@ class FatteningFeedingService(FeedingService):
     _feeds_model = FatteningFeeds
     
     def _rabbits_with_prognosis(self, days: int):
-        rabbits_for_each_day = self._get_predictions(self.days_for_plan)
+        rabbits_for_each_day = self._get_predictions(days)
         feeding_rabbits_for_each_day = []
-        for day in range(self.days_for_plan):
+        for day in range(days):
             rabbits_count = len(
                 rabbits_for_each_day[day].fattening_rabbits
             ) + len(
