@@ -11,7 +11,7 @@ class CageListSerializer(serializers.ModelSerializer):
     # noinspection PyAbstractClass
     class _IsParallelField(serializers.SerializerMethodField):
         def get_attribute(self, cage):
-            if cage.cast.CHAR_TYPE != MotherCage.CHAR_TYPE:
+            if cage.CHAR_TYPE != MotherCage.CHAR_TYPE:
                 raise SkipField
             return super().get_attribute(cage)
     
@@ -27,10 +27,10 @@ class CageListSerializer(serializers.ModelSerializer):
     is_parallel = _IsParallelField()
     
     def get_number_rabbits(self, cage):
-        return len(cage.cast.rabbits)
+        return cage.number_rabbits
     
     def get_type(self, cage):
-        return cage.cast.CHAR_TYPE
+        return cage.CHAR_TYPE
     
     def get_is_parallel(self, cage):
-        return cage.cast.manager.is_parallel
+        return cage.manager.is_parallel
