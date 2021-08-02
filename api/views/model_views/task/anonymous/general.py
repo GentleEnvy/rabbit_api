@@ -1,7 +1,6 @@
 from api.models import *
 from api.serializers import AnonymousTaskListSerializer
-from api.services.controllers import *
-from api.services.controllers.task.base import TaskController
+from api.services.task.controllers import TaskController
 from api.views.model_views.task.base import BaseTaskGeneralView
 
 __all__ = ['AnonymousTaskGeneralView']

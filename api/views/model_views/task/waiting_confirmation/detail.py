@@ -1,7 +1,7 @@
 from api.models import Task
 from api.serializers import WaitingConfirmationTaskUpdateSerializer
-from api.services.controllers.task.base import TaskController
-from api.services.controllers.task import all_controllers
+from api.services.task.controllers import TaskController
+from api.services.task.controllers import all_controllers
 from api.views.model_views.base import BaseDetailView
 
 __all__ = ['WaitingConfirmationTaskDetailView']

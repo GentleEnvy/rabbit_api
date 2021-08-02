@@ -1,4 +1,4 @@
-from api.services.controllers.task._controller import *
+from api.services.task.controllers._controller import *
 
 all_controllers = (
     ToReproductionTaskController, ToFatteningTaskController, MatingTaskController,
