@@ -48,7 +48,7 @@ class CriticalError(CastSupportsError):
 class APIWarning(APIException):
     key_name = 'warning'
     
-    def __init__(self, message='Critical server error', status=100, code: str = None):
+    def __init__(self, message='Warning', status=100, code: str = None):
         super().__init__(message, status)
         self.code: Final[str] = code
     

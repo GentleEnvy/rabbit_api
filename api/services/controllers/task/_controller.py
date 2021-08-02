@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Callable, Type
 
 from django.core.exceptions import ValidationError
 
@@ -14,35 +13,7 @@ __all__ = [
 ]
 
 
-def _setup_jigging_cage(
-    task: Task, cage_from: Cage, cage_to_attr: str, cleaner: Callable,
-    cage_to_type: Type[Cage] = None
-) -> None:
-    if getattr(task, cage_to_attr) is not None:
-        try:
-            cleaner()
-            return
-        except ValidationError:
-            pass
-    # noinspection SpellCheckingInspection
-    filterer = CageFilterer(
-        Cage.objects.select_related('fatteningcage', 'mothercage')
-    )
-    # TODO: check same cage
-    for nearest_cage in filterer.order_by_nearest_to(cage_from, cage_to_type):
-        try:
-            nearest_cage.clean_for_task()
-            setattr(task, cage_to_attr, nearest_cage)
-            cleaner()
-        except ValidationError:
-            continue
-        task.save()
-        break
-    raise ValidationError('There are no suitable cages')
-
-
 def _create_from_fattening_cage(controller, tasks):
-    # noinspection SpellCheckingInspection
     for fattening_cage in FatteningCage.objects.exclude(
         id__in=[t.cage.id for t in tasks]
     ):
@@ -56,8 +27,30 @@ class ToReproductionTaskController(TaskController):
     task_model = ToReproductionTask
     
     def _setup(self, tasks):
+        task: ToReproductionTask
         for task in tasks:
-            _setup_jigging_cage(task, task.rabbit.cage, 'cage_to', task.clean_cage_to)
+            if task.cage_to is not None:
+                try:
+                    task.full_clean()
+                    continue
+                except ValidationError:
+                    pass
+            filterer = CageFilterer(Cage.objects.select_subclasses())
+            # TODO: check same cage
+            is_found = False
+            for nearest_cage in filterer.order_by_nearest_to(
+                task.rabbit.cage, FatteningCage if task.rabbit.is_male else MotherCage
+            ):
+                try:
+                    task.cage_to = nearest_cage
+                    task.clean_cage_to()
+                    task.save()
+                    is_found = True
+                    break
+                except ValidationError:
+                    continue
+            if not is_found:
+                raise OverflowError('There are no suitable cages')
     
     def execute(self, task: ToReproductionTask):
         rabbit = task.rabbit
@@ -73,8 +66,30 @@ class ToFatteningTaskController(TaskController):
     task_model = ToFatteningTask
     
     def _setup(self, tasks):
+        task: ToFatteningTask
         for task in tasks:
-            _setup_jigging_cage(task, task.rabbit.cage, 'cage_to', task.clean_cage_to)
+            if task.cage_to is not None:
+                try:
+                    task.full_clean()
+                    continue
+                except ValidationError:
+                    pass
+            filterer = CageFilterer(Cage.objects.select_subclasses())
+            # TODO: check same cage
+            is_found = False
+            for nearest_cage in filterer.order_by_nearest_to(
+                task.rabbit.cast.cage, FatteningCage
+            ):
+                try:
+                    task.cage_to = nearest_cage
+                    task.clean_cage_to()
+                    task.save()
+                    is_found = True
+                    break
+                except ValidationError:
+                    continue
+            if not is_found:
+                raise OverflowError('There are no suitable cages')
     
     def execute(self, task: ToReproductionTask):
         casted_rabbit = FatteningRabbit.recast(task.rabbit)
@@ -98,7 +113,7 @@ class BunnyJiggingTaskController(TaskController):
     def _create(self, tasks):
         for mother_cage in MotherCage.objects.exclude(
             id__in=[t.cage_from.id for t in tasks]
-        ).prefetch_related('bunny_set').all():
+        ):
             try:
                 self.task_model.objects.create(cage_from=mother_cage)
             except ValidationError:
@@ -107,14 +122,41 @@ class BunnyJiggingTaskController(TaskController):
     def _setup(self, tasks):
         task: BunnyJiggingTask
         for task in tasks:
-            _setup_jigging_cage(
-                task, task.cage_from, 'male_cage_to', task.clean_male_cage_to,
-                FatteningCage
-            )
-            _setup_jigging_cage(
-                task, task.cage_from, 'female_cage_to', task.clean_female_cage_to,
-                FatteningCage
-            )
+            if task.male_cage_to is not None:
+                try:
+                    task.full_clean()
+                    continue
+                except ValidationError:
+                    pass
+            filterer = CageFilterer(Cage.objects.select_subclasses())
+            is_found_for_male = False
+            is_found_for_female = False
+            for nearest_cage in filterer.order_by_nearest_to(
+                task.cage_from, FatteningCage
+            ):
+                if not is_found_for_male:
+                    try:
+                        task.male_cage_to = nearest_cage
+                        task.clean_male_cage_to()
+                        is_found_for_male = True
+                    except ValidationError:
+                        continue
+                else:
+                    try:
+                        task.female_cage_to = nearest_cage
+                        task.clean_female_cage_to()
+                        is_found_for_female = True
+                    except ValidationError:
+                        continue
+                if is_found_for_male and is_found_for_female:
+                    try:
+                        task.save()
+                    except ValidationError:
+                        is_found_for_male = False
+                        is_found_for_female = False
+                        continue
+            if not is_found_for_male or not is_found_for_female:
+                raise OverflowError('There are no suitable cages')
     
     def execute(self, task: BunnyJiggingTask):
         bunnies = task.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY)
@@ -164,9 +206,7 @@ class SlaughterTaskController(TaskController):
     
     def _create(self, tasks):
         exclude_rabbit_ids = [task.rabbit.id for task in tasks]
-        for plan in Plan.objects.filter(
-            date__lte=datetime.utcnow()
-        ).all():
+        for plan in Plan.objects.filter(date__lte=datetime.utcnow()):
             for fattening_rabbit in plan.fatteningrabbit_set.exclude(
                 id__in=exclude_rabbit_ids
             ):
