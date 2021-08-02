@@ -26,7 +26,7 @@ class CageGeneralView(BaseGeneralView):
             'fatteningcage__fatherrabbit',
             filter=Q(fatteningcage__fatherrabbit__current_type=Rabbit.TYPE_FATHER)
         )
-    )
+    ).order_by('id')
     
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
@@ -61,10 +61,10 @@ class CageGeneralView(BaseGeneralView):
                 if (
                     (
                         number_rabbits_from is None or
-                        number_rabbits_from <= len(cage.number_rabbits)
+                        number_rabbits_from <= cage.number_rabbits
                     ) and (
                         number_rabbits_to is None or
-                        number_rabbits_to >= len(cage.number_rabbits)
+                        number_rabbits_to >= cage.number_rabbits
                     ) and (
                         type_ is None or cage.CHAR_TYPE in type_
                     )
