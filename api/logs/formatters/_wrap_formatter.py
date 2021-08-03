@@ -2,7 +2,7 @@ from logging import Formatter
 from textwrap import wrap
 from typing import Final
 
-from api.logs.records._cache_message import CacheMessageLogRecord
+from api.logs.records import CacheMessageLogRecord
 
 __all__ = ['WrapFormatter']
 
@@ -25,7 +25,7 @@ def _wrap(text: str, max_length: int) -> str:
 
 
 class WrapFormatter(Formatter):
-    def __init__(self, *args, max_length: int = 150, **kwargs):
+    def __init__(self, *args, max_length: int = 140, **kwargs):
         super().__init__(*args, **kwargs)
         self._max_length: Final[int] = max_length
     

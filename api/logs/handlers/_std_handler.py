@@ -17,5 +17,5 @@ class StdHandler(BaseHandler, StreamHandler):
     def emit(self, record):
         if record.exc_info or record.levelno >= self._err_level:
             self.stream = stderr
-        super().emit(record)
+        StreamHandler.emit(self, record)
         self.stream = stdout

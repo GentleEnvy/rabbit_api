@@ -5,9 +5,9 @@
         "web_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
             "datefmt": "[%d.%m-%H:%M:%S]",
-            "format": "web: %(message)s"
+            "format": "web %(asctime)s: %(message)s"
         },
-        "root_formatter": {
+        "api_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
             "datefmt": "[%d.%m-%H:%M:%S]",
             "format": "%(levelname)-7s| %(name)s %(asctime)s <%(module)s->%(funcName)s(%(lineno)d)>: %(message)s"
@@ -20,10 +20,10 @@
             "formatter": "web_formatter",
             "stream": "ext://sys.stdout"
         },
-        "root_console_handler": {
+        "api_console_handler": {
             "level": "DEBUG",
             "class": "api.logs.handlers.StdHandler",
-            "formatter": "root_formatter"
+            "formatter": "api_formatter"
         }
     },
     "loggers": {
@@ -33,7 +33,7 @@
             "propagate": false
         },
         "api": {
-            "handlers": ["root_console_handler"],
+            "handlers": ["api_console_handler"],
             "level": "DEBUG",
             "propagate": false
         }

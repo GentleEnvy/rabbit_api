@@ -7,7 +7,7 @@
             "datefmt": "[%d.%m-%H:%M:%S]",
             "format": "web: %(message)s"
         },
-        "root_formatter": {
+        "api_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
             "datefmt": "[%d.%m-%H:%M:%S]",
             "format": "%(levelname)-5s| %(name)s %(asctime)s <%(module)s->%(funcName)s(%(lineno)d)>: %(message)s"
@@ -28,15 +28,15 @@
             "mode": "a",
             "encoding": "utf-8"
         },
-        "root_console_handler": {
+        "api_console_handler": {
             "level": "DEBUG",
             "class": "api.logs.handlers.StdHandler",
-            "formatter": "root_formatter"
+            "formatter": "api_formatter"
         },
-        "root_file_handler": {
+        "api_file_handler": {
             "level": "DEBUG",
             "class": "logging.handlers.WatchedFileHandler",
-            "formatter": "root_formatter",
+            "formatter": "api_formatter",
             "filename": "api/logs/logs.log",
             "mode": "a",
             "encoding": "utf-8"
@@ -45,12 +45,12 @@
     "loggers": {
         "django.request": {
             "handlers": ["web_console_handler", "web_file_handler"],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": false
         },
         "api": {
-            "handlers": ["root_console_handler", "root_file_handler"],
-            "level": "INFO",
+            "handlers": ["api_console_handler", "api_file_handler"],
+            "level": "DEBUG",
             "propagate": false
         }
     }
