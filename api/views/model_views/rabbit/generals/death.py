@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
@@ -10,11 +9,10 @@ from api.views.base import BaseView
 __all__ = ['RabbitDeathView']
 
 
-# noinspection PyMethodMayBeStatic
 class RabbitDeathView(BaseView):
     serializer_class = RabbitDeathSerializer
     
-    def delete(self, request):
+    def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cage = serializer.validated_data['cage']
@@ -35,11 +33,6 @@ class RabbitDeathView(BaseView):
         
         return Response(status=status.HTTP_200_OK)
     
-    def post(self, request):
-        if settings.DEBUG:
-            return self.delete(request)
-        self.http_method_not_allowed(request)
-    
     def _death_by_mother(self, cage):
         if cage.CHAR_TYPE != MotherCage.CHAR_TYPE:
             raise ValidationError('This cage is not a MotherCage')
@@ -48,7 +41,8 @@ class RabbitDeathView(BaseView):
             raise ValidationError('In this cage there is no bunnies')
         self._die(bunny, DeadRabbit.CAUSE_MOTHER)
     
-    def _die(self, rabbit, cause) -> DeadRabbit:
+    @staticmethod
+    def _die(rabbit, cause) -> DeadRabbit:
         dead_rabbit = DeadRabbit.recast(rabbit)
         dead_rabbit.death_cause = cause
         dead_rabbit.save()

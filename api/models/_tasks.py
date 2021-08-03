@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
 
+from api.exceptions import APIWarning
 from api.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
@@ -58,7 +59,7 @@ class ToReproductionTask(Task):
             self.clean_cage_to()
     
     def clean_cage_to(self):
-        # TODO: check that the cage is not occupied by another task
+        self.cage_to.cast.clean_for_task()
         if self.rabbit.is_male:
             if self.cage_to.cast.CHAR_TYPE == MotherCage.CHAR_TYPE:
                 raise ValidationError('The male cannot be jigged to MotherCage')
@@ -89,6 +90,7 @@ class ToFatteningTask(Task):
             self.clean_cage_to()
     
     def clean_cage_to(self):
+        self.cage_to.clean_for_task()
         for neighbour in self.cage_to.cast.rabbits:
             if neighbour.is_male != self.rabbit.is_male:
                 raise ValidationError(
@@ -108,11 +110,16 @@ class MatingTask(Task):
     father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
     
     def clean(self):
-        super().clean()
-        self.clean_mother_rabbit(self.mother_rabbit)
-        self.clean_father_rabbit(self.father_rabbit)
-        # TODO: check the uniqueness (mother_rabbit, father_rabbit) for
-        #   anonymous | in_progress
+        try:
+            MatingTask.objects.get(
+                mother_rabbit=self.mother_rabbit, father_rabbit=self.father_rabbit,
+                is_confirmed=None
+            )
+            raise APIWarning('This couple is already waiting for mating', code='mating')
+        except MatingTask.DoesNotExist:
+            super().clean()
+            self.clean_mother_rabbit(self.mother_rabbit)
+            self.clean_father_rabbit(self.father_rabbit)
     
     @classmethod
     def clean_mother_rabbit(cls, mother_rabbit: MotherRabbit):
@@ -162,14 +169,25 @@ class BunnyJiggingTask(Task):
                 raise ValidationError(
                     "There is bunny in this cage that don't need jigging"
                 )
+        if self.male_cage_to is not None:
+            self.clean_male_cage_to()
+            if self.female_cage_to is None:
+                raise ValidationError(
+                    'male_cage_to is not None, but female_cage_to is None'
+                )
+            self.clean_female_cage_to()
+        elif self.female_cage_to is not None:
+            raise ValidationError(
+                'female_cage_to is not None, but male_cage_to is None'
+            )
     
     def clean_male_cage_to(self):
-        if self.male_cage_to is not None:
-            if self.male_cage_to == self.female_cage_to:
-                raise ValidationError('Males and females cannot sit in the same cage')
-            self.male_cage_to.clean_for_jigging_bunnies(
-                self.__bunny_set().filter(is_male=True)
-            )
+        self.male_cage_to.clean_for_task()
+        if self.male_cage_to == self.female_cage_to:
+            raise ValidationError('Males and females cannot sit in the same cage')
+        self.male_cage_to.clean_for_jigging_bunnies(
+            self.__bunny_set().filter(is_male=True)
+        )
     
     def clean_female_cage_to(self):
         if self.female_cage_to is not None:
