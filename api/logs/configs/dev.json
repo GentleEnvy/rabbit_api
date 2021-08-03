@@ -44,12 +44,12 @@
     },
     "loggers": {
         "gunicorn.access": {
-            "handlers": ["web_console_handler"],
+            "handlers": ["web_file_handler"],
             "level": "DEBUG",
             "propagate": false
         },
         "api": {
-            "handlers": ["api_console_handler"],
+            "handlers": ["api_console_handler", "api_file_handler"],
             "level": "DEBUG",
             "propagate": false
         }
