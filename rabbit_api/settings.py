@@ -116,4 +116,4 @@ SECRET_KEY = '''<django_heroku>'''
 ALLOWED_HOSTS = '''<django_heroku>'''
 DATABASES = {'default': ''''<django_heroku>'''}
 
-django_heroku.settings(locals(), test_runner=False)
+django_heroku.settings(locals(), test_runner=False, logging=False)
