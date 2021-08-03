@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import os
 
@@ -106,3 +107,11 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+with open('api/logs/dev_config.json', 'r') as logs_config_json:
+    LOGGING = json.load(logs_config_json)
+
+
+# Custom
+
+YANDEX_DISK_TOKEN = os.environ['YANDEX_DISK_TOKEN']
