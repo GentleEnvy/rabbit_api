@@ -1,4 +1,6 @@
 from django.db.models import Q, QuerySet, Prefetch, Count
+from django.http import Http404
+from rest_framework.exceptions import ValidationError
 
 from api.exceptions import ClientError
 from api.views.model_views.base import BaseGeneralView
@@ -31,6 +33,7 @@ class CageGeneralView(BaseGeneralView):
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
+        raise Http404('abc')
         
         if farm_number := params.get('farm_number'):
             queryset = queryset.filter(farm_number__in=farm_number.split(','))
