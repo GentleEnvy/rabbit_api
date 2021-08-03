@@ -33,7 +33,6 @@ class CageGeneralView(BaseGeneralView):
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
-        raise Http404('abc')
         
         if farm_number := params.get('farm_number'):
             queryset = queryset.filter(farm_number__in=farm_number.split(','))
