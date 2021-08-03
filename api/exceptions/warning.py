@@ -22,7 +22,7 @@ def _cast_rest_api_exception(exception: RestAPIException):
 
 
 def _cast_http_404(exception: Http404):
-    return APIWarning(str(exception), rest_status.HTTP_404_NOT_FOUND, 'not_found')
+    return APIWarning(str(exception), rest_status.HTTP_404_NOT_FOUND, ['not_found'])
 
 
 class APIWarning(CastSupportsError):
@@ -34,9 +34,9 @@ class APIWarning(CastSupportsError):
         Http404: _cast_http_404
     }
     
-    def __init__(self, message=None, status=None, *codes: str):
+    def __init__(self, message=None, status=None, codes: list[str] = None):
         super().__init__(message or 'Warning', status or rest_status.HTTP_100_CONTINUE)
-        self.codes: Final[tuple[str, ...]] = tuple(codes)
+        self.codes: Final[tuple[str, ...]] = tuple(codes or [])
     
     def serialize(self):
         json = super().serialize()

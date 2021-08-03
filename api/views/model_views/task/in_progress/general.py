@@ -26,5 +26,5 @@ class InProgressUpdateTaskGeneralView(BaseView):
                 task_controller().update_in_progress()
         except OverflowError as e:
             # TODO: log
-            raise APIWarning(str(e), code='overflow')
+            raise APIWarning(str(e), codes=['overflow'])
         return Response(status=status.HTTP_202_ACCEPTED)

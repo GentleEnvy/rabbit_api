@@ -115,7 +115,7 @@ class MatingTask(Task):
                 mother_rabbit=self.mother_rabbit, father_rabbit=self.father_rabbit,
                 is_confirmed=None
             )
-            raise APIWarning('This couple is already waiting for mating', code='mating')
+            raise APIWarning('This couple is already waiting for mating', codes=['mating'])
         except MatingTask.DoesNotExist:
             super().clean()
             self.clean_mother_rabbit(self.mother_rabbit)
