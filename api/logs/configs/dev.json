@@ -32,7 +32,7 @@
             "level": "DEBUG",
             "propagate": false
         },
-        "root": {
+        "api": {
             "handlers": ["root_console_handler"],
             "level": "DEBUG",
             "propagate": false

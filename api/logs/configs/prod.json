@@ -48,7 +48,7 @@
             "level": "INFO",
             "propagate": false
         },
-        "root": {
+        "api": {
             "handlers": ["root_console_handler", "root_file_handler"],
             "level": "INFO",
             "propagate": false

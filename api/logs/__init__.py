@@ -1,5 +1,7 @@
-import logging
+from api.logs._logger import logger
 
-from api.logs.records import CacheMessageLogRecord
-
-logging.setLogRecordFactory(CacheMessageLogRecord)
+debug = logger.debug
+info = logger.info
+warning = logger.warning
+error = logger.exception
+critical = logger.critical
