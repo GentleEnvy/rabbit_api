@@ -5,7 +5,7 @@
         "web_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
             "datefmt": "[%d.%m-%H:%M:%S]",
-            "format": "web: %(message)s"
+            "format": "web %(asctime)s: %(message)s"
         },
         "api_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
@@ -43,8 +43,8 @@
         }
     },
     "loggers": {
-        "django.server": {
-            "handlers": ["web_console_handler", "web_file_handler"],
+        "gunicorn.access": {
+            "handlers": ["web_file_handler"],
             "level": "DEBUG",
             "propagate": false
         },
