@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import os
 
@@ -46,6 +47,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'api.middlewares.RequestLogMiddleware'
 ]
 
 ROOT_URLCONF = 'rabbit_api.urls'
@@ -91,6 +94,22 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+with open(f"api/logs/configs/{'dev' if DEBUG else 'prod'}.json", 'r') as logs_config_json:
+    LOGGING = json.load(logs_config_json)
+
+
+###
+# Custom
+###
+
+
+YANDEX_DISK_TOKEN = os.environ['YANDEX_DISK_TOKEN']
+
+
+###
+# heroku
+###
 
 
 SECRET_KEY = '''<django_heroku>'''

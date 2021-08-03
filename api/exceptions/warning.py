@@ -11,6 +11,8 @@ from api.exceptions.base import *
 
 __all__ = ['APIWarning']
 
+from api.logs import warning
+
 
 def _cast_rest_api_exception(exception: RestAPIException):
     return APIWarning(
@@ -25,19 +27,15 @@ def _cast_http_404(exception: Http404):
 
 class APIWarning(CastSupportsError):
     KEY_NAME = 'warning'
-    
-    DEFAULT_MESSAGE = 'Warning'
-    DEFAULT_STATUS = rest_status.HTTP_100_CONTINUE
+    LOG_FUNC = warning
     
     EXCEPTION__CAST = {
         AuthenticationFailed: _cast_rest_api_exception,
         Http404: _cast_http_404
     }
     
-    def __init__(
-        self, message=DEFAULT_MESSAGE, status=DEFAULT_STATUS, *codes: str
-    ):
-        super().__init__(message, status)
+    def __init__(self, message=None, status=None, *codes: str):
+        super().__init__(message or 'Warning', status or rest_status.HTTP_100_CONTINUE)
         self.codes: Final[tuple[str, ...]] = tuple(codes)
     
     def serialize(self):

@@ -11,12 +11,10 @@ class MotherFeedingService(FeedingService):
     def _rabbits_with_prognosis(self, days: int):
         mothers_for_each_day = self._get_predictions(days)
         feeding_mothers_for_each_day = []
-        for day in range(self.days_for_plan):
+        for day in range(days):
             mothers_count = 0
             for mother_rabbit in mothers_for_each_day[day].mother_rabbits:
                 if MotherRabbitManager.STATUS_FEEDS_BUNNY in mother_rabbit.status:
                     mothers_count += 1
             feeding_mothers_for_each_day.append(mothers_count)
         return feeding_mothers_for_each_day
-    
-    

@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, date, time
-from typing import Union
+from typing import Union, TextIO
 
 from dateutil.parser import parse
 from django.utils import timezone
 
-__all__ = ['diff_time', 'to_datetime']
+__all__ = ['diff_time', 'to_datetime', 'file_line_count']
 
 
 def diff_time(
@@ -31,3 +31,15 @@ def to_datetime(value: Union[str, date]) -> datetime:
         dt if timezone.is_aware(dt) else
         dt.replace(tzinfo=timezone.get_current_timezone())
     )
+
+
+def file_line_count(file: TextIO) -> int:
+    """
+    :param file: file is opened in 'r' mode
+    :return: number of lines in file
+    """
+    file.seek(0)
+    line_count = -1
+    for last_line, _ in enumerate(file):
+        line_count = last_line
+    return line_count + 1

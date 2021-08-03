@@ -6,6 +6,8 @@ from rest_framework.response import Response
 
 __all__ = ['APIException', 'CastSupportsError']
 
+from api.logs import error, logger
+
 
 class APIException(Exception):
     KEY_NAME: str
@@ -21,7 +23,18 @@ class APIException(Exception):
         return Response(data=self.serialize(), status=self.status)
 
 
-class CastSupportsError(APIException):
+class LoggedException(APIException):
+    LOG_FUNC = staticmethod(error)
+    
+    def __init__(self, message, status, log_func=None):
+        super().__init__(message, status)
+        self.log_func = log_func or self.LOG_FUNC
+    
+    def log(self) -> None:
+        self.log_func(self.message)
+
+
+class CastSupportsError(LoggedException):
     EXCEPTION__CAST: dict[Type[Exception], Callable[[Exception], APIException]] = {}
     
     @classmethod

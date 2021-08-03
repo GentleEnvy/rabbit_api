@@ -1,0 +1,57 @@
+{
+    "version": 1,
+    "disable_existing_loggers": true,
+    "formatters": {
+        "web_formatter": {
+            "class": "api.logs.formatters.ExceptFormatter",
+            "datefmt": "[%d.%m-%H:%M:%S]",
+            "format": "web: %(message)s"
+        },
+        "api_formatter": {
+            "class": "api.logs.formatters.ExceptFormatter",
+            "datefmt": "[%d.%m-%H:%M:%S]",
+            "format": "%(levelname)-5s| %(name)s %(asctime)s <%(module)s->%(funcName)s(%(lineno)d)>: %(message)s"
+        }
+    },
+    "handlers": {
+        "web_console_handler": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "web_formatter",
+            "stream": "ext://sys.stdout"
+        },
+        "web_file_handler": {
+            "level": "DEBUG",
+            "class": "logging.handlers.WatchedFileHandler",
+            "formatter": "web_formatter",
+            "filename": "api/logs/logs.log",
+            "mode": "a",
+            "encoding": "utf-8"
+        },
+        "api_console_handler": {
+            "level": "DEBUG",
+            "class": "api.logs.handlers.StdHandler",
+            "formatter": "api_formatter"
+        },
+        "api_file_handler": {
+            "level": "DEBUG",
+            "class": "logging.handlers.WatchedFileHandler",
+            "formatter": "api_formatter",
+            "filename": "api/logs/logs.log",
+            "mode": "a",
+            "encoding": "utf-8"
+        }
+    },
+    "loggers": {
+        "django.server": {
+            "handlers": ["web_console_handler", "web_file_handler"],
+            "level": "DEBUG",
+            "propagate": false
+        },
+        "api": {
+            "handlers": ["api_console_handler", "api_file_handler"],
+            "level": "DEBUG",
+            "propagate": false
+        }
+    }
+}

@@ -6,6 +6,8 @@ from api.exceptions.base import *
 
 __all__ = ['CriticalError']
 
+from api.logs import critical
+
 
 def _cast_rest_api_exception(exception: RestAPIException):
     return CriticalError(exception.get_full_details(), getattr(exception, 'status_code'))
@@ -24,6 +26,7 @@ def _cast_exception(exception: Exception):
 
 class CriticalError(CastSupportsError):
     KEY_NAME = 'critical_error'
+    LOG_FUNC = staticmethod(critical)
     
     EXCEPTION__CAST = {
         RestAPIException: _cast_rest_api_exception,

@@ -32,6 +32,7 @@ def _exception_handler(exception):
     except Exception as e:
         error = CriticalError(str(e))
     
+    error.log()
     if settings.DEBUG and isinstance(error, (CriticalError, ClientError)):
         raise exception
     return error.to_response()
@@ -41,19 +42,19 @@ def _exception_handler(exception):
 class BaseView(GenericAPIView):
     model: Model
     
-    @classmethod
-    def as_view(cls, **init_kwargs):
-        def get_view(view_func):
-            def view(*args, **kwargs):
-                try:
-                    return view_func(*args, **kwargs)
-                except Exception as e:
-                    return _exception_handler(e)
-            
-            return view
-        
-        view_function = super().as_view(**init_kwargs)
-        return csrf_exempt(get_view(view_function))
+    # @classmethod
+    # def as_view(cls, **init_kwargs):
+    #     def get_view(view_func):
+    #         def view(*args, **kwargs):
+    #             try:
+    #                 return view_func(*args, **kwargs)
+    #             except Exception as e:
+    #                 return _exception_handler(e)
+    #
+    #         return view
+    #
+    #     view_function = super().as_view(**init_kwargs)
+    #     return csrf_exempt(get_view(view_function))
     
     def handle_exception(self, exception):
         return _exception_handler(exception)
