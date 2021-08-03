@@ -1,0 +1,41 @@
+{
+    "version": 1,
+    "disable_existing_loggers": true,
+    "formatters": {
+        "web_formatter": {
+            "class": "api.logs.formatters.ExceptFormatter",
+            "datefmt": "[%d.%m-%H:%M:%S]",
+            "format": "web: %(message)s"
+        },
+        "root_formatter": {
+            "class": "api.logs.formatters.ExceptFormatter",
+            "datefmt": "[%d.%m-%H:%M:%S]",
+            "format": "%(levelname)-7s| %(name)s %(asctime)s <%(module)s->%(funcName)s(%(lineno)d)>: %(message)s"
+        }
+    },
+    "handlers": {
+        "web_console_handler": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "web_formatter",
+            "stream": "ext://sys.stdout"
+        },
+        "root_console_handler": {
+            "level": "DEBUG",
+            "class": "api.logs.handlers.StdHandler",
+            "formatter": "root_formatter"
+        }
+    },
+    "loggers": {
+        "django.server": {
+            "handlers": ["web_console_handler"],
+            "level": "DEBUG",
+            "propagate": false
+        },
+        "root": {
+            "handlers": ["root_console_handler"],
+            "level": "DEBUG",
+            "propagate": false
+        }
+    }
+}

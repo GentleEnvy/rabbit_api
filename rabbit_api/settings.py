@@ -108,10 +108,11 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-with open('api/logs/dev_config.json', 'r') as logs_config_json:
+with open(f"api/logs/configs/{'dev' if DEBUG else 'prod'}.json", 'r') as logs_config_json:
     LOGGING = json.load(logs_config_json)
 
-
+###
 # Custom
+###
 
 YANDEX_DISK_TOKEN = os.environ['YANDEX_DISK_TOKEN']
