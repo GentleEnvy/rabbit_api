@@ -10,6 +10,7 @@ class BaseHandler(Handler):
         super().__init__(*args, **kwargs)
         self._logs_drainer = LogsDrainer(
             path_to_logs_file='api/logs/logs.log',
+            max_line_count=100000,
             directory_to_upload='/rabbit/api/logs'
         )
     

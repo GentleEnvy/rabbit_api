@@ -6,15 +6,13 @@ Uses a logger configured by the name of django.request
 to log all requests and responses according to configuration
 specified for django.request.
 """
-import logging
 import time
-import json
 
 from django.utils.deprecation import MiddlewareMixin
 
-__all__ = ['RequestLogMiddleware']
+from api.logs import debug
 
-logger = logging.getLogger('api')
+__all__ = ['RequestLogMiddleware']
 
 
 # noinspection PyMethodMayBeStatic
@@ -46,5 +44,5 @@ class RequestLogMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         """Log data using logger."""
         log_data = self.extract_log_info(request=request, response=response)
-        logger.debug(msg=log_data)
+        debug(msg=log_data)
         return response

@@ -43,7 +43,7 @@
         }
     },
     "loggers": {
-        "django.request": {
+        "django.server": {
             "handlers": ["web_console_handler", "web_file_handler"],
             "level": "DEBUG",
             "propagate": false
