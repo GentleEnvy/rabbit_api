@@ -1,7 +1,13 @@
-### custom
+###
+# Custom
+
 .mypy_cache
 .pytest_cache
 .idea/
+/api/services/file/loader/_temp/*
+
+# Custom
+###
 
 
 ### python_gitignore template

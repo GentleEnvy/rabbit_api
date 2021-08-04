@@ -25,7 +25,7 @@ class BaseReadOnlyRaiseSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
-# FIXME: make a custom Field instead of a Serializer
+# TODO: replace to a custom Field (OnlyNumberCageField) instead of a Serializer
 class BaseSupportsCageSerializer(serializers.ModelSerializer):
     def is_valid(self, raise_exception=False):
         data = {key: value for key, value in self.initial_data.items()}
@@ -35,6 +35,6 @@ class BaseSupportsCageSerializer(serializers.ModelSerializer):
         if None not in (farm_number, number, letter):
             data['cage'] = Cage.objects.get(
                 farm_number=farm_number, number=number, letter=letter
-            ).cast  # TODO: select_related
+            ).cast
         self.initial_data = data
         return super().is_valid(raise_exception)
