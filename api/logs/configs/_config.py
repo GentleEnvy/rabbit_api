@@ -17,11 +17,10 @@ class LogConfig:
     
     def __init__(self, loggers: dict[str, _TypeLoggerConfig]):
         self.loggers = deepcopy(loggers)
-        self.__dict_config = None
+        self.__dict_config: dict
     
     def to_dict(self) -> dict[str, Any]:
         self._setup_dict_config()
-        print(self.__dict_config)
         return self.__dict_config
     
     def _setup_dict_config(self) -> None:
@@ -43,12 +42,14 @@ class LogConfig:
         logger_config['level'] = logger_config.get('level', self.DEFAULT_LEVEL)
     
     def _setup_handler(self, handler: dict[str, Any]) -> str:
+        handler = deepcopy(handler)
         handler_name = handler.pop('__name__')
         handler['formatter'] = self._setup_formatter(handler['formatter'])
         self.__dict_config['handlers'][handler_name] = handler
         return handler_name
     
     def _setup_formatter(self, formatter: dict[str, Any]) -> str:
+        formatter = deepcopy(formatter)
         formatter_name = formatter.pop('__name__')
         self.__dict_config['formatters'][formatter_name] = formatter
         return formatter_name
