@@ -5,7 +5,7 @@
         "web_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
             "datefmt": "[%d.%m-%H:%M:%S]",
-            "format": "web: %(message)s"
+            "format": "web %(asctime)s: %(message)s"
         },
         "api_formatter": {
             "class": "api.logs.formatters.ExceptFormatter",
@@ -40,16 +40,21 @@
             "filename": "api/logs/logs.log",
             "mode": "a",
             "encoding": "utf-8"
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "api.logs.handlers.AdminEmailHandler",
+            "include_html": true
         }
     },
     "loggers": {
         "django.server": {
-            "handlers": ["web_console_handler", "web_file_handler"],
+            "handlers": ["web_file_handler" ,"web_console_handler"],
             "level": "DEBUG",
             "propagate": false
         },
         "api": {
-            "handlers": ["api_console_handler", "api_file_handler"],
+            "handlers": ["api_file_handler", "api_console_handler", "mail_admins"],
             "level": "DEBUG",
             "propagate": false
         }

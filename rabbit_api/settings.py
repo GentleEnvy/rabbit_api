@@ -113,8 +113,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 with open(f"api/logs/configs/{'dev' if DEBUG else 'prod'}.json", 'r') as logs_config_json:
     LOGGING = json.load(logs_config_json)
 
+ADMINS = [('envy', 'envy15@mail.ru'), ('envy', 'komarov.sergei163@gmail.com')]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+
 ###
 # Custom
 ###
+
 
 YANDEX_DISK_TOKEN = os.environ['YANDEX_DISK_TOKEN']
