@@ -1,9 +1,10 @@
-from rest_framework import status
-from rest_framework.response import Response
+from urllib.parse import urlencode
+
+from django.http import Http404
+from django.shortcuts import redirect
 
 from api.models import *
 from api.views.base import BaseView
-from api.views.model_views.utils import redirect_by_id
 from api.views.model_views.base import BaseDetailView
 from api.serializers import *
 
@@ -15,13 +16,21 @@ __all__ = [
 
 class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
-    def get(self, request, *args, **kwargs):
-        return redirect_by_id(
-            Rabbit, request, kwargs.get('id'), current_type__in=(
-                FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
-                FatherRabbit.CHAR_TYPE
+    def get(self, request, id):
+        try:
+            base_rabbit = Rabbit.objects.get(
+                id=id, current_type__in=(
+                    FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
+                    FatherRabbit.CHAR_TYPE
+                )
             )
-        )
+        except Rabbit.DoesNotExist:
+            raise Http404('Rabbit with this id was not found')
+        if query_params := request.query_params:
+            return redirect(
+                f'{base_rabbit.cast.get_absolute_url()}?{urlencode(query_params)}'
+            )
+        return redirect(base_rabbit.cast.get_absolute_url())
 
 
 class _BaseRabbitDetailView(BaseDetailView):

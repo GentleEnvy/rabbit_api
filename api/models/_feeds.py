@@ -1,30 +1,26 @@
-from __future__ import annotations
-
-from datetime import date, datetime
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from api.models.base import BaseModel
 
-__all__ = ['CommonFeeds', 'NursingMotherFeeds']
+__all__ = ['Feeds', 'FatteningFeeds', 'MotherFeeds']
 
 
-class CommonFeeds(BaseModel):
-    date = models.DateField(default=datetime.utcnow)
-    stocks_change = models.IntegerField(default=0)
-    
-    def clean(self):
-        super().clean()
-        if self.date > date.today():
-            raise ValidationError('Wrong date of common feeds stocks change input')
+def _stocks_validator(stocks):
+    if stocks == 0:
+        raise ValidationError('Stocks cannot be zero', code='value')
 
 
-class NursingMotherFeeds(BaseModel):
-    date = models.DateField(default=datetime.utcnow)
-    stocks_change = models.IntegerField(default=0)
-    
-    def clean(self):
-        super().clean()
-        if self.date > date.today():
-            raise ValidationError('Wrong date of mother feeds stocks change input')
+class Feeds(BaseModel):
+    time = models.DateTimeField(default=datetime.utcnow)
+    stocks = models.SmallIntegerField(validators=[_stocks_validator])
+
+
+class FatteningFeeds(Feeds):
+    pass
+
+
+class MotherFeeds(Feeds):
+    pass

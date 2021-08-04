@@ -1,5 +1,9 @@
+import json
 from pathlib import Path
 import os
+
+from api.logs.configs import LogConfig
+from api.logs.configs.handlers import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -7,9 +11,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
 
-ALLOWED_HOSTS = [
-    '*'
-]
+ALLOWED_HOSTS = ['*']
 
 # noinspection SpellCheckingInspection
 INSTALLED_APPS = [
@@ -46,10 +48,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'api.middlewares.RequestLogMiddleware'
 ]
 
 ROOT_URLCONF = 'rabbit_api.urls'
@@ -106,3 +110,31 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if DEBUG:  # dev
+    LOGGING = LogConfig(
+        {'api': {'handlers': [api_console]}, 'django.server': {'handlers': [web_console]}}
+    ).to_dict()
+else:  # prod
+    LOGGING = LogConfig(
+        {
+            'api': {'handlers': [api_file, api_console, email_admins]},
+            'django.server': {'handlers': [web_file, web_console]}
+        }
+    ).to_dict()
+
+ADMINS = [('envy', 'envy15@mail.ru'), ('envy', 'komarov.sergei163@gmail.com')]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+###
+# Custom
+
+YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
+
+# Custom
+###

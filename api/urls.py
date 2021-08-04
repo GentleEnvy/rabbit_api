@@ -148,5 +148,10 @@ urlpatterns = [
             path('birth/confirmed/<int:id>/', BirthConfirmedDetailView.as_view()),
             path('birth/unconfirmed/<int:id>/', BirthUnconfirmedDetailView.as_view())
         ]
+    ],
+    # feeds
+    *[
+        path('feeds/fattening/', FatteningFeedsView.as_view()),
+        path('feeds/mother/', MotherFeedsView.as_view())
     ]
 ]
