@@ -100,13 +100,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if DEBUG:  # dev
     LOGGING = LogConfig(
-        {'api': {'handlers': [api_console]}, 'django.server': {'handlers': [web_console]}}
+        {
+            'api': {'handlers': [api_file, api_console]},
+            'gunicorn.access': {'handlers': [web_file]}
+        }
     ).to_dict()
 else:  # prod
     LOGGING = LogConfig(
         {
             'api': {'handlers': [api_file, api_console, email_admins]},
-            'django.server': {'handlers': [web_file, web_console]}
+            'gunicorn.access': {'handlers': [web_file]}
         }
     ).to_dict()
 
