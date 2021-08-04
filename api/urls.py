@@ -94,7 +94,12 @@ urlpatterns = [
         path('auth/session/', AuthSessionView.as_view())
     ],
     # user
-    path('user/', UserListView.as_view()),
+    *[
+        # general
+        path('user/', UserGeneralView.as_view()),
+        # docx
+        path('user/<int:id>/docx/', UserDocxView.as_view())
+    ],
     # task
     *[
         # anonymous
