@@ -7,7 +7,7 @@ web = {
     '__name__': 'web_formatter',
     'class': _class,
     'datefmt': _datefmt,
-    'format': 'WEB   | %(asctime)s: %(message)s'
+    'format': 'WEB    | %(asctime)s: %(message)s'
 }
 
 api = {
