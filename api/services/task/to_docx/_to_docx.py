@@ -79,6 +79,5 @@ class TaskToDocxService:
     
     def render(self) -> DocxTemplate:
         document = self.template
-        print(self.context)
         document.render(self.context)
         return document

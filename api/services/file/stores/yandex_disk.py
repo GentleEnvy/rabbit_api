@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, BinaryIO
 
 from django.conf import settings
 from yadisk import YaDisk
@@ -15,7 +15,12 @@ class YandexDisk:
         if not self.ya_disk.check_token():
             raise ValueError('Yandex disk token is invalid')
     
-    def upload(self, file, path):
+    def upload(self, file: BinaryIO, path: str):
+        """
+        :param file: upload file opened in 'rb' mode
+        :param path: destination path
+        :raise FileExistsError: if file on the base already exists
+        """
         try:
             self.ya_disk.upload(file, path)
         except PathExistsError:

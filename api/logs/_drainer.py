@@ -2,7 +2,7 @@ import atexit
 from datetime import datetime
 from typing import Final
 
-from api.services.file_bases import YandexDisk
+from api.services.file import YandexDisk
 from api.utils.functions import file_line_count
 
 __all__ = ['LogsDrainer']
@@ -25,7 +25,7 @@ class LogsDrainer:
         self._max_line_count: Final[int] = max_line_count
         self._directory_to_upload: Final[str] = directory_to_upload
         
-        self.__file_base = YandexDisk()
+        self.__file_store = YandexDisk()
         
         atexit.register(self._upload_logs_and_clear)
     
@@ -46,5 +46,5 @@ class LogsDrainer:
     
     def _upload_logs_and_clear(self) -> None:
         with open(self._path_to_logs_file, 'rb') as logs_file:
-            self.__file_base.upload(logs_file, self._path_to_upload)
+            self.__file_store.upload(logs_file, self._path_to_upload)
         open(self._path_to_logs_file, 'w').close()  # clear logs file
