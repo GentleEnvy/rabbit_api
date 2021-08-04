@@ -2,7 +2,7 @@
 
 """
 Middleware to log all requests and responses.
-Uses a logger configured by the name of django.request
+Uses a logger_config configured by the name of django.request
 to log all requests and responses according to configuration
 specified for django.request.
 """
@@ -42,7 +42,7 @@ class RequestLogMiddleware(MiddlewareMixin):
         return log_data
     
     def process_response(self, request, response):
-        """Log data using logger."""
+        """Log data using logger_config."""
         log_data = self.extract_log_info(request=request, response=response)
         debug(msg=log_data)
         return response

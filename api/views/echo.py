@@ -1,6 +1,5 @@
 from rest_framework.response import Response
 
-from api.logs import critical
 from api.views.base import BaseView
 
 __all__ = ['EchoView']

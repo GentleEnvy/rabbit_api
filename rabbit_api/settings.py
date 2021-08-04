@@ -4,6 +4,9 @@ import os
 
 import django_heroku
 
+from api.logs.configs import LogConfig
+from api.logs.configs.handlers import *
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
@@ -95,25 +98,42 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-with open(f"api/logs/configs/{'dev' if DEBUG else 'prod'}.json", 'r') as logs_config_json:
-    LOGGING = json.load(logs_config_json)
+if DEBUG:  # dev
+    LOGGING = LogConfig(
+        {'api': {'handlers': [api_console]}, 'django.server': {'handlers': [web_console]}}
+    ).to_dict()
+else:  # prod
+    LOGGING = LogConfig(
+        {
+            'api': {'handlers': [api_file, api_console, email_admins]},
+            'django.server': {'handlers': [web_file, web_console]}
+        }
+    ).to_dict()
 
+ADMINS = [('envy', 'envy15@mail.ru'), ('envy', 'komarov.sergei163@gmail.com')]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 ###
 # Custom
+
+YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
+
+# Custom
 ###
 
-
-YANDEX_DISK_TOKEN = os.environ['YANDEX_DISK_TOKEN']
-
-
 ###
-# heroku
-###
-
+# Heroku
 
 SECRET_KEY = '''<django_heroku>'''
 ALLOWED_HOSTS = '''<django_heroku>'''
 DATABASES = {'default': ''''<django_heroku>'''}
 
 django_heroku.settings(locals(), test_runner=False, logging=False)
+
+# Heroku
+###
