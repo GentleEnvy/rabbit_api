@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from api.exceptions import APIWarning
 from api.models import Task
 from api.serializers import InProgressTaskListSerializer
-from api.services.task.controllers import TaskController
+from api.services.task.controllers.base import TaskController
+from api.services.task.controllers import all_controllers
 from api.views.base import BaseView
 from api.views.model_views.task.base import BaseTaskGeneralView
 

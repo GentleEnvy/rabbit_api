@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
 
-from api.exceptions import APIWarning
 from api.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
@@ -111,11 +110,13 @@ class MatingTask(Task):
     
     def clean(self):
         try:
-            MatingTask.objects.get(
+            MatingTask.objects.exclude(id=self.id).get(
                 mother_rabbit=self.mother_rabbit, father_rabbit=self.father_rabbit,
                 is_confirmed=None
             )
-            raise APIWarning('This couple is already waiting for mating', codes=['mating'])
+            raise ValidationError(
+                'This couple is already waiting for mating', codes=['mating']
+            )
         except MatingTask.DoesNotExist:
             super().clean()
             self.clean_mother_rabbit(self.mother_rabbit)

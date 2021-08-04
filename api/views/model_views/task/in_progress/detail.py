@@ -1,6 +1,7 @@
 from api.models import *
 from api.serializers.task.in_progress import *
-from api.services.task.controllers import TaskController
+from api.services.task.controllers.base import TaskController
+from api.services.task.controllers import *
 from api.views.model_views.base import BaseDetailView
 
 __all__ = [

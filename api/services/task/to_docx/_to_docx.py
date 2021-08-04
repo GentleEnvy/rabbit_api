@@ -1,9 +1,16 @@
-from typing import Final, TypedDict, Callable, Type
+from datetime import datetime
+from pathlib import Path
+from typing import Final, TypedDict, Callable, Type, Union
 
+from django.contrib.auth.models import User
 from docxtpl import DocxTemplate
 
 from api.models import *
 from api.serializers.cage.default import OnlyNumberCageSerializer
+
+
+def _get_path_to_template() -> Path:
+    return Path(__file__).parent / 'task_template.docx'
 
 
 def _(cage: Cage) -> str:
@@ -25,8 +32,7 @@ class TaskToDocxService:
     TYPE__CONTEXT: dict[Type[Task], _TypeTaskContext] = {
         ToReproductionTask: {
             'title': 'Отсадка', 'description': lambda t: _(t.cage_to)
-        },
-        ToFatteningTask: {
+        },        ToFatteningTask: {
             'title': 'Отсадка', 'description': lambda t: _(t.cage_to)
         },
         MatingTask: {
@@ -49,10 +55,30 @@ class TaskToDocxService:
         }
     }
     
-    def __init__(self, task):
-        self.task: Final = task
+    def __init__(self, tasks: list, user: User = None, path_to_template: str = None):
+        self.tasks: Final[list] = tasks
+        self.user: Final[User] = user or tasks[0].user
+        self.path_to_template: Final[str] = path_to_template or _get_path_to_template()
     
     @property
-    def context(self) -> TypeTaskContext:
-        context = self.TYPE__CONTEXT[type(self.task)]
-        return {k: v() if callable(v) else v for k, v in context}
+    def context(self) -> dict[str, Union[str, list[TypeTaskContext]]]:
+        return {
+            'tasks': [
+                {
+                    k: v(task) if callable(v) else v
+                    for k, v in self.TYPE__CONTEXT[type(task)].items()
+                } for task in self.tasks
+            ],
+            'date': datetime.utcnow().date().strftime('%d.%m.%Y'),
+            'user': f'{self.user.last_name} {self.user.first_name}'
+        }
+    
+    @property
+    def template(self) -> DocxTemplate:
+        return DocxTemplate(self.path_to_template)
+    
+    def render(self) -> DocxTemplate:
+        document = self.template
+        print(self.context)
+        document.render(self.context)
+        return document
