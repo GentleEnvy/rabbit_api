@@ -1,6 +1,6 @@
-from api.logs.formatters._wrap_formatter import WrapFormatter
+from api.logs.formatters._wrap import WrapFormatter
 
-__all__ = ['ExceptFormatter']
+__all__ = ['ErrorFormatter']
 
 
 def _tab(text: str) -> str:
@@ -9,7 +9,7 @@ def _tab(text: str) -> str:
     return '\t' + text.replace('\n', '\n\t')
 
 
-class ExceptFormatter(WrapFormatter):
+class ErrorFormatter(WrapFormatter):
     def formatException(self, ei):
         formatted_exception = super().formatException(ei)
         return _tab(
