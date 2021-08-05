@@ -5,6 +5,7 @@
 .pytest_cache
 .idea/
 /api/services/file/loader/_temp/*
+/dumps/*
 
 # Custom
 ###
