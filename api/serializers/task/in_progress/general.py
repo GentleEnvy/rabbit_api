@@ -49,10 +49,15 @@ class _ToReproductionTaskSerializer(_BaseTaskSerializer):
         fields = _BaseTaskSerializer.Meta.fields + ['cage_from', 'cage_to']
     
     cage_from = serializers.SerializerMethodField()
+    cage_to = serializers.SerializerMethodField()
     
     @_cage_serializer
     def get_cage_from(self, task):
         return task.rabbit.cage
+    
+    @_cage_serializer
+    def get_cage_to(self, task):
+        return task.cage_to
 
 
 # noinspection PyMethodMayBeStatic
@@ -62,10 +67,15 @@ class _ToFatteningTaskSerializer(_BaseTaskSerializer):
         fields = _BaseTaskSerializer.Meta.fields + ['cage_from', 'cage_to']
     
     cage_from = serializers.SerializerMethodField()
+    cage_to = serializers.SerializerMethodField()
     
     @_cage_serializer
     def get_cage_from(self, task):
         return task.rabbit.cage
+    
+    @_cage_serializer
+    def get_cage_to(self, task):
+        return task.cage_to
 
 
 class _MatingTaskSerializer(_BaseTaskSerializer):
