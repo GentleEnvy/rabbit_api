@@ -7,3 +7,6 @@ __all__ = ['Breed']
 
 class Breed(BaseModel):
     title = models.TextField()
+    
+    def __str__(self):
+        return self.title
