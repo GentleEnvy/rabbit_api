@@ -63,14 +63,14 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseHistoricalModel):
     @classmethod
     def recast(cls, rabbit: Rabbit):
         if cls is Rabbit:
-            raise NotImplementedError("Instance can't be cast to Rabbit (base class)")
+            raise TypeError("Instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
-            raise NotImplementedError('CHAR_TYPE must be determined')
-        if rabbit.current_type == DeadRabbit.CHAR_TYPE:
-            raise TypeError("It's forbidden to recast from DeadRabbit")
-        casted_rabbit = getattr(
-            rabbit, cls.__name__.lower(), None
-        ) or cls(rabbit_ptr=rabbit)
+            raise ValueError('CHAR_TYPE must be determined')
+        DeadRabbit.Cleaner.for_recast(rabbit)
+        
+        casted_rabbit = getattr(rabbit, cls.__name__.lower(), None) or cls(
+            rabbit_ptr=rabbit
+        )
         casted_rabbit.__dict__.update(rabbit.__dict__)
         casted_rabbit.current_type = cls.CHAR_TYPE
         return casted_rabbit

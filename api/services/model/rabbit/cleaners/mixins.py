@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Final
 
 from api.services.model.rabbit.cleaners._cleaner import *
 
@@ -9,11 +9,11 @@ __all__ = [
 
 
 class RabbitCleanerMixin:
-    _cleaner: Type[RabbitCleaner] = RabbitCleaner
+    Cleaner: Type[RabbitCleaner] = RabbitCleaner
     
     @property
     def cleaner(self) -> RabbitCleaner:
-        return self._cleaner(self)
+        return self.Cleaner(self)
     
     def clean(self):
         # noinspection PyUnresolvedReferences
@@ -22,40 +22,40 @@ class RabbitCleanerMixin:
 
 
 class DeadRabbitCleanerMixin(RabbitCleanerMixin):
-    _cleaner = DeadRabbitCleaner
-
+    Cleaner: Final = DeadRabbitCleaner
+    
     @property
     def cleaner(self) -> DeadRabbitCleaner:
-        return self._cleaner(self)
+        return self.Cleaner(self)
 
 
 class FatteningRabbitCleanerMixin(RabbitCleanerMixin):
-    _cleaner = FatteningRabbitCleaner
-
+    Cleaner: Final = FatteningRabbitCleaner
+    
     @property
     def cleaner(self) -> FatteningRabbitCleaner:
-        return self._cleaner(self)
+        return self.Cleaner(self)
 
 
 class BunnyCleanerMixin(RabbitCleanerMixin):
-    _cleaner = BunnyCleaner
-
+    Cleaner: Final = BunnyCleaner
+    
     @property
     def cleaner(self) -> BunnyCleaner:
-        return self._cleaner(self)
+        return self.Cleaner(self)
 
 
 class MotherRabbitCleanerMixin(RabbitCleanerMixin):
-    _cleaner = MotherRabbitCleaner
-
+    Cleaner: Final = MotherRabbitCleaner
+    
     @property
     def cleaner(self) -> MotherRabbitCleaner:
-        return self._cleaner(self)
+        return self.Cleaner(self)
 
 
 class FatherRabbitCleanerMixin(RabbitCleanerMixin):
-    _cleaner = FatherRabbitCleaner
-
+    Cleaner: Final = FatherRabbitCleaner
+    
     @property
     def cleaner(self) -> FatherRabbitCleaner:
-        return self._cleaner(self)
+        return self.Cleaner(self)

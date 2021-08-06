@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
 
+from api.services.model.rabbit.cleaners import *
 from api.services.model.rabbit.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
@@ -48,12 +49,7 @@ class ToReproductionTask(Task):
     
     def clean(self):
         super().clean()
-        if self.rabbit.current_type != Rabbit.TYPE_FATTENING:
-            raise ValidationError('The rabbit type is not a FatteningRabbit')
-        if self.rabbit.is_male is None:
-            raise ValidationError(
-                'The sex of the rabbit changing the type must be determined'
-            )
+        self.rabbit.cleaner.for_recast_to_reproduction()
         if self.cage_to is not None:
             self.clean_cage_to()
     
@@ -83,8 +79,7 @@ class ToFatteningTask(Task):
     
     def clean(self):
         super().clean()
-        if self.rabbit.current_type not in (Rabbit.TYPE_MOTHER, Rabbit.TYPE_FATHER):
-            raise ValidationError('The rabbit type is not a MotherRabbit or FatherRabbit')
+        FatteningRabbitCleaner.for_recast(self.rabbit)
         if self.cage_to is not None:
             self.clean_cage_to()
     
@@ -142,11 +137,20 @@ class BunnyJiggingTask(Task):
         bunny_set = self.__bunny_set()
         if bunny_set.count() == 0:
             raise ValidationError('There are no bunnies in cage_form')
+        
+        is_bunny_need_jigging = False
         for bunny in bunny_set.all():
-            if BunnyManager.STATUS_NEED_JIGGING not in bunny.manager.status:
-                raise ValidationError(
-                    "There is bunny in this cage that don't need jigging"
-                )
+            try:
+                bunny.cleaner.for_jigging()
+            except ValidationError:
+                continue
+            is_bunny_need_jigging = True
+            break
+        if not is_bunny_need_jigging:
+            raise ValidationError(
+                "There are no bunnies in this cage that need jigging"
+            )
+        
         if self.male_cage_to is not None:
             self.clean_male_cage_to()
             if self.female_cage_to is None:
@@ -179,7 +183,6 @@ class BunnyJiggingTask(Task):
         return self.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY)
 
 
-# MAYBE: add vaccination tasks for father and mother rabbits
 class VaccinationTask(Task):
     CHAR_TYPE = 'V'
     
@@ -193,8 +196,7 @@ class VaccinationTask(Task):
         if fattening_set.count() == 0:
             raise ValidationError('There are no fattening rabbits in cage')
         for fattening_rabbit in fattening_set.all():
-            if fattening_rabbit.is_vaccinated:
-                raise ValidationError('This rabbit already been vaccinated')
+            fattening_rabbit.cleaner.for_vaccinate()
 
 
 class SlaughterInspectionTask(Task):
@@ -211,12 +213,9 @@ class SlaughterInspectionTask(Task):
         )
         if fattening_set.count() == 0:
             raise ValidationError('There is no fattening rabbit in this cage')
-        NEED_INSPECTION = FatteningRabbitManager.STATUS_NEED_INSPECTION
         for fattening_rabbit in fattening_set:
-            if NEED_INSPECTION not in fattening_rabbit.manager.status:
-                raise ValidationError(
-                    "There is fattening rabbit in this cage that don't need inspection"
-                )
+            fattening_rabbit.cleaner.for_slaughter_inspection()
+        
         if self.weights is not None:
             self.clean_weights(self.weights, _fattening_rabbits=fattening_set)
     
