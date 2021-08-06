@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.serializers.cage.default import OnlyNumberCageSerializer
+from api.serializers.model.cage.default import OnlyNumberCageSerializer
 from api.managers import MotherRabbitManager
 from api.models import *
 

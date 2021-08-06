@@ -4,4 +4,4 @@ from api.views.recast import *
 from api.views.echo import *
 from api.views.auth import *
 from api.views.models.users.general import *
-from api.views.feeds import *
+from api.views.models.feeds import *

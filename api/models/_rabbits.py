@@ -9,12 +9,13 @@ from django.urls import reverse
 from model_utils.managers import QueryManager
 from multiselectfield import MultiSelectField
 
-from api.managers.mixins import *
-from api.models._plans import Plan
-from api.models._breed import *
-from api.models._history import *
 from api.models.base import BaseHistoricalModel
+from api.models._plans import *
+from api.models._breeds import *
+from api.models._histories import *
 from api.models._cages import *
+from api.services.model.rabbit.managers.mixins import *
+from api.services.model.rabbit.managers import *
 
 __all__ = [
     'Rabbit', 'DeadRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
@@ -159,7 +160,6 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
             self.clean_for_plan()
     
     def clean_for_plan(self):
-        from api.managers import FatteningRabbitManager
         READY_TO_SLAUGHTER = FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER
         if READY_TO_SLAUGHTER not in self.manager.status:
             raise ValidationError(

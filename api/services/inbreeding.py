@@ -6,6 +6,8 @@ from django.db.models import QuerySet
 
 from api.models import *
 
+__all__ = ['AvoidInbreedingService']
+
 
 class AvoidInbreedingService:
     DAYS_FOR_SAFE_FERTILIZATION = 3

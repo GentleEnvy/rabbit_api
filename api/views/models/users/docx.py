@@ -6,7 +6,7 @@ from django.http import StreamingHttpResponse
 from docxtpl import DocxTemplate
 import pytz
 
-from api.services.task.to_docx import TaskToDocxService
+from api.services.model.task import TaskToDocxService
 from api.views.base import BaseView
 
 __all__ = ['UserDocxView']

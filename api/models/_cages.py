@@ -11,7 +11,7 @@ from multiselectfield import MultiSelectField
 
 import api.models as api_models
 from api.models.base import BaseModel
-from api.managers.cage.mixins import *
+from api.services.model.cage.managers.mixins import *
 
 __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 

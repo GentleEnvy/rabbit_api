@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 
 # noinspection SpellCheckingInspection
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination',
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.base.BasePagination',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
     'api.middlewares.RequestLogMiddleware'
 ]
