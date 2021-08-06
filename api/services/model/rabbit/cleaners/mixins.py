@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, Type
 
 from api.services.model.rabbit.cleaners._cleaner import *
 

@@ -62,7 +62,7 @@ class Cage(CageManagerMixin, BaseModel):
     
     # FIXME: to manager
     @property
-    def rabbits(self) -> set['api_models.Rabbit']:
+    def rabbits(self) -> set['models.Rabbit']:
         raise NotImplementedError
     
     def __str__(self):
@@ -120,7 +120,7 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
         ).count() > 0:
             raise ValidationError('Father rabbit is already sitting in this cage')
     
-    def clean_for_jigging_bunnies(self, rabbits: Iterable['api_models.Rabbit']):
+    def clean_for_jigging_bunnies(self, rabbits: Iterable['models.Rabbit']):
         rabbits = list(rabbits)
         if len(rabbits) == 0:
             return
@@ -139,7 +139,7 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
                 )
     
     @staticmethod
-    def _clean_for_rabbits(rabbits: list['api_models.Rabbit']):
+    def _clean_for_rabbits(rabbits: list['models.Rabbit']):
         for rabbit in rabbits[1:]:
             if rabbit.is_male != rabbits[0].is_male:
                 raise ValidationError('Rabbits in the same cage must be of the same sex')
@@ -148,7 +148,7 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
                     'Rabbits in the same cage must be born on the same day'
                 )
     
-    def _clean_for_father(self, father: 'api_models.Rabbit'):
+    def _clean_for_father(self, father: 'models.Rabbit'):
         if father.current_type != api_models.Rabbit.TYPE_FATHER:
             raise ValidationError('This rabbit is not currently FatherRabbit')
         if self.fatherrabbit_set.exclude(id=father.id).filter(
@@ -162,7 +162,7 @@ class FatteningCage(FatteningCageManagerMixin, Cage):
                 'Other fattening rabbit is already sitting in this cage'
             )
     
-    def _clean_for_fattening(self, rabbits: Iterable['api_models.Rabbit']):
+    def _clean_for_fattening(self, rabbits: Iterable['models.Rabbit']):
         for rabbit in rabbits:
             if rabbit.current_type != api_models.Rabbit.TYPE_FATTENING:
                 raise ValidationError(
@@ -208,7 +208,7 @@ class MotherCage(MotherCageManagerMixin, Cage):
         ).count()) > 0:
             raise ValidationError('Mother rabbit is already sitting in this cage')
     
-    def _clean_for_mother(self, mother: 'api_models.Rabbit'):
+    def _clean_for_mother(self, mother: 'models.Rabbit'):
         if mother.current_type != api_models.Rabbit.TYPE_MOTHER:
             raise ValidationError('This rabbit is not currently MotherRabbit')
         if self.motherrabbit_set.exclude(id=mother.id).filter(

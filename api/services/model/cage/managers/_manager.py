@@ -7,11 +7,11 @@ __all__ = [
 
 
 class CageManager(BaseManager):
-    model: 'api_models.Cage'
+    model: 'models.Cage'
 
 
 class MotherCageManager(CageManager):
-    model: 'api_models.MotherCage'
+    model: 'models.MotherCage'
     
     @property
     def is_parallel(self) -> bool:
@@ -19,4 +19,4 @@ class MotherCageManager(CageManager):
 
 
 class FatteningCageManager(CageManager):
-    model: 'api_models.FatteningCage'
+    model: 'models.FatteningCage'

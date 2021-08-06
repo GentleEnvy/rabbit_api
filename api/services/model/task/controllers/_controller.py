@@ -43,7 +43,7 @@ class ToReproductionTaskController(TaskController):
             ):
                 try:
                     task.cage_to = nearest_cage
-                    task.clean_cage_to()
+                    task.cleaner.clean_cage_to()
                     task.save()
                     is_found = True
                     break
@@ -82,7 +82,7 @@ class ToFatteningTaskController(TaskController):
             ):
                 try:
                     task.cage_to = nearest_cage
-                    task.clean_cage_to()
+                    task.cleaner.clean_cage_to()
                     task.save()
                     is_found = True
                     break
@@ -137,14 +137,14 @@ class BunnyJiggingTaskController(TaskController):
                 if not is_found_for_male:
                     try:
                         task.male_cage_to = nearest_cage
-                        task.clean_male_cage_to()
+                        task.cleaner.clean_male_cage_to()
                         is_found_for_male = True
                     except ValidationError:
                         continue
                 else:
                     try:
                         task.female_cage_to = nearest_cage
-                        task.clean_female_cage_to()
+                        task.cleaner.clean_female_cage_to()
                         is_found_for_female = True
                     except ValidationError:
                         continue

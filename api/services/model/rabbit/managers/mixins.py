@@ -1,5 +1,4 @@
 from api.services.model.rabbit.managers._manager import *
-from api.services.model.base.manager.mixin import BaseManagerMixin
 
 __all__ = [
     'RabbitManagerMixin', 'FatteningRabbitManagerMixin', 'BunnyManagerMixin',
@@ -7,41 +6,41 @@ __all__ = [
 ]
 
 
-class RabbitManagerMixin(BaseManagerMixin):
-    _manager = RabbitManager
+class RabbitManagerMixin:
+    Manager = RabbitManager
     
     @property
     def manager(self) -> RabbitManager:
-        return super().manager
+        return self.Manager(self)
 
 
-class FatteningRabbitManagerMixin(BaseManagerMixin):
-    _manager = FatteningRabbitManager
+class FatteningRabbitManagerMixin(RabbitManagerMixin):
+    Manager = FatteningRabbitManager
     
     @property
-    def manager(self) -> FatherRabbitManager:
-        return super().manager
+    def manager(self) -> FatteningRabbitManager:
+        return self.Manager(self)
 
 
-class BunnyManagerMixin(BaseManagerMixin):
-    _manager = BunnyManager
+class BunnyManagerMixin(RabbitManagerMixin):
+    Manager = BunnyManager
     
     @property
     def manager(self) -> BunnyManager:
-        return super().manager
+        return self.Manager(self)
 
 
-class MotherRabbitManagerMixin(BaseManagerMixin):
-    _manager = MotherRabbitManager
+class MotherRabbitManagerMixin(RabbitManagerMixin):
+    Manager = MotherRabbitManager
     
     @property
     def manager(self) -> MotherRabbitManager:
-        return super().manager
+        return self.Manager(self)
 
 
-class FatherRabbitManagerMixin(BaseManagerMixin):
-    _manager = FatherRabbitManager
+class FatherRabbitManagerMixin(RabbitManagerMixin):
+    Manager = FatherRabbitManager
     
     @property
     def manager(self) -> FatherRabbitManager:
-        return super().manager
+        return self.Manager(self)

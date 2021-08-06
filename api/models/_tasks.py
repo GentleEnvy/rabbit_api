@@ -1,14 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
 
-from api.services.model.rabbit.cleaners import *
-from api.services.model.rabbit.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
 from api.models.base import BaseModel
+from api.services.model.task.cleaners.mixins import *
 
 __all__ = [
     'Task', 'ToReproductionTask', 'ToFatteningTask', 'MatingTask', 'BunnyJiggingTask',
@@ -16,7 +14,7 @@ __all__ = [
 ]
 
 
-class Task(BaseModel):
+class Task(TaskCleanerMixin, BaseModel):
     objects = InheritanceManager()
     
     CHAR_TYPE: str
@@ -27,48 +25,17 @@ class Task(BaseModel):
     )
     completed_at = models.DateTimeField(null=True, blank=True)
     is_confirmed = models.BooleanField(null=True, blank=True)
-    
-    def clean(self):
-        super().clean()
-        if self.completed_at is not None:
-            if self.user is None:
-                raise ValidationError(
-                    'The task cannot be completed until the user is specified'
-                )
-        else:  # completed_at is None
-            if self.is_confirmed is not None:
-                raise ValidationError("Can't confirm an uncompleted task")
 
 
-class ToReproductionTask(Task):
+class ToReproductionTask(ToReproductionTaskCleanerMixin, Task):
     CHAR_TYPE = 'R'
     
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
     # in progress
     cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True, blank=True)
-    
-    def clean(self):
-        super().clean()
-        self.rabbit.cleaner.for_recast_to_reproduction()
-        if self.cage_to is not None:
-            self.clean_cage_to()
-    
-    def clean_cage_to(self):
-        self.cage_to.cast.clean_for_task()
-        if self.rabbit.is_male:
-            if self.cage_to.cast.CHAR_TYPE == MotherCage.CHAR_TYPE:
-                raise ValidationError('The male cannot be jigged to MotherCage')
-        else:  # rabbit is female
-            if self.cage_to.cast.CHAR_TYPE == FatteningCage.CHAR_TYPE:
-                raise ValidationError('The female cannot be jigged to FatteningCage')
-        for neighbour in self.cage_to.cast.rabbits:
-            if neighbour != self.rabbit:
-                raise ValidationError(
-                    'The cage for the reproduction rabbit must be empty'
-                )
 
 
-class ToFatteningTask(Task):
+class ToFatteningTask(ToFatteningTaskCleanerMixin, Task):
     CHAR_TYPE = 'F'
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
@@ -76,48 +43,17 @@ class ToFatteningTask(Task):
     cage_to = models.ForeignKey(
         FatteningCage, on_delete=models.CASCADE, null=True, blank=True
     )
-    
-    def clean(self):
-        super().clean()
-        FatteningRabbitCleaner.for_recast(self.rabbit)
-        if self.cage_to is not None:
-            self.clean_cage_to()
-    
-    def clean_cage_to(self):
-        self.cage_to.clean_for_task()
-        for neighbour in self.cage_to.cast.rabbits:
-            if neighbour.is_male != self.rabbit.is_male:
-                raise ValidationError(
-                    'Fattening rabbits in the same cage must be of the same sex'
-                )
-            if neighbour.is_vaccinated != self.rabbit.is_vaccinated:
-                raise ValidationError(
-                    'Fattening rabbits in the same cage must have the same status of '
-                    'vaccinated'
-                )
 
 
-class MatingTask(Task):
+class MatingTask(MatingTaskCleanerMixin, Task):
     CHAR_TYPE = 'M'
     
     mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
     father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
-    
-    def clean(self):
-        try:
-            MatingTask.objects.exclude(id=self.id).get(
-                mother_rabbit=self.mother_rabbit, father_rabbit=self.father_rabbit,
-                is_confirmed=None
-            )
-            raise ValidationError('This couple is already waiting for mating')
-        except MatingTask.DoesNotExist:
-            super().clean()
-            self.mother_rabbit.cleaner.for_mating()
-            self.father_rabbit.cleaner.for_mating()
 
 
 # noinspection SpellCheckingInspection
-class BunnyJiggingTask(Task):
+class BunnyJiggingTask(BunnyJiggingTaskCleanerMixin, Task):
     CHAR_TYPE = 'B'
     
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
@@ -131,111 +67,23 @@ class BunnyJiggingTask(Task):
         null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
     males = models.PositiveSmallIntegerField(null=True, blank=True)
-    
-    def clean(self):
-        super().clean()
-        bunny_set = self.__bunny_set()
-        if bunny_set.count() == 0:
-            raise ValidationError('There are no bunnies in cage_form')
-        
-        is_bunny_need_jigging = False
-        for bunny in bunny_set.all():
-            try:
-                bunny.cleaner.for_jigging()
-            except ValidationError:
-                continue
-            is_bunny_need_jigging = True
-            break
-        if not is_bunny_need_jigging:
-            raise ValidationError(
-                "There are no bunnies in this cage that need jigging"
-            )
-        
-        if self.male_cage_to is not None:
-            self.clean_male_cage_to()
-            if self.female_cage_to is None:
-                raise ValidationError(
-                    'male_cage_to is not None, but female_cage_to is None'
-                )
-            self.clean_female_cage_to()
-        elif self.female_cage_to is not None:
-            raise ValidationError(
-                'female_cage_to is not None, but male_cage_to is None'
-            )
-    
-    def clean_male_cage_to(self):
-        self.male_cage_to.clean_for_task()
-        if self.male_cage_to == self.female_cage_to:
-            raise ValidationError('Males and females cannot sit in the same cage')
-        self.male_cage_to.clean_for_jigging_bunnies(
-            self.__bunny_set().filter(is_male=True)
-        )
-    
-    def clean_female_cage_to(self):
-        if self.female_cage_to is not None:
-            if self.female_cage_to == self.male_cage_to:
-                raise ValidationError('Females and males cannot sit in the same cage')
-            self.female_cage_to.clean_for_jigging_bunnies(
-                self.__bunny_set().filter(is_male=False)
-            )
-    
-    def __bunny_set(self):
-        return self.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY)
 
 
-class VaccinationTask(Task):
+class VaccinationTask(VaccinationTaskCleanerMixin, Task):
     CHAR_TYPE = 'V'
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
-    
-    def clean(self):
-        super().clean()
-        fattening_set = self.cage.fatteningrabbit_set.filter(
-            current_type=Rabbit.TYPE_FATTENING
-        )
-        if fattening_set.count() == 0:
-            raise ValidationError('There are no fattening rabbits in cage')
-        for fattening_rabbit in fattening_set.all():
-            fattening_rabbit.cleaner.for_vaccinate()
 
 
-class SlaughterInspectionTask(Task):
+class SlaughterInspectionTask(SlaughterInspectionTaskCleanerMixin, Task):
     CHAR_TYPE = 'I'
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
     weights: list[float] = ArrayField(models.FloatField(), null=True, blank=True)
-    
-    def clean(self):
-        super().clean()
-        fattening_set = self.cage.fatteningrabbit_set.filter(
-            current_type=Rabbit.TYPE_FATTENING
-        )
-        if fattening_set.count() == 0:
-            raise ValidationError('There is no fattening rabbit in this cage')
-        for fattening_rabbit in fattening_set:
-            fattening_rabbit.cleaner.for_slaughter_inspection()
-        
-        if self.weights is not None:
-            self.clean_weights(self.weights, _fattening_rabbits=fattening_set)
-    
-    def clean_weights(self, weights, _fattening_rabbits=None):
-        if len(weights) == 0:
-            raise ValidationError('Weights cannot be empty')
-        if _fattening_rabbits is None:
-            fattening_set = self.cage.fatteningrabbit_set.filter(
-                current_type=Rabbit.TYPE_FATTENING
-            )
-        else:
-            fattening_set = _fattening_rabbits
-        if len(weights) != fattening_set.count():
-            raise ValidationError(
-                'The length of the list of weights must match the number of rabbits in '
-                'the cage'
-            )
 
 
-class SlaughterTask(Task):
+class SlaughterTask(SlaughterTaskCleanerMixin, Task):
     CHAR_TYPE = 'S'
     
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)

@@ -5,8 +5,7 @@ from typing import Optional
 from django.db.models import Q
 
 from api.utils.functions import diff_time, to_datetime
-from api.services.model.base.manager import *
-from api import models as api_models
+from api import models as models
 
 __all__ = [
     'RabbitManager', 'FatteningRabbitManager', 'BunnyManager',
@@ -45,12 +44,15 @@ def _get_output_efficiency(rabbit, dead_causes):
     return efficiency_children / output
 
 
-class RabbitManager(BaseManager):
-    model: 'api_models.Rabbit'
+class RabbitManager:
+    rabbit: 'models.Rabbit'
+    
+    def __init__(self, rabbit):
+        self.rabbit = rabbit
     
     @property
     def age(self) -> timedelta:
-        return diff_time(datetime.utcnow(), self.model.birthday)
+        return diff_time(datetime.utcnow(), self.rabbit.birthday)
     
     @property
     @abstractmethod
@@ -59,7 +61,7 @@ class RabbitManager(BaseManager):
 
 
 class FatteningRabbitManager(RabbitManager):
-    model: 'api_models.FatteningRabbit'
+    rabbit: 'models.FatteningRabbit'
     
     STATUS_NEED_VACCINATION = 'NV'
     STATUS_NEED_INSPECTION = 'NI'
@@ -69,7 +71,7 @@ class FatteningRabbitManager(RabbitManager):
     
     @property
     def status(self):
-        if not self.model.is_vaccinated:
+        if not self.rabbit.is_vaccinated:
             return {self.STATUS_NEED_VACCINATION}
         # vaccinated
         if self.age.days >= self.__NEED_INSPECTION_AGE:
@@ -77,7 +79,7 @@ class FatteningRabbitManager(RabbitManager):
             if last_weighting is None:
                 return {self.STATUS_NEED_INSPECTION}
             # last_weighting is not None
-            if last_weighting < self.model.birthday + timedelta(
+            if last_weighting < self.rabbit.birthday + timedelta(
                 self.__NEED_INSPECTION_AGE
             ):
                 return {self.STATUS_NEED_INSPECTION}
@@ -89,15 +91,15 @@ class FatteningRabbitManager(RabbitManager):
     @property
     def last_weighting(self) -> Optional[datetime]:
         try:
-            return api_models.FatteningRabbitHistory.objects.exclude(weight=None).filter(
-                rabbit=self.model
+            return models.FatteningRabbitHistory.objects.exclude(weight=None).filter(
+                rabbit=self.rabbit
             ).latest('time').time
-        except api_models.RabbitHistory.DoesNotExist:
+        except models.RabbitHistory.DoesNotExist:
             return None
 
 
 class BunnyManager(RabbitManager):
-    model: 'api_models.Bunny'
+    rabbit: 'models.Bunny'
     
     STATUS_NEED_JIGGING = 'NJ'
     
@@ -111,7 +113,7 @@ class BunnyManager(RabbitManager):
 
 
 class MotherRabbitManager(RabbitManager):
-    model: 'api_models.MotherRabbit'
+    rabbit: 'models.MotherRabbit'
     
     STATUS_READY_FOR_FERTILIZATION = 'RF'
     STATUS_UNCONFIRMED_PREGNANT = 'UP'
@@ -122,13 +124,13 @@ class MotherRabbitManager(RabbitManager):
     
     @property
     def status(self):
-        PregnancyInspection = api_models.PregnancyInspection
+        PregnancyInspection = models.PregnancyInspection
         statuses = set()
         
-        rabbits_in_cage = self.model.cage.cast.rabbits
+        rabbits_in_cage = self.rabbit.cage.cast.rabbits
         for rabbit_in_cage in rabbits_in_cage:
-            if rabbit_in_cage != self.model:
-                if rabbit_in_cage.current_type == api_models.Bunny.CHAR_TYPE:
+            if rabbit_in_cage != self.rabbit:
+                if rabbit_in_cage.current_type == models.Bunny.CHAR_TYPE:
                     statuses.add(self.STATUS_FEEDS_BUNNY)
                     break
         
@@ -150,7 +152,7 @@ class MotherRabbitManager(RabbitManager):
         if last_births is None or last_births < last_fertilization:
             try:
                 last_pregnancy_inspection = PregnancyInspection.objects.filter(
-                    mother_rabbit=self.model, time__gte=last_fertilization
+                    mother_rabbit=self.rabbit, time__gte=last_fertilization
                 ).latest('time')
             except PregnancyInspection.DoesNotExist:
                 statuses.add(self.STATUS_UNCONFIRMED_PREGNANT)
@@ -168,19 +170,19 @@ class MotherRabbitManager(RabbitManager):
     @property
     def last_births(self) -> Optional[date]:
         try:
-            return api_models.Bunny.objects.filter(
-                mother=self.model
+            return models.Bunny.objects.filter(
+                mother=self.rabbit
             ).latest('birthday').birthday
-        except api_models.Bunny.DoesNotExist:
+        except models.Bunny.DoesNotExist:
             return None
     
     @property
-    def last_mating(self) -> Optional['api_models.Mating']:
+    def last_mating(self) -> Optional['models.Mating']:
         try:
-            return api_models.Mating.objects.filter(
-                mother_rabbit=self.model
+            return models.Mating.objects.filter(
+                mother_rabbit=self.rabbit
             ).latest('time')
-        except api_models.Mating.DoesNotExist:
+        except models.Mating.DoesNotExist:
             return None
     
     @property
@@ -193,19 +195,19 @@ class MotherRabbitManager(RabbitManager):
     @property
     def output(self) -> int:
         # noinspection PyTypeChecker
-        return _get_output(self.model)
+        return _get_output(self.rabbit)
     
     @property
     def output_efficiency(self) -> Optional[float]:
         # noinspection PyTypeChecker
         return _get_output_efficiency(
-            self.model,
-            (api_models.DeadRabbit.CAUSE_SLAUGHTER, api_models.DeadRabbit.CAUSE_EXTRA)
+            self.rabbit,
+            (models.DeadRabbit.CAUSE_SLAUGHTER, models.DeadRabbit.CAUSE_EXTRA)
         )
 
 
 class FatherRabbitManager(RabbitManager):
-    model: 'api_models.FatherRabbit'
+    rabbit: 'models.FatherRabbit'
     
     STATUS_READY_FOR_FERTILIZATION = 'RF'
     
@@ -220,12 +222,12 @@ class FatherRabbitManager(RabbitManager):
     @property
     def output(self) -> int:
         # noinspection PyTypeChecker
-        return _get_output(self.model)
+        return _get_output(self.rabbit)
     
     @property
     def output_efficiency(self) -> Optional[float]:
         # noinspection PyTypeChecker
         return _get_output_efficiency(
-            self.model,
-            (api_models.DeadRabbit.CAUSE_ILLNESS, api_models.DeadRabbit.CAUSE_DISEASE)
+            self.rabbit,
+            (models.DeadRabbit.CAUSE_ILLNESS, models.DeadRabbit.CAUSE_DISEASE)
         )
