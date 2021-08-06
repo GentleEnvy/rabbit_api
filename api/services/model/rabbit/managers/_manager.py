@@ -5,7 +5,7 @@ from typing import Optional
 from django.db.models import Q
 
 from api.utils.functions import diff_time, to_datetime
-from api.services.model.base.manager._manager import *
+from api.services.model.base.manager import *
 from api import models as api_models
 
 __all__ = [

@@ -13,9 +13,11 @@ class _BasePartnerSerializer(serializers.Serializer):
         def to_internal_value(self, data):
             partner = super().to_internal_value(data)
             if partner.is_male:
-                MatingTask.clean_father_rabbit(partner)
+                partner: FatherRabbit
+                partner.cleaner.for_mating()
             else:  # partner is female
-                MatingTask.clean_mother_rabbit(partner)
+                partner: MotherRabbit
+                partner.cleaner.for_mating()
             return partner
     
     partner: _PartnerField

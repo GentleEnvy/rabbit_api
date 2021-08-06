@@ -51,8 +51,8 @@ class MotherRabbitPartnersView(_BasePartnersView):
     serializer_class = MotherRabbitPartnerSerializer
     queryset = MotherRabbit.all_current
     
-    def _clean(self, rabbit):
-        MatingTask.clean_mother_rabbit(rabbit)
+    def _clean(self, rabbit: MotherRabbit):
+        rabbit.cleaner.for_mating()
 
 
 class FatherRabbitPartnersView(_BasePartnersView):

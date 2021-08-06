@@ -117,29 +117,8 @@ class MatingTask(Task):
             raise ValidationError('This couple is already waiting for mating')
         except MatingTask.DoesNotExist:
             super().clean()
-            self.clean_mother_rabbit(self.mother_rabbit)
-            self.clean_father_rabbit(self.father_rabbit)
-    
-    @classmethod
-    def clean_mother_rabbit(cls, mother_rabbit: MotherRabbit):
-        if mother_rabbit.current_type != Rabbit.TYPE_MOTHER:
-            raise ValidationError('The mother rabbit is not mother')
-        mother_status = mother_rabbit.manager.status
-        READY_FOR_FERTILIZATION = MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
-        if READY_FOR_FERTILIZATION not in mother_status:
-            raise ValidationError('The female is not ready for fertilization')
-        # MAYBE: forbid mating with STATUS_FEEDS_BUNNY
-        CONFIRMED_PREGNANT = MotherRabbitManager.STATUS_CONFIRMED_PREGNANT
-        if CONFIRMED_PREGNANT in mother_status:
-            raise ValidationError('The female already pregnancy (confirmed)')
-    
-    @classmethod
-    def clean_father_rabbit(cls, father_rabbit: FatherRabbit):
-        if father_rabbit.current_type != Rabbit.TYPE_FATHER:
-            raise ValidationError('This rabbit is not father')
-        READY_FOR_FERTILIZATION = FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION
-        if READY_FOR_FERTILIZATION not in father_rabbit.manager.status:
-            raise ValidationError('The male is not ready for fertilization')
+            self.mother_rabbit.cleaner.for_mating()
+            self.father_rabbit.cleaner.for_mating()
 
 
 # noinspection SpellCheckingInspection

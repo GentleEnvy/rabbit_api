@@ -88,8 +88,8 @@ class AvoidInbreedingService:
                 f'{re.sub(r"(?<!^)(?=[A-Z])", " ", type(rabbit.cast).__name__).lower()}'
             )
         if rabbit.current_type == Rabbit.TYPE_MOTHER:
-            MatingTask.clean_mother_rabbit(rabbit)
             mother_rabbit: MotherRabbit = rabbit.cast
+            mother_rabbit.cleaner.for_mating()
             if mother_rabbit.manager.last_fertilization is not None and (
                 mother_rabbit.manager.last_fertilization - datetime.today()
             ).days < self.days_for_safe_fertilization:

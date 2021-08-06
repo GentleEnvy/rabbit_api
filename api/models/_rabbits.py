@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Final, Union
+from typing import Final
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from model_utils.managers import QueryManager
@@ -14,8 +13,8 @@ from api.models._plans import *
 from api.models._breeds import *
 from api.models._histories import *
 from api.models._cages import *
+from api.services.model.rabbit.cleaners.mixins import *
 from api.services.model.rabbit.managers.mixins import *
-from api.services.model.rabbit.managers import *
 
 __all__ = [
     'Rabbit', 'DeadRabbit', 'FatteningRabbit', 'Bunny', 'MotherRabbit', 'FatherRabbit'
@@ -24,7 +23,7 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
+class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseHistoricalModel):
     CHAR_TYPE: str = None
     
     history_model = RabbitHistory
@@ -77,7 +76,7 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
         return casted_rabbit
     
     @property
-    def cast(self) -> Union[DeadRabbit, _RabbitInCage]:
+    def cast(self):
         for rabbit_class in (
             DeadRabbit, FatteningRabbit, Bunny, MotherRabbit, FatherRabbit
         ):
@@ -90,11 +89,11 @@ class Rabbit(RabbitManagerMixin, BaseHistoricalModel):
     
     def save(self, *args, **kwargs):
         if self.__class__ is Rabbit:
-            raise NotImplementedError("Instance can't be saved as Rabbit (base class)")
+            raise TypeError("Instance can't be saved as Rabbit (base class)")
         super().save(*args, **kwargs)
 
 
-class DeadRabbit(Rabbit):
+class DeadRabbit(DeadRabbitCleanerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
     
     history_model = DeadRabbitHistory
@@ -123,17 +122,7 @@ class DeadRabbit(Rabbit):
         raise AttributeError
 
 
-class _RabbitInCage(Rabbit):
-    class Meta(Rabbit.Meta):
-        abstract = True
-    
-    cage: Cage
-    
-    def get_absolute_url(self):
-        raise NotImplementedError
-
-
-class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
+class FatteningRabbit(FatteningRabbitCleanerMixin, FatteningRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
     
     history_model = FatteningRabbitHistory
@@ -151,23 +140,9 @@ class FatteningRabbit(FatteningRabbitManagerMixin, _RabbitInCage):
     
     def get_absolute_url(self):
         return reverse('fattening_rabbit__detail__url', kwargs={'id': self.id})
-    
-    def clean(self):
-        super().clean()
-        if self.is_male is None:
-            raise ValidationError('The sex of the FatteningRabbit must be determined')
-        if self.plan is not None:
-            self.clean_for_plan()
-    
-    def clean_for_plan(self):
-        READY_TO_SLAUGHTER = FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER
-        if READY_TO_SLAUGHTER not in self.manager.status:
-            raise ValidationError(
-                'The fattening rabbit in the plan must have the status READY_TO_SLAUGHTER'
-            )
 
 
-class Bunny(BunnyManagerMixin, _RabbitInCage):
+class Bunny(BunnyCleanerMixin, BunnyManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
     
     history_model = BunnyHistory
@@ -186,7 +161,7 @@ class Bunny(BunnyManagerMixin, _RabbitInCage):
         return reverse('bunny__detail__url', kwargs={'id': self.id})
 
 
-class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
+class MotherRabbit(MotherRabbitCleanerMixin, MotherRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
     
     history_model = MotherRabbitHistory
@@ -203,16 +178,9 @@ class MotherRabbit(MotherRabbitManagerMixin, _RabbitInCage):
     
     def get_absolute_url(self):
         return reverse('mother_rabbit__detail__url', kwargs={'id': self.id})
-    
-    def clean(self):
-        super().clean()
-        if self.is_male is None:
-            raise ValidationError('The sex of the MotherRabbit must be determined')
-        if self.is_male:
-            raise ValidationError('MotherRabbit must be a female')
 
 
-class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
+class FatherRabbit(FatherRabbitCleanerMixin, FatherRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
     
     history_model = FatherRabbitHistory
@@ -229,10 +197,3 @@ class FatherRabbit(FatherRabbitManagerMixin, _RabbitInCage):
     
     def get_absolute_url(self):
         return reverse('father_rabbit__detail__url', kwargs={'id': self.id})
-    
-    def clean(self):
-        super().clean()
-        if self.is_male is None:
-            raise ValidationError('The sex of the FatherRabbit must be determined')
-        if not self.is_male:
-            raise ValidationError('FatherRabbit must be a male')
