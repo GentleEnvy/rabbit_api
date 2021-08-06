@@ -1,4 +1,4 @@
-from api.managers import MotherRabbitManager
+from api.services.model.rabbit.managers import MotherRabbitManager
 from api.models import *
 from api.services.model.feed.base import *
 from datetime import datetime

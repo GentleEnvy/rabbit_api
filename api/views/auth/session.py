@@ -1,5 +1,5 @@
+from api.serializers.auth.session import AuthSessionSerializer
 from api.views.auth.base import BaseAuthView
-from api.serializers import AuthSessionSerializer
 
 __all__ = ['AuthSessionView']
 

@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 
-from api.managers import FatteningRabbitManager, MotherRabbitManager, FatherRabbitManager
+from api.services.model.rabbit.managers import *
 from api.models import *
 from api.views.base import BaseView
 

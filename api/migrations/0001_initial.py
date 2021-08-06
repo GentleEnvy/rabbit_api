@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(models.Model, api.services.models.rabbits.managers.mixins.RabbitManagerMixin),
+            bases=(models.Model, api.services.model.rabbit.managers.mixins.RabbitManagerMixin),
         ),
         migrations.CreateModel(
             name='RabbitHistory',
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(api.services.models.rabbits.managers.mixins.BunnyManagerMixin, 'api.rabbit'),
+            bases=(api.services.model.rabbit.managers.mixins.BunnyManagerMixin, 'api.rabbit'),
         ),
         migrations.CreateModel(
             name='DeadRabbit',
@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(api.services.models.rabbits.managers.mixins.FatherRabbitManagerMixin, 'api.rabbit'),
+            bases=(api.services.model.rabbit.managers.mixins.FatherRabbitManagerMixin, 'api.rabbit'),
         ),
         migrations.CreateModel(
             name='FatteningCage',
@@ -129,7 +129,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(api.services.models.rabbits.managers.mixins.FatteningRabbitManagerMixin, 'api.rabbit'),
+            bases=(api.services.model.rabbit.managers.mixins.FatteningRabbitManagerMixin, 'api.rabbit'),
         ),
         migrations.CreateModel(
             name='MatingPlan',
@@ -163,7 +163,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(api.services.models.rabbits.managers.mixins.MotherRabbitManagerMixin, 'api.rabbit'),
+            bases=(api.services.model.rabbit.managers.mixins.MotherRabbitManagerMixin, 'api.rabbit'),
         ),
         migrations.CreateModel(
             name='SlaughterPlan',

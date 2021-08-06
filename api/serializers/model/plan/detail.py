@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from api.managers import FatteningRabbitManager
+from api.services.model.rabbit.filterer import RabbitFilterer
+from api.services.model.rabbit.managers import FatteningRabbitManager
 from api.models import Plan, FatteningRabbit
-from api.services.filterers import RabbitFilterer
 
 __all__ = ['PlanUpdateSerializer']
 

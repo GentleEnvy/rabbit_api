@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
 
-from api.managers import *
+from api.services.model.rabbit.managers import *
 from api.models._cages import *
 from api.models._rabbits import *
 from api.models.base import BaseModel
