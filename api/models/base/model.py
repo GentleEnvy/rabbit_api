@@ -26,12 +26,14 @@ class ListenDiffModel(BaseModel):
     
     @property
     def diff(self):
+        if self.id is None:
+            return self._changes_dict
         real_dict = self._real
         changes_dict = self._changes_dict
         diffs = {
-            field: new_value
+            field: real_dict.get(field)
             for field, new_value in changes_dict.items()
-            if real_dict.get(field) is None or new_value != real_dict.get(field)
+            if new_value != real_dict.get(field)
         }
         return diffs
     
