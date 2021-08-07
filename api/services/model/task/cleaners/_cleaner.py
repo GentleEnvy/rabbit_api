@@ -39,14 +39,14 @@ class ToReproductionTaskCleaner(TaskCleaner):
             self.clean_cage_to()
     
     def clean_cage_to(self):
-        self.task.cage_to.cast.clean_for_task()
+        self.task.cage_to.cleaner.for_task()
         if self.task.rabbit.is_male:
             if self.task.cage_to.cast.CHAR_TYPE == models.MotherCage.CHAR_TYPE:
                 raise ValidationError('The male cannot be jigged to MotherCage')
         else:  # rabbit is female
             if self.task.cage_to.cast.CHAR_TYPE == models.FatteningCage.CHAR_TYPE:
                 raise ValidationError('The female cannot be jigged to FatteningCage')
-        for neighbour in self.task.cage_to.cast.rabbits:
+        for neighbour in self.task.cage_to.manager.rabbits:
             if neighbour != self.task.rabbit:
                 raise ValidationError(
                     'The cage for the reproduction rabbit must be empty'
@@ -63,8 +63,8 @@ class ToFatteningTaskCleaner(TaskCleaner):
             self.clean_cage_to()
     
     def clean_cage_to(self):
-        self.task.cage_to.clean_for_task()
-        for neighbour in self.task.cage_to.cast.rabbits:
+        self.task.cage_to.cleaner.for_task()
+        for neighbour in self.task.cage_to.cast.manager.rabbits:
             if neighbour.is_male != self.task.rabbit.is_male:
                 raise ValidationError(
                     'Fattening rabbits in the same cage must be of the same sex'
@@ -127,10 +127,10 @@ class BunnyJiggingTaskCleaner(TaskCleaner):
             )
     
     def clean_male_cage_to(self):
-        self.task.male_cage_to.clean_for_task()
+        self.task.male_cage_to.cleaner.for_task()
         if self.task.male_cage_to == self.task.female_cage_to:
             raise ValidationError('Males and females cannot sit in the same cage')
-        self.task.male_cage_to.clean_for_jigging_bunnies(
+        self.task.male_cage_to.cleaner.for_jigging_bunnies(
             self.__bunny_set().filter(is_male=True)
         )
     
@@ -138,7 +138,7 @@ class BunnyJiggingTaskCleaner(TaskCleaner):
         if self.task.female_cage_to is not None:
             if self.task.female_cage_to == self.task.male_cage_to:
                 raise ValidationError('Females and males cannot sit in the same cage')
-            self.task.female_cage_to.clean_for_jigging_bunnies(
+            self.task.female_cage_to.cleaner.for_jigging_bunnies(
                 self.__bunny_set().filter(is_male=False)
             )
     

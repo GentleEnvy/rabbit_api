@@ -50,12 +50,12 @@ class FatteningCageCleaner(CageCleaner):
             else:
                 self._for_fattening(rabbits)
     
-    def clean_for_jigging_father(self):
+    def for_jigging_father(self):
         self.for_jigging()
         if len(self.cage.manager.father_rabbits) > 0:
             raise ValidationError('Father rabbit is already sitting in this cage')
     
-    def clean_for_jigging_bunnies(self, rabbits: Iterable['models.Rabbit']):
+    def for_jigging_bunnies(self, rabbits: Iterable['models.Rabbit']):
         rabbits = list(rabbits)
         if len(rabbits) == 0:
             return
