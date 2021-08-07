@@ -1,4 +1,5 @@
-from api.services.model.base.manager.mixin import BaseManagerMixin
+from typing import Type
+
 from api.services.model.cage.managers._manager import *
 
 __all__ = [
@@ -6,25 +7,25 @@ __all__ = [
 ]
 
 
-class CageManagerMixin(BaseManagerMixin):
-    _manager = CageManager
+class CageManagerMixin:
+    Manager: Type[CageManager] = CageManager
     
     @property
     def manager(self) -> CageManager:
-        return super().manager
+        return self.Manager(self)
 
 
-class MotherCageManagerMixin(BaseManagerMixin):
-    _manager = MotherCageManager
+class MotherCageManagerMixin(CageManagerMixin):
+    Manager = MotherCageManager
     
     @property
     def manager(self) -> MotherCageManager:
-        return super().manager
+        return self.Manager(self)
 
 
-class FatteningCageManagerMixin(BaseManagerMixin):
-    _manager = FatteningCageManager
+class FatteningCageManagerMixin(CageManagerMixin):
+    Manager = FatteningCageManager
     
     @property
     def manager(self) -> FatteningCageManager:
-        return super().manager
+        return self.Manager(self)
