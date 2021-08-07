@@ -1,4 +1,4 @@
-from django.db.models import Q, QuerySet, Count
+from django.db.models import Q, QuerySet
 
 from api.exceptions import ClientError
 from api.serializers.model.cage.general import CageListSerializer
@@ -12,21 +12,7 @@ class CageGeneralView(BaseGeneralView):
     model = Cage
     list_serializer = CageListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Cage.objects.select_subclasses().annotate(
-        number_rabbits=Count(
-            'mothercage__motherrabbit',
-            filter=Q(mothercage__motherrabbit__current_type=Rabbit.TYPE_MOTHER)
-        ) + Count(
-            'mothercage__bunny',
-            filter=Q(mothercage__bunny__current_type=Rabbit.TYPE_BUNNY)
-        ) + Count(
-            'fatteningcage__fatteningrabbit',
-            filter=Q(fatteningcage__fatteningrabbit__current_type=Rabbit.TYPE_FATTENING)
-        ) + Count(
-            'fatteningcage__fatherrabbit',
-            filter=Q(fatteningcage__fatherrabbit__current_type=Rabbit.TYPE_FATHER)
-        )
-    ).order_by('id')
+    queryset = Cage.Manager.prefetch_number_rabbits().order_by('id')
     
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
@@ -61,10 +47,10 @@ class CageGeneralView(BaseGeneralView):
                 if (
                     (
                         number_rabbits_from is None or
-                        number_rabbits_from <= cage.number_rabbits
+                        number_rabbits_from <= cage.manager.number_rabbits
                     ) and (
                         number_rabbits_to is None or
-                        number_rabbits_to >= cage.number_rabbits
+                        number_rabbits_to >= cage.manager.number_rabbits
                     ) and (
                         type_ is None or cage.CHAR_TYPE in type_
                     )

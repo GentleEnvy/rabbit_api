@@ -27,7 +27,7 @@ class CageListSerializer(serializers.ModelSerializer):
     is_parallel = _IsParallelField()
     
     def get_number_rabbits(self, cage):
-        return cage.number_rabbits
+        return cage.manager.number_rabbits
     
     def get_type(self, cage):
         return cage.CHAR_TYPE
