@@ -14,10 +14,6 @@ __all__ = [
 ]
 
 
-def _SAFE_CONFIRMED(collector, field, sub_objs, using):
-    models.CASCADE(collector, field, sub_objs.filter(is_confirmed=None), using)
-
-
 class Task(TaskCleanerMixin, BaseModel):
     objects = InheritanceManager()
     
@@ -25,7 +21,7 @@ class Task(TaskCleanerMixin, BaseModel):
     
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
-        get_user_model(), on_delete=_SAFE_CONFIRMED, null=True, blank=True
+        get_user_model(), on_delete=models.CASCADE, null=True, blank=True
     )
     completed_at = models.DateTimeField(null=True, blank=True)
     is_confirmed = models.BooleanField(null=True, blank=True)
@@ -34,40 +30,40 @@ class Task(TaskCleanerMixin, BaseModel):
 class ToReproductionTask(ToReproductionTaskCleanerMixin, Task):
     CHAR_TYPE = 'R'
     
-    rabbit = models.ForeignKey(FatteningRabbit, on_delete=_SAFE_CONFIRMED)
+    rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
     # in progress
-    cage_to = models.ForeignKey(Cage, on_delete=_SAFE_CONFIRMED, null=True, blank=True)
+    cage_to = models.ForeignKey(Cage, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class ToFatteningTask(ToFatteningTaskCleanerMixin, Task):
     CHAR_TYPE = 'F'
     
-    rabbit = models.ForeignKey(Rabbit, on_delete=_SAFE_CONFIRMED)
+    rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     # in progress
     cage_to = models.ForeignKey(
-        FatteningCage, on_delete=_SAFE_CONFIRMED, null=True, blank=True
+        FatteningCage, on_delete=models.CASCADE, null=True, blank=True
     )
 
 
 class MatingTask(MatingTaskCleanerMixin, Task):
     CHAR_TYPE = 'M'
     
-    mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=_SAFE_CONFIRMED)
-    father_rabbit = models.ForeignKey(FatherRabbit, on_delete=_SAFE_CONFIRMED)
+    mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
+    father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
 
 
 # noinspection SpellCheckingInspection
 class BunnyJiggingTask(BunnyJiggingTaskCleanerMixin, Task):
     CHAR_TYPE = 'B'
     
-    cage_from = models.ForeignKey(MotherCage, on_delete=_SAFE_CONFIRMED)
+    cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
     # in progress
     male_cage_to = models.ForeignKey(
-        FatteningCage, on_delete=_SAFE_CONFIRMED,
+        FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_male_set'
     )
     female_cage_to = models.ForeignKey(
-        FatteningCage, on_delete=_SAFE_CONFIRMED,
+        FatteningCage, on_delete=models.CASCADE,
         null=True, blank=True, related_name='bunnyjiggingtask_by_female_set'
     )
     males = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -76,13 +72,13 @@ class BunnyJiggingTask(BunnyJiggingTaskCleanerMixin, Task):
 class VaccinationTask(VaccinationTaskCleanerMixin, Task):
     CHAR_TYPE = 'V'
     
-    cage = models.ForeignKey(FatteningCage, on_delete=_SAFE_CONFIRMED)
+    cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
 
 
 class SlaughterInspectionTask(SlaughterInspectionTaskCleanerMixin, Task):
     CHAR_TYPE = 'I'
     
-    cage = models.ForeignKey(FatteningCage, on_delete=_SAFE_CONFIRMED)
+    cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
     weights: list[float] = ArrayField(models.FloatField(), null=True, blank=True)
 
@@ -90,4 +86,4 @@ class SlaughterInspectionTask(SlaughterInspectionTaskCleanerMixin, Task):
 class SlaughterTask(SlaughterTaskCleanerMixin, Task):
     CHAR_TYPE = 'S'
     
-    rabbit = models.ForeignKey(FatteningRabbit, on_delete=_SAFE_CONFIRMED)
+    rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
