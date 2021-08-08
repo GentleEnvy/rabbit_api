@@ -44,8 +44,8 @@ class BaseHistoricalModel(ListenDiffModel):
             pass
         if diff:
             new_dict = {
-                field: new_value
-                for field, new_value in diff.items()
+                field: getattr(self, field)
+                for field in diff.keys()
                 if field in history_fields
             }
         else:
@@ -62,7 +62,7 @@ class BaseHistoricalModel(ListenDiffModel):
             try:
                 new_dict[new_field] = new_dict.pop(old_filed)
             except KeyError:
-                pass
+                continue
         super().save(*args, **kwargs)
         self.history_model.objects.create(
             **(new_dict | {self.history_model.historical_name: self})

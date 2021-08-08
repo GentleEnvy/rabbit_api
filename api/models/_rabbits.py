@@ -7,6 +7,7 @@ from django.db import models
 from django.urls import reverse
 from model_utils.managers import QueryManager
 from multiselectfield import MultiSelectField
+from simple_history.models import HistoricalRecords
 
 from api.models.base import BaseHistoricalModel
 from api.models._plans import *
@@ -125,6 +126,8 @@ class DeadRabbit(DeadRabbitCleanerMixin, Rabbit):
 class FatteningRabbit(FatteningRabbitCleanerMixin, FatteningRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
     
+    history = HistoricalRecords()
+    
     history_model = FatteningRabbitHistory
     
     cage = models.ForeignKey(
@@ -145,6 +148,8 @@ class FatteningRabbit(FatteningRabbitCleanerMixin, FatteningRabbitManagerMixin, 
 class Bunny(BunnyCleanerMixin, BunnyManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
     
+    history = HistoricalRecords()
+    
     history_model = BunnyHistory
     
     cage = models.ForeignKey(
@@ -164,6 +169,8 @@ class Bunny(BunnyCleanerMixin, BunnyManagerMixin, Rabbit):
 class MotherRabbit(MotherRabbitCleanerMixin, MotherRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
     
+    history = HistoricalRecords()
+    
     history_model = MotherRabbitHistory
     
     cage = models.ForeignKey(
@@ -182,6 +189,8 @@ class MotherRabbit(MotherRabbitCleanerMixin, MotherRabbitManagerMixin, Rabbit):
 
 class FatherRabbit(FatherRabbitCleanerMixin, FatherRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
+    
+    history = HistoricalRecords()
     
     history_model = FatherRabbitHistory
     

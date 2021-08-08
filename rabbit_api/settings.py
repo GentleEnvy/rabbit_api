@@ -26,8 +26,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'model_utils',
+    'simple_history',
     
-    'api.apps.ApiConfig'
+    'api.apps.ApiConfig',
 ]
 
 # noinspection SpellCheckingInspection
@@ -108,6 +109,8 @@ USE_L10N = True
 USE_TZ = False
 
 STATIC_URL = '/static/'
+
+FIXTURE_DIRS = ['api/tests/fixtures/']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
