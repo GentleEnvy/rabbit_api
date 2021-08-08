@@ -2,7 +2,6 @@ from api.models._breeds import *
 from api.models._cages import *
 from api.models._plans import *
 from api.models._matings import *
-from api.models._histories import *
 from api.models._rabbits import *
 from api.models._tasks import *
 from api.models._inspections import *

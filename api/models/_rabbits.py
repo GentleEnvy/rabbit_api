@@ -9,10 +9,9 @@ from model_utils.managers import QueryManager
 from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords
 
-from api.models.base import BaseHistoricalModel
+from api.models.base import BaseModel
 from api.models._plans import *
 from api.models._breeds import *
-from api.models._histories import *
 from api.models._cages import *
 from api.services.model.rabbit.cleaners.mixins import *
 from api.services.model.rabbit.managers.mixins import *
@@ -24,10 +23,8 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
-class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseHistoricalModel):
+class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
     CHAR_TYPE: str = None
-    
-    history_model = RabbitHistory
     
     birthday = models.DateTimeField(default=datetime.utcnow)
     mother = models.ForeignKey(
@@ -97,8 +94,6 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseHistoricalModel):
 class DeadRabbit(DeadRabbitCleanerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
     
-    history_model = DeadRabbitHistory
-    
     death_day = models.DateTimeField(default=datetime.utcnow)
     death_cause = models.CharField(
         choices=(
@@ -128,8 +123,6 @@ class FatteningRabbit(FatteningRabbitCleanerMixin, FatteningRabbitManagerMixin, 
     
     history = HistoricalRecords()
     
-    history_model = FatteningRabbitHistory
-    
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
@@ -150,8 +143,6 @@ class Bunny(BunnyCleanerMixin, BunnyManagerMixin, Rabbit):
     
     history = HistoricalRecords()
     
-    history_model = BunnyHistory
-    
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
@@ -171,8 +162,6 @@ class MotherRabbit(MotherRabbitCleanerMixin, MotherRabbitManagerMixin, Rabbit):
     
     history = HistoricalRecords()
     
-    history_model = MotherRabbitHistory
-    
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
@@ -191,8 +180,6 @@ class FatherRabbit(FatherRabbitCleanerMixin, FatherRabbitManagerMixin, Rabbit):
     CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
     
     history = HistoricalRecords()
-    
-    history_model = FatherRabbitHistory
     
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
