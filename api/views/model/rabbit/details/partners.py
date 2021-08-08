@@ -61,4 +61,4 @@ class FatherRabbitPartnersView(_BasePartnersView):
     queryset = FatherRabbit.all_current
     
     def _clean(self, rabbit):
-        MatingTask.clean_father_rabbit(rabbit)
+        rabbit.cleaner.for_mating()

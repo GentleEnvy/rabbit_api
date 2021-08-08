@@ -98,7 +98,7 @@ class AvoidInbreedingService:
                     'This rabbit is pregnant, no partner should be found'
                 )
         else:  # rabbit is FatherRabbit
-            MatingTask.clean_father_rabbit(rabbit)
+            rabbit.cast.cleaner.for_mating()
         if rabbit.warning_status:
             raise ValidationError('This rabbit is ill')
     

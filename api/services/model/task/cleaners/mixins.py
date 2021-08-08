@@ -23,7 +23,7 @@ class TaskCleanerMixin:
         self.cleaner.clean()
 
 
-class ToReproductionTaskCleanerMixin(TaskCleaner):
+class ToReproductionTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = ToReproductionTaskCleaner
     
     @property
@@ -31,7 +31,7 @@ class ToReproductionTaskCleanerMixin(TaskCleaner):
         return self.Cleaner(self)
 
 
-class ToFatteningTaskCleanerMixin(TaskCleaner):
+class ToFatteningTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = ToFatteningTaskCleaner
     
     @property
@@ -39,7 +39,7 @@ class ToFatteningTaskCleanerMixin(TaskCleaner):
         return self.Cleaner(self)
 
 
-class MatingTaskCleanerMixin(TaskCleaner):
+class MatingTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = MatingTaskCleaner
     
     @property
@@ -47,7 +47,7 @@ class MatingTaskCleanerMixin(TaskCleaner):
         return self.Cleaner(self)
 
 
-class BunnyJiggingTaskCleanerMixin(TaskCleaner):
+class BunnyJiggingTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = BunnyJiggingTaskCleaner
     
     @property
@@ -55,7 +55,7 @@ class BunnyJiggingTaskCleanerMixin(TaskCleaner):
         return self.Cleaner(self)
 
 
-class VaccinationTaskCleanerMixin(TaskCleaner):
+class VaccinationTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = VaccinationTaskCleaner
     
     @property
@@ -63,7 +63,7 @@ class VaccinationTaskCleanerMixin(TaskCleaner):
         return self.Cleaner(self)
 
 
-class SlaughterInspectionTaskCleanerMixin(TaskCleaner):
+class SlaughterInspectionTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = SlaughterTaskCleaner
     
     @property
@@ -71,7 +71,7 @@ class SlaughterInspectionTaskCleanerMixin(TaskCleaner):
         return self.Cleaner(self)
 
 
-class SlaughterTaskCleanerMixin(TaskCleaner):
+class SlaughterTaskCleanerMixin(TaskCleanerMixin):
     Cleaner = SlaughterTaskCleaner
     
     @property

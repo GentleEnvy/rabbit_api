@@ -127,7 +127,7 @@ class MotherRabbitManager(RabbitManager):
         PregnancyInspection = models.PregnancyInspection
         statuses = set()
         
-        rabbits_in_cage = self.rabbit.cage.cast.rabbits
+        rabbits_in_cage = self.rabbit.cage.manager.rabbits
         for rabbit_in_cage in rabbits_in_cage:
             if rabbit_in_cage != self.rabbit:
                 if rabbit_in_cage.current_type == models.Bunny.CHAR_TYPE:
