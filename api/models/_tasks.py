@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from model_utils.managers import InheritanceManager
+from simple_history.models import HistoricalRecords
 
 from api.models._cages import *
 from api.models._rabbits import *
@@ -29,6 +30,7 @@ class Task(TaskCleanerMixin, BaseModel):
 
 class ToReproductionTask(ToReproductionTaskCleanerMixin, Task):
     CHAR_TYPE = 'R'
+    history = HistoricalRecords()
     
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
     # in progress
@@ -37,6 +39,7 @@ class ToReproductionTask(ToReproductionTaskCleanerMixin, Task):
 
 class ToFatteningTask(ToFatteningTaskCleanerMixin, Task):
     CHAR_TYPE = 'F'
+    history = HistoricalRecords()
     
     rabbit = models.ForeignKey(Rabbit, on_delete=models.CASCADE)
     # in progress
@@ -47,6 +50,7 @@ class ToFatteningTask(ToFatteningTaskCleanerMixin, Task):
 
 class MatingTask(MatingTaskCleanerMixin, Task):
     CHAR_TYPE = 'M'
+    history = HistoricalRecords()
     
     mother_rabbit = models.ForeignKey(MotherRabbit, on_delete=models.CASCADE)
     father_rabbit = models.ForeignKey(FatherRabbit, on_delete=models.CASCADE)
@@ -55,6 +59,7 @@ class MatingTask(MatingTaskCleanerMixin, Task):
 # noinspection SpellCheckingInspection
 class BunnyJiggingTask(BunnyJiggingTaskCleanerMixin, Task):
     CHAR_TYPE = 'B'
+    history = HistoricalRecords()
     
     cage_from = models.ForeignKey(MotherCage, on_delete=models.CASCADE)
     # in progress
@@ -71,12 +76,14 @@ class BunnyJiggingTask(BunnyJiggingTaskCleanerMixin, Task):
 
 class VaccinationTask(VaccinationTaskCleanerMixin, Task):
     CHAR_TYPE = 'V'
+    history = HistoricalRecords()
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
 
 
 class SlaughterInspectionTask(SlaughterInspectionTaskCleanerMixin, Task):
     CHAR_TYPE = 'I'
+    history = HistoricalRecords()
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
@@ -85,5 +92,6 @@ class SlaughterInspectionTask(SlaughterInspectionTaskCleanerMixin, Task):
 
 class SlaughterTask(SlaughterTaskCleanerMixin, Task):
     CHAR_TYPE = 'S'
+    history = HistoricalRecords()
     
     rabbit = models.ForeignKey(FatteningRabbit, on_delete=models.CASCADE)
