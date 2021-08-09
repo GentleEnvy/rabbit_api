@@ -3,8 +3,8 @@ from rest_framework import serializers
 __all__ = ['TypedRabbitSerializerMixin']
 
 
-# noinspection PyMethodMayBeStatic
-class TypedRabbitSerializerMixin:
+# noinspection PyMethodMayBeStatic, PyAbstractClass
+class TypedRabbitSerializerMixin(serializers.Serializer):
     class Meta:
         fields = ['current_type']
     
