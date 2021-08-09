@@ -49,7 +49,7 @@ class _BasePartnersView(BaseView):
 class MotherRabbitPartnersView(_BasePartnersView):
     model = MotherRabbit
     serializer_class = MotherRabbitPartnerSerializer
-    queryset = MotherRabbit.all_current
+    queryset = MotherRabbit.objects.all()
     
     def _clean(self, rabbit: MotherRabbit):
         rabbit.cleaner.for_mating()
@@ -58,7 +58,7 @@ class MotherRabbitPartnersView(_BasePartnersView):
 class FatherRabbitPartnersView(_BasePartnersView):
     model = FatherRabbit
     serializer_class = FatherRabbitPartnerSerializer
-    queryset = FatherRabbit.all_current
+    queryset = FatherRabbit.objects.all()
     
     def _clean(self, rabbit):
         rabbit.cleaner.for_mating()

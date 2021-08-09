@@ -121,7 +121,7 @@ class _BunnyJiggingTaskSerializer(_BaseTaskSerializer):
         return task.female_cage_to
     
     def get_number_bunnies(self, task):
-        return task.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY).count()
+        return task.cage_from.bunny_set.count()
 
 
 class _VaccinationTaskSerializer(_CageTaskSerializer):
@@ -138,7 +138,7 @@ class _SlaughterInspectionTaskSerializer(_CageTaskSerializer):
     number_rabbits = serializers.SerializerMethodField()
     
     def get_number_rabbits(self, task: SlaughterInspectionTask):
-        return len(task.cage.rabbits)
+        return task.cage.manager.number_rabbits
 
 
 # noinspection PyMethodMayBeStatic

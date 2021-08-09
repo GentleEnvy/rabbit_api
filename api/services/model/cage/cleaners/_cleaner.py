@@ -45,7 +45,7 @@ class FatteningCageCleaner(CageCleaner):
         super().clean()
         rabbits = list(self.cage.manager.rabbits)
         if len(rabbits) > 0:
-            if rabbits[0].current_type == models.Rabbit.TYPE_FATHER:
+            if isinstance(rabbits[0], models.FatherRabbit):
                 self._for_father(rabbits[0])
             else:
                 self._for_fattening(rabbits)
@@ -84,7 +84,7 @@ class FatteningCageCleaner(CageCleaner):
                 )
     
     def _for_father(self, father: 'models.Rabbit'):
-        if father.current_type != models.Rabbit.TYPE_FATHER:
+        if not isinstance(father, models.FatherRabbit):
             raise ValidationError('This rabbit is not currently FatherRabbit')
         if len(self.cage.manager.father_rabbits) > 0:
             raise ValidationError('Other father rabbit is already sitting in this cage')
@@ -95,7 +95,7 @@ class FatteningCageCleaner(CageCleaner):
     
     def _for_fattening(self, rabbits: Iterable['models.Rabbit']):
         for rabbit in rabbits:
-            if rabbit.current_type != models.Rabbit.TYPE_FATTENING:
+            if not isinstance(rabbit, models.FatteningRabbit):
                 raise ValidationError('Only fattening rabbits can sit in this cage')
         self._for_rabbits(list(rabbits))
 
@@ -124,7 +124,7 @@ class MotherCageCleaner(CageCleaner):
             raise ValidationError('Mother rabbit is already sitting in this cage')
 
     def _for_mother(self, mother: 'models.Rabbit'):
-        if mother.current_type != models.Rabbit.TYPE_MOTHER:
+        if not isinstance(mother, models.MotherRabbit):
             raise ValidationError('This rabbit is not currently MotherRabbit')
         if len(self.cage.manager.mother_rabbits) > 0:
             raise ValidationError('Mother rabbit is already sitting in this cage')

@@ -9,7 +9,7 @@ __all__ = ['BirthConfirmedGeneralView', 'BirthUnconfirmedGeneralView']
 
 class _BaseBirthGeneralView(BaseGeneralView):
     list_serializer = BirthListSerializer
-    queryset = MotherRabbit.all_current.all()
+    queryset = MotherRabbit.objects.all()
     _allow_statuses: list[str]
     
     __BIRTH_TIME_ORDER = 'birth_time'

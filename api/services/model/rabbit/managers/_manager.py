@@ -27,16 +27,10 @@ def _get_output(rabbit):
 
 
 def _get_output_efficiency(rabbit, dead_causes):
-    from api.models import FatteningRabbit, MotherRabbit, FatherRabbit, DeadRabbit
-    
+    DeadRabbit = models.DeadRabbit
     efficiency_children = rabbit.rabbit_set.filter(
-        Q(
-            current_type__in=(c.CHAR_TYPE for c in
-                (FatteningRabbit, MotherRabbit, FatherRabbit)
-            )
-        ) | Q(current_type=DeadRabbit.CHAR_TYPE) & ~Q(
-            deadrabbit__death_cause__in=dead_causes
-        )
+        ~Q(fatteningrabbit=None) | ~Q(motherrabbit=None) | ~Q(fatherrabbit=None) |
+        Q(current_type=DeadRabbit.CHAR_TYPE) & ~Q(deadrabbit__death_cause__in=dead_causes)
     ).count()
     output = _get_output(rabbit)
     if output == 0:

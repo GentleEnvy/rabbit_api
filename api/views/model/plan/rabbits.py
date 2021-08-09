@@ -10,15 +10,11 @@ __all__ = ['PlanRabbitsView']
 class PlanRabbitsView(BaseGeneralView):
     model = FatteningRabbit
     list_serializer = RabbitListSerializer
-    queryset = FatteningRabbit.objects.filter(
-        current_type=FatteningRabbit.CHAR_TYPE
-    ).select_related('breed', 'cage').all()
+    queryset = FatteningRabbit.objects.select_related('breed', 'cage').all()
     
     # TODO: query_params parser
     def filter_queryset(self, queryset):
-        queryset = FatteningRabbit.objects.filter(
-            current_type=FatteningRabbit.CHAR_TYPE
-        ).select_related('breed', 'cage').all()
+        queryset = FatteningRabbit.objects.select_related('breed', 'cage').all()
         
         params = self.request.query_params
         filters = {}

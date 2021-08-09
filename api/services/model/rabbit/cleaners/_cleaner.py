@@ -17,21 +17,20 @@ class RabbitCleaner:
         return models.Rabbit
     
     @classmethod
-    def check_current_type_of_rabbit(cls, rabbit, current_type=None):
-        current_type = current_type or cls.get_model().CHAR_TYPE
-        if rabbit.current_type != current_type:
+    def check_type_of_rabbit(cls, rabbit, type_=None):
+        if isinstance(rabbit, type_ or cls.get_model()):
             raise ValidationError(
-                f"Rabbit's current_type is {rabbit.current_type} (not a {current_type})"
+                f"Rabbit's type is {type(rabbit)} (not a {type_})"
             )
     
     def __init__(self, rabbit):
         self.rabbit: Final['models.Rabbit'] = rabbit
     
     def clean(self):
-        self.check_current_type_of_rabbit(self.rabbit, type(self.rabbit).CHAR_TYPE)
+        pass
     
-    def check_current_type(self):
-        self.check_current_type_of_rabbit(self.rabbit)
+    def check_type(self):
+        self.check_type_of_rabbit(self.rabbit)
 
 
 class DeadRabbitCleaner(RabbitCleaner):
@@ -41,7 +40,7 @@ class DeadRabbitCleaner(RabbitCleaner):
     
     @classmethod
     def for_recast(cls, rabbit):
-        if rabbit.current_type == models.Rabbit.TYPE_DIED:
+        if hasattr(rabbit, models.DeadRabbit.__name__.lower()):
             raise ValidationError("It's forbidden to recast from DeadRabbit")
 
 
@@ -55,9 +54,9 @@ class FatteningRabbitCleaner(RabbitCleaner):
     @classmethod
     def for_recast(cls, rabbit):
         try:
-            MotherRabbitCleaner.check_current_type_of_rabbit(rabbit)
+            MotherRabbitCleaner.check_type_of_rabbit(rabbit)
         except ValidationError:
-            FatherRabbitCleaner.check_current_type_of_rabbit(rabbit)
+            FatherRabbitCleaner.check_type_of_rabbit(rabbit)
     
     def clean(self):
         super().clean()
@@ -105,7 +104,7 @@ class BunnyCleaner(RabbitCleaner):
             raise ValidationError('The father of the bunny must be determined')
     
     def for_jigging(self):
-        self.check_current_type()
+        self.check_type()
         if BunnyManager.STATUS_NEED_JIGGING not in self.rabbit.manager.status:
             raise ValidationError("This bunny don't need jigging")
 
@@ -117,7 +116,7 @@ class MotherRabbitCleaner(RabbitCleaner):
     
     @classmethod
     def for_recast(cls, rabbit):
-        FatteningRabbitCleaner.check_current_type_of_rabbit(rabbit)
+        FatteningRabbitCleaner.check_type_of_rabbit(rabbit)
         cls.check_rabbit(rabbit)
     
     @classmethod
@@ -134,7 +133,7 @@ class MotherRabbitCleaner(RabbitCleaner):
         self.check_rabbit(self.rabbit)
     
     def for_mating(self):
-        self.check_current_type()
+        self.check_type()
         mother_status = self.rabbit.manager.status
         READY_FOR_FERTILIZATION = MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
         if READY_FOR_FERTILIZATION not in mother_status:
@@ -155,7 +154,7 @@ class FatherRabbitCleaner(RabbitCleaner):
     
     @classmethod
     def for_recast(cls, rabbit):
-        FatteningRabbitCleaner.check_current_type_of_rabbit(rabbit)
+        FatteningRabbitCleaner.check_type_of_rabbit(rabbit)
         cls.check_rabbit(rabbit)
     
     @classmethod
@@ -172,7 +171,7 @@ class FatherRabbitCleaner(RabbitCleaner):
         self.check_rabbit(self.rabbit)
     
     def for_mating(self):
-        if self.rabbit.current_type != models.Rabbit.TYPE_FATHER:
+        if not isinstance(self.rabbit, models.FatherRabbit):
             raise ValidationError('This rabbit is not father')
         READY_FOR_FERTILIZATION = FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION
         if READY_FOR_FERTILIZATION not in self.rabbit.manager.status:

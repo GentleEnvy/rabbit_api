@@ -1,6 +1,6 @@
 from typing import Final
 
-from django.db.models import Prefetch, Count, Q, QuerySet
+from django.db.models import Prefetch, Count, QuerySet
 from model_utils.managers import InheritanceQuerySet
 
 import api.models as models
@@ -21,43 +21,30 @@ class CageManager:
         return models.Cage.objects.select_subclasses().prefetch_related(
             Prefetch(
                 'mothercage__motherrabbit_set',
-                queryset=models.MotherRabbit.all_current.all(), to_attr='mother_rabbits'
+                queryset=models.MotherRabbit.objects.all(), to_attr='mother_rabbits'
             ),
             Prefetch(
-                'mothercage__bunny_set', queryset=models.Bunny.all_current.all(),
+                'mothercage__bunny_set', queryset=models.Bunny.objects.all(),
                 to_attr='bunnies'
             ),
             Prefetch(
                 'fatteningcage__fatherrabbit_set',
-                queryset=models.FatherRabbit.all_current.all(), to_attr='father_rabbits'
+                queryset=models.FatherRabbit.objects.all(), to_attr='father_rabbits'
             ),
             Prefetch(
                 'fatteningcage__fatteningrabbit_set',
-                queryset=models.FatteningRabbit.all_current.all(),
+                queryset=models.FatteningRabbit.objects.all(),
                 to_attr='fattening_rabbits'
             )
         )
     
     @classmethod
     def prefetch_number_rabbits(cls) -> InheritanceQuerySet:
-        Rabbit = models.Rabbit
         return models.Cage.objects.select_subclasses().annotate(
-            number_rabbits=Count(
-                'mothercage__motherrabbit',
-                filter=Q(mothercage__motherrabbit__current_type=Rabbit.TYPE_MOTHER)
-            ) + Count(
-                'mothercage__bunny',
-                filter=Q(mothercage__bunny__current_type=Rabbit.TYPE_BUNNY)
-            ) + Count(
-                'fatteningcage__fatteningrabbit',
-                filter=Q(
-                    fatteningcage__fatteningrabbit__current_type=Rabbit.TYPE_FATTENING
-                )
-            ) + Count(
-                'fatteningcage__fatherrabbit',
-                filter=Q(
-                    fatteningcage__fatherrabbit__current_type=Rabbit.TYPE_FATHER
-                )
+            number_rabbits=Count('mothercage__motherrabbit') + Count(
+                'mothercage__bunny'
+            ) + Count('fatteningcage__fatteningrabbit') + Count(
+                'fatteningcage__fatherrabbit'
             )
         )
     
@@ -88,10 +75,10 @@ class MotherCageManager(CageManager):
         return models.MotherCage.objects.prefetch_related(
             Prefetch(
                 'motherrabbit_set',
-                queryset=models.MotherRabbit.all_current.all(), to_attr='mother_rabbits'
+                queryset=models.MotherRabbit.objects.all(), to_attr='mother_rabbits'
             ),
             Prefetch(
-                'bunny_set', queryset=models.Bunny.all_current.all(), to_attr='bunnies'
+                'bunny_set', queryset=models.Bunny.objects.all(), to_attr='bunnies'
             )
         )
     
@@ -102,9 +89,7 @@ class MotherCageManager(CageManager):
             if (
                 mother_rabbits := getattr(self.cage.mothercage, 'mother_rabbits', None)
             ) is None:
-                return self.cage.motherrabbit_set.filter(
-                    current_type=models.Rabbit.TYPE_MOTHER
-                )
+                return self.cage.motherrabbit_set.all()
         return mother_rabbits
     
     @property
@@ -112,7 +97,7 @@ class MotherCageManager(CageManager):
         if (bunnies := getattr(self.cage, 'bunnies', None)) is None:
             # noinspection PyUnresolvedReferences
             if (bunnies := getattr(self.cage.mothercage, 'bunnies', None)) is None:
-                return self.cage.bunny_set.filter(current_type=models.Rabbit.TYPE_BUNNY)
+                return self.cage.bunny_set.all()
         return bunnies
     
     @property
@@ -128,11 +113,11 @@ class FatteningCageManager(CageManager):
         return models.MotherCage.objects.prefetch_related(
             Prefetch(
                 'fatherrabbit_set',
-                queryset=models.FatherRabbit.all_current.all(), to_attr='father_rabbits'
+                queryset=models.FatherRabbit.objects.all(), to_attr='father_rabbits'
             ),
             Prefetch(
                 'fatteningrabbit_set',
-                queryset=models.FatteningRabbit.all_current.all(),
+                queryset=models.FatteningRabbit.objects.all(),
                 to_attr='fattening_rabbits'
             )
         )
@@ -144,9 +129,7 @@ class FatteningCageManager(CageManager):
             if (
                 father_rabbits := getattr(self.cage.fatteningcage, 'father_rabbits', None)
             ) is None:
-                return self.cage.fatherrabbit_set.filter(
-                    current_type=models.Rabbit.TYPE_FATHER
-                )
+                return self.cage.fatherrabbit_set.all()
         return father_rabbits
     
     @property
@@ -156,7 +139,5 @@ class FatteningCageManager(CageManager):
             if (fattening_rabbits := getattr(
                 self.cage.fatteningcage, 'fattening_rabbits', None
             )) is None:
-                return self.cage.fatherrabbit_set.filter(
-                    current_type=models.Rabbit.TYPE_FATTENING
-                )
+                return self.cage.fatherrabbit_set.all()
         return fattening_rabbits

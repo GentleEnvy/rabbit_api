@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Final
+from typing import Final, Any, Type
 
 from django.db import models
 from django.urls import reverse
-from model_utils.managers import QueryManager
+from model_utils.managers import InheritanceQuerySet, QueryManager
 from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords
 
@@ -24,7 +24,13 @@ _is_valid_cage = {'status': []}
 
 
 class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
+    @classmethod
+    def get_subclasses(cls) -> tuple[Type[Rabbit], ...]:
+        return DeadRabbit, Bunny, FatteningRabbit, FatherRabbit, MotherRabbit
+    
     CHAR_TYPE: str = None
+    objects = InheritanceQuerySet()
+    live = QueryManager(deadrabbit=None)
     
     birthday = models.DateTimeField(default=datetime.utcnow)
     mother = models.ForeignKey(
@@ -37,16 +43,6 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
     is_vaccinated = models.BooleanField(default=False)
     weight = models.FloatField(null=True, blank=True)
     breed = models.ForeignKey(Breed, on_delete=models.PROTECT)
-    current_type = models.CharField(
-        choices=(
-            (TYPE_DIED := 'D', 'TYPE_DEAD'),
-            (TYPE_BUNNY := 'B', 'TYPE_BUNNY'),
-            (TYPE_FATTENING := 'F', 'TYPE_FATTENING'),
-            (TYPE_FATHER := 'P', 'TYPE_FATHER'),
-            (TYPE_MOTHER := 'M', 'TYPE_MOTHER')
-        ),
-        max_length=1, default=TYPE_BUNNY
-    )
     warning_status = MultiSelectField(
         choices=(
             (NOT_EAT := 'NE', 'NOT_EAT'),
@@ -56,31 +52,30 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
         blank=True, default='', max_choices=3
     )
     
-    all_current: QueryManager
-    
     @classmethod
     def recast(cls, rabbit: Rabbit):
+        rabbit = rabbit.cast
         if cls is Rabbit:
             raise TypeError("Instance can't be cast to Rabbit (base class)")
         if cls.CHAR_TYPE is None:
             raise ValueError('CHAR_TYPE must be determined')
         DeadRabbit.Cleaner.for_recast(rabbit)
         
-        casted_rabbit = getattr(rabbit, cls.__name__.lower(), None) or cls(
-            rabbit_ptr=rabbit
-        )
+        casted_rabbit: Any = cls(rabbit_ptr=rabbit.rabbit_ptr)
         casted_rabbit.__dict__.update(rabbit.__dict__)
-        casted_rabbit.current_type = cls.CHAR_TYPE
+        rabbit.delete(keep_parents=True)
         return casted_rabbit
     
     @property
     def cast(self):
-        for rabbit_class in (
-            DeadRabbit, FatteningRabbit, Bunny, MotherRabbit, FatherRabbit
-        ):
-            if self.current_type == rabbit_class.CHAR_TYPE:
-                return getattr(self, rabbit_class.__name__.lower())
-        raise AttributeError('Incorrect current_type')
+        rabbit_classes = self.get_subclasses()
+        if isinstance(self, rabbit_classes):
+            return self
+        for rabbit_class in rabbit_classes:
+            casted_rabbit = getattr(self, rabbit_class.__name__.lower(), None)
+            if casted_rabbit is not None:
+                return casted_rabbit
+        raise TypeError('The rabbit type is not defined')
     
     def get_absolute_url(self) -> str:
         raise NotImplementedError
@@ -92,7 +87,7 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
 
 
 class DeadRabbit(DeadRabbitCleanerMixin, Rabbit):
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_DIED
+    CHAR_TYPE: Final[str] = 'D'
     
     death_day = models.DateTimeField(default=datetime.utcnow)
     death_cause = models.CharField(
@@ -108,8 +103,6 @@ class DeadRabbit(DeadRabbitCleanerMixin, Rabbit):
         max_length=1
     )
     
-    all_current = QueryManager(current_type=CHAR_TYPE)
-    
     @classmethod
     def recast(cls, rabbit) -> DeadRabbit:
         return super().recast(rabbit)
@@ -119,16 +112,13 @@ class DeadRabbit(DeadRabbitCleanerMixin, Rabbit):
 
 
 class FatteningRabbit(FatteningRabbitCleanerMixin, FatteningRabbitManagerMixin, Rabbit):
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_FATTENING
-    
+    CHAR_TYPE: Final[str] = 'F'
     history = HistoricalRecords()
     
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
     plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True)
-    
-    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> FatteningRabbit:
@@ -139,15 +129,12 @@ class FatteningRabbit(FatteningRabbitCleanerMixin, FatteningRabbitManagerMixin, 
 
 
 class Bunny(BunnyCleanerMixin, BunnyManagerMixin, Rabbit):
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_BUNNY
-    
+    CHAR_TYPE: Final[str] = 'B'
     history = HistoricalRecords()
     
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-    
-    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, _):
@@ -158,15 +145,12 @@ class Bunny(BunnyCleanerMixin, BunnyManagerMixin, Rabbit):
 
 
 class MotherRabbit(MotherRabbitCleanerMixin, MotherRabbitManagerMixin, Rabbit):
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_MOTHER
-    
+    CHAR_TYPE: Final[str] = 'M'
     history = HistoricalRecords()
     
     cage = models.ForeignKey(
         MotherCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-    
-    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> MotherRabbit:
@@ -177,15 +161,12 @@ class MotherRabbit(MotherRabbitCleanerMixin, MotherRabbitManagerMixin, Rabbit):
 
 
 class FatherRabbit(FatherRabbitCleanerMixin, FatherRabbitManagerMixin, Rabbit):
-    CHAR_TYPE: Final[str] = Rabbit.TYPE_FATHER
-    
+    CHAR_TYPE: Final[str] = 'P'
     history = HistoricalRecords()
     
     cage = models.ForeignKey(
         FatteningCage, on_delete=models.PROTECT, limit_choices_to=_is_valid_cage
     )
-    
-    all_current = QueryManager(current_type=CHAR_TYPE)
     
     @classmethod
     def recast(cls, rabbit) -> FatherRabbit:

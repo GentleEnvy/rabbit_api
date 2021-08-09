@@ -2,6 +2,7 @@ from django.forms import model_to_dict
 from rest_framework import serializers
 
 from api.serializers.base import BaseSupportsCageSerializer
+from api.serializers.model.rabbit.base import TypedRabbitSerializerMixin
 from api.models import *
 
 __all__ = [
@@ -11,12 +12,11 @@ __all__ = [
 
 
 # noinspection PyMethodMayBeStatic
-class RabbitListSerializer(serializers.ModelSerializer):
-    class Meta:
+class RabbitListSerializer(TypedRabbitSerializerMixin, serializers.ModelSerializer):
+    class Meta(TypedRabbitSerializerMixin.Meta):
         model = Rabbit
-        fields = [
-            'id', 'cage', 'birthday', 'is_male', 'breed', 'current_type', 'weight',
-            'status'
+        fields = TypedRabbitSerializerMixin.Meta.fields + [
+            'id', 'cage', 'birthday', 'is_male', 'breed', 'weight', 'status'
         ]
     
     cage = serializers.SerializerMethodField()
@@ -33,21 +33,27 @@ class RabbitListSerializer(serializers.ModelSerializer):
         return rabbit.breed.title
 
 
-class MotherRabbitCreateSerializer(BaseSupportsCageSerializer):
-    class Meta:
+class MotherRabbitCreateSerializer(
+    TypedRabbitSerializerMixin, BaseSupportsCageSerializer
+):
+    class Meta(TypedRabbitSerializerMixin.Meta):
         model = MotherRabbit
-        fields = ['birthday', 'breed', 'cage', 'current_type', 'is_male', 'is_vaccinated']
+        fields = TypedRabbitSerializerMixin.Meta.fields + [
+            'birthday', 'breed', 'cage', 'is_male', 'is_vaccinated'
+        ]
     
-    current_type = serializers.HiddenField(default=Meta.model.CHAR_TYPE)
     is_male = serializers.HiddenField(default=False)
     is_vaccinated = serializers.HiddenField(default=True)
 
 
-class FatherRabbitCreateSerializer(BaseSupportsCageSerializer):
-    class Meta:
+class FatherRabbitCreateSerializer(
+    TypedRabbitSerializerMixin, BaseSupportsCageSerializer
+):
+    class Meta(TypedRabbitSerializerMixin.Meta):
         model = FatherRabbit
-        fields = ['birthday', 'breed', 'cage', 'current_type', 'is_male', 'is_vaccinated']
+        fields = TypedRabbitSerializerMixin.Meta.fields + [
+            'birthday', 'breed', 'cage', 'is_male', 'is_vaccinated'
+        ]
     
-    current_type = serializers.HiddenField(default=Meta.model.CHAR_TYPE)
     is_male = serializers.HiddenField(default=True)
     is_vaccinated = serializers.HiddenField(default=True)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from api.serializers.base import BaseReadOnlyRaiseSerializer
+from api.serializers.model.rabbit.base import TypedRabbitSerializerMixin
 from api.models import *
 
 __all__ = [
@@ -16,11 +17,13 @@ class _CageSerializer(serializers.ModelSerializer):
 
 
 # noinspection PyMethodMayBeStatic
-class FatteningRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
-    class Meta:
+class FatteningRabbitDetailSerializer(
+    TypedRabbitSerializerMixin, BaseReadOnlyRaiseSerializer
+):
+    class Meta(TypedRabbitSerializerMixin.Meta):
         model = FatteningRabbit
-        read_only_fields = [
-            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status'
+        read_only_fields = TypedRabbitSerializerMixin.Meta.fields + [
+            'id', 'is_male', 'birthday', 'breed', 'cage', 'status'
         ]
         fields = read_only_fields + ['weight']
         depth = 1
@@ -37,11 +40,11 @@ class FatteningRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
 
 
 # noinspection PyMethodMayBeStatic
-class BunnyDetailSerializer(BaseReadOnlyRaiseSerializer):
-    class Meta:
+class BunnyDetailSerializer(TypedRabbitSerializerMixin, BaseReadOnlyRaiseSerializer):
+    class Meta(TypedRabbitSerializerMixin.Meta):
         model = FatteningRabbit
-        read_only_fields = [
-            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status'
+        read_only_fields = TypedRabbitSerializerMixin.Meta.fields + [
+            'id', 'is_male', 'birthday', 'breed', 'cage', 'status'
         ]
         fields = read_only_fields + ['weight']
         depth = 1
@@ -58,11 +61,13 @@ class BunnyDetailSerializer(BaseReadOnlyRaiseSerializer):
 
 
 # noinspection PyMethodMayBeStatic
-class _ReproductionRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
-    class Meta:
-        read_only_fields = [
-            'id', 'is_male', 'birthday', 'breed', 'current_type', 'cage', 'status',
-            'output', 'output_efficiency'
+class _ReproductionRabbitDetailSerializer(
+    TypedRabbitSerializerMixin, BaseReadOnlyRaiseSerializer
+):
+    class Meta(TypedRabbitSerializerMixin.Meta):
+        read_only_fields = TypedRabbitSerializerMixin.Meta.fields + [
+            'id', 'is_male', 'birthday', 'breed', 'cage', 'status', 'output',
+            'output_efficiency'
         ]
         fields = read_only_fields + ['weight']
         depth = 1

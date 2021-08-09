@@ -18,12 +18,7 @@ class RabbitDetailView(BaseView):
     # noinspection PyMethodMayBeStatic
     def get(self, request, id):
         try:
-            base_rabbit = Rabbit.objects.get(
-                id=id, current_type__in=(
-                    FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE, MotherRabbit.CHAR_TYPE,
-                    FatherRabbit.CHAR_TYPE
-                )
-            )
+            base_rabbit = Rabbit.live.get(id=id)
         except Rabbit.DoesNotExist:
             raise Http404('Rabbit with this id was not found')
         if query_params := request.query_params:

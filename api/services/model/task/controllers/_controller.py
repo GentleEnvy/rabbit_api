@@ -159,7 +159,7 @@ class BunnyJiggingTaskController(TaskController):
                 raise OverflowError('There are no suitable cages')
     
     def execute(self, task: BunnyJiggingTask):
-        bunnies = task.cage_from.bunny_set.filter(current_type=Rabbit.TYPE_BUNNY)
+        bunnies = task.cage_from.bunny_set.all()
         fattening_rabbits = list(map(FatteningRabbit.recast, bunnies))
         for male in fattening_rabbits[:task.males]:
             male.is_male = True
@@ -178,9 +178,7 @@ class VaccinationTaskController(TaskController):
         _create_from_fattening_cage(self, tasks)
     
     def execute(self, task: VaccinationTask):
-        fattening_rabbits = task.cage.fatteningrabbit_set.filter(
-            current_type=Rabbit.TYPE_FATTENING
-        )
+        fattening_rabbits = task.cage.fatteningrabbit_set.all()
         for fattening_rabbit in fattening_rabbits:
             fattening_rabbit.is_vaccinated = True
             fattening_rabbit.save()
@@ -193,9 +191,7 @@ class SlaughterInspectionTaskController(TaskController):
         _create_from_fattening_cage(self, tasks)
     
     def execute(self, task: SlaughterInspectionTask):
-        fattening_rabbits = task.cage.fatteningrabbit_set.filter(
-            current_type=Rabbit.TYPE_FATTENING
-        )
+        fattening_rabbits = task.cage.fatteningrabbit_set.all()
         for rabbit, weight in zip(fattening_rabbits, task.weights):
             rabbit.weight = weight
             rabbit.save()

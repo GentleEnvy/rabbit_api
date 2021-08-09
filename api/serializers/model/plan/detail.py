@@ -15,9 +15,8 @@ class PlanUpdateSerializer(serializers.ModelSerializer):
     class _RabbitsField(serializers.PrimaryKeyRelatedField):
         def __init__(self, **kwargs):
             super().__init__(
-                **kwargs, many=True, queryset=FatteningRabbit.objects.filter(
-                    current_type=FatteningRabbit.CHAR_TYPE
-                ), source='fatteningrabbit_set'
+                **kwargs, many=True, queryset=FatteningRabbit.objects.all(),
+                source='fatteningrabbit_set'
             )
         
         def get_queryset(self):

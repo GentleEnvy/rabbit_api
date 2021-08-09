@@ -14,26 +14,20 @@ class StatisticView(BaseView):
         MOTHER_READY = MotherRabbitManager.STATUS_READY_FOR_FERTILIZATION
         FATHER_READY = FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION
         
-        rabbits = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).count()
+        rabbits = Rabbit.live.count()
         cages = Cage.objects.count()
-        bunnies = Bunny.objects.filter(current_type=Bunny.CHAR_TYPE).count()
+        bunnies = Bunny.objects.count()
         # TODO: operations
         ready_to_slaughter = 0
-        for fattening_rabbit in FatteningRabbit.objects.filter(
-            current_type=FatteningRabbit.CHAR_TYPE
-        ):
+        for fattening_rabbit in FatteningRabbit.objects.all():
             if READY_TO_SLAUGHTER in fattening_rabbit.manager.status:
                 ready_to_slaughter += 1
         reproducible_mothers = 0
-        for mother_rabbit in MotherRabbit.objects.filter(
-            current_type=MotherRabbit.CHAR_TYPE
-        ):
+        for mother_rabbit in MotherRabbit.objects.all():
             if MOTHER_READY in mother_rabbit.manager.status:
                 reproducible_mothers += 1
         reproducible_fathers = 0
-        for father_rabbit in FatherRabbit.objects.filter(
-            current_type=FatteningRabbit.CHAR_TYPE
-        ):
+        for father_rabbit in FatherRabbit.objects.all():
             if FATHER_READY in father_rabbit.manager.status:
                 reproducible_fathers += 1
         return Response(

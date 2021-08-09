@@ -26,6 +26,11 @@ class Task(TaskCleanerMixin, BaseModel):
     )
     completed_at = models.DateTimeField(null=True, blank=True)
     is_confirmed = models.BooleanField(null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        BaseModel.save(self)
+        if self.is_confirmed is not None:
+            self.delete()
 
 
 class ToReproductionTask(ToReproductionTaskCleanerMixin, Task):

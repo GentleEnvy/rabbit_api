@@ -30,8 +30,8 @@ class _BasePartnerSerializer(serializers.Serializer):
 
 
 class MotherRabbitPartnerSerializer(_BasePartnerSerializer):
-    partner = _BasePartnerSerializer._PartnerField(queryset=FatherRabbit.all_current)
+    partner = _BasePartnerSerializer._PartnerField(queryset=FatherRabbit.objects.all())
 
 
 class FatherRabbitPartnerSerializer(_BasePartnerSerializer):
-    partner = _BasePartnerSerializer._PartnerField(queryset=MotherRabbit.all_current)
+    partner = _BasePartnerSerializer._PartnerField(queryset=MotherRabbit.objects.all())

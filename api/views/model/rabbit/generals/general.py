@@ -14,7 +14,7 @@ class RabbitGeneralView(BaseGeneralView):
     model = Rabbit
     list_serializer = RabbitListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Rabbit.objects.exclude(current_type=DeadRabbit.CHAR_TYPE).select_related(
+    queryset = Rabbit.live.select_related(
         'breed',
         'bunny', 'bunny__cage',
         'fatteningrabbit', 'fatteningrabbit__cage',

@@ -10,7 +10,7 @@ __all__ = ['BirthUnconfirmedDetailView', 'BirthConfirmedDetailView']
 
 
 class _BaseBirthDetailView(BaseDetailView):
-    queryset = MotherRabbit.all_current.all()
+    queryset = MotherRabbit.objects.all()
     lookup_url_kwarg = 'id'
     filter_status: str
     

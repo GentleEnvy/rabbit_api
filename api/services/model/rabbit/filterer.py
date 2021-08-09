@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+from django.db.models import Q
+
 from api.models import *
 from api.services.model.base.filterer import BaseFilterer
 
@@ -19,8 +21,6 @@ class RabbitFilterer(BaseFilterer):
         queryset = self.queryset
         if is_male is not None:
             queryset = queryset.filter(is_male=is_male)
-        if type_:
-            queryset = queryset.filter(current_type__in=type_)
         if breed:
             queryset = queryset.filter(breed__in=list(map(int, breed)))
         if age_from is not None:
@@ -49,6 +49,8 @@ class RabbitFilterer(BaseFilterer):
                     rabbit.cast.cage.number >= cage_number_from
                 ) and (
                     cage_number_to is None or rabbit.cast.cage.number <= cage_number_to
+                ) and (
+                    type_ is None or rabbit.cast.CHAR_TYPE == type_
                 )
             ]
         )
@@ -81,7 +83,7 @@ class RabbitFilterer(BaseFilterer):
         if order == 'type':
             return sum(
                 (
-                    list(queryset.filter(current_type=rabbit_class.CHAR_TYPE).all())
+                    list(queryset.filter(~Q(**{rabbit_class.__name__.lower(): None})))
                     for rabbit_class in
                     (FatteningRabbit, MotherRabbit, FatherRabbit, Bunny)
                 ),
