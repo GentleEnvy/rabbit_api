@@ -27,10 +27,9 @@ def _get_output(rabbit):
 
 
 def _get_output_efficiency(rabbit, dead_causes):
-    DeadRabbit = models.DeadRabbit
     efficiency_children = rabbit.rabbit_set.filter(
         ~Q(fatteningrabbit=None) | ~Q(motherrabbit=None) | ~Q(fatherrabbit=None) |
-        Q(current_type=DeadRabbit.CHAR_TYPE) & ~Q(deadrabbit__death_cause__in=dead_causes)
+        ~Q(deadrabbit=None) & ~Q(deadrabbit__death_cause__in=dead_causes)
     ).count()
     output = _get_output(rabbit)
     if output == 0:
@@ -84,12 +83,8 @@ class FatteningRabbitManager(RabbitManager):
     
     @property
     def last_weighting(self) -> Optional[datetime]:
-        try:
-            return models.FatteningRabbitHistory.objects.exclude(weight=None).filter(
-                rabbit=self.rabbit
-            ).latest('time').time
-        except models.RabbitHistory.DoesNotExist:
-            return None
+        # FIXME
+        return None
 
 
 class BunnyManager(RabbitManager):

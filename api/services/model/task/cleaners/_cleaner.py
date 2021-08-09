@@ -143,7 +143,7 @@ class BunnyJiggingTaskCleaner(TaskCleaner):
             )
     
     def __bunny_set(self):
-        return self.task.cage_from.bunny_set.filter(current_type=models.Rabbit.TYPE_BUNNY)
+        return self.task.cage_from.bunny_set.all()
 
 
 class VaccinationTaskCleaner(TaskCleaner):
@@ -151,9 +151,7 @@ class VaccinationTaskCleaner(TaskCleaner):
     
     def clean(self):
         super().clean()
-        fattening_set = self.task.cage.fatteningrabbit_set.filter(
-            current_type=models.Rabbit.TYPE_FATTENING
-        )
+        fattening_set = self.task.cage.fatteningrabbit_set.all()
         if fattening_set.count() == 0:
             raise ValidationError('There are no fattening rabbits in cage')
         for fattening_rabbit in fattening_set.all():
@@ -165,9 +163,7 @@ class SlaughterInspectionTaskCleaner(TaskCleaner):
     
     def clean(self):
         super().clean()
-        fattening_set = self.task.cage.fatteningrabbit_set.filter(
-            current_type=models.Rabbit.TYPE_FATTENING
-        )
+        fattening_set = self.task.cage.fatteningrabbit_set.all()
         if fattening_set.count() == 0:
             raise ValidationError('There is no fattening rabbit in this cage')
         for fattening_rabbit in fattening_set:
@@ -180,9 +176,7 @@ class SlaughterInspectionTaskCleaner(TaskCleaner):
         if len(weights) == 0:
             raise ValidationError('Weights cannot be empty')
         if _fattening_rabbits is None:
-            fattening_set = self.task.cage.fatteningrabbit_set.filter(
-                current_type=models.Rabbit.TYPE_FATTENING
-            )
+            fattening_set = self.task.cage.fatteningrabbit_set.all()
         else:
             fattening_set = _fattening_rabbits
         if len(weights) != fattening_set.count():

@@ -5,7 +5,7 @@ from typing import Final, Any, Type
 
 from django.db import models
 from django.urls import reverse
-from model_utils.managers import InheritanceQuerySet, QueryManager
+from model_utils.managers import QueryManager, InheritanceManager
 from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords
 
@@ -29,7 +29,7 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
         return DeadRabbit, Bunny, FatteningRabbit, FatherRabbit, MotherRabbit
     
     CHAR_TYPE: str = None
-    objects = InheritanceQuerySet()
+    objects = InheritanceManager()
     live = QueryManager(deadrabbit=None)
     
     birthday = models.DateTimeField(default=datetime.utcnow)
