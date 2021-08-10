@@ -18,7 +18,8 @@ class RabbitCleaner:
     
     @classmethod
     def check_type_of_rabbit(cls, rabbit, type_=None):
-        if isinstance(rabbit, type_ or cls.get_model()):
+        type_ = type_ or cls.get_model()
+        if not isinstance(rabbit, type_):
             raise ValidationError(
                 f"Rabbit's type is {type(rabbit)} (not a {type_})"
             )
