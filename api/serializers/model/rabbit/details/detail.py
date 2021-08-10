@@ -47,6 +47,8 @@ class _BaseRabbitDetailSerializer(BaseReadOnlyRaiseSerializer):
 class FatteningRabbitDetailSerializer(_BaseRabbitDetailSerializer):
     class Meta(_BaseRabbitDetailSerializer.Meta):
         model = FatteningRabbit
+        read_only_fields = _BaseRabbitDetailSerializer.Meta.read_only_fields + ['plan']
+        fields = read_only_fields + ['weight']
 
 
 class BunnyDetailSerializer(_BaseRabbitDetailSerializer):
