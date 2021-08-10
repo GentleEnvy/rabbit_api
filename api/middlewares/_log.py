@@ -6,6 +6,7 @@ Uses a logger_config configured by the name of django.request
 to log all requests and responses according to configuration
 specified for django.request.
 """
+import json
 import time
 
 from django.utils.deprecation import MiddlewareMixin
@@ -13,6 +14,12 @@ from django.utils.deprecation import MiddlewareMixin
 from api.logs import debug
 
 __all__ = ['RequestLogMiddleware']
+
+
+def _get_content_type(request_or_response):
+    return request_or_response.content_type or getattr(
+        request_or_response, 'headers', {}
+    ).get('Content-Type', '')
 
 
 # noinspection PyMethodMayBeStatic
@@ -32,16 +39,24 @@ class RequestLogMiddleware(MiddlewareMixin):
     def extract_log_info(self, request, response=None, **_):
         """Extract appropriate log info from requests/responses/exceptions."""
         log_data = {
-            'remote_address': request.META['REMOTE_ADDR'],
-            'run_time': time.time() - request.start_time,
+            'run_time': time.time() - request.start_time
         }
         if request.method in ['PUT', 'POST', 'PATCH']:
-            log_data['request_body'] = request.req_body
-        if response:
-            if 'text/html' in response.headers.get('Content-Type'):
-                log_data['response_body'] = '<<<HTML>>>'
+            content_type = _get_content_type(response)
+            if 'application/json' in content_type:
+                log_data['request'] = json.dumps(
+                    json.loads(request.req_body), separators=(',', ':')
+                )
             else:
-                log_data['response_body'] = getattr(response, 'content', b'')
+                log_data['request'] = request.req_body
+        if response:
+            content_type = _get_content_type(response)
+            if 'text/html' in content_type:
+                log_data['response'] = '<<<HTML>>>'
+            elif 'application/json' in content_type:
+                log_data['response'] = json.dumps(response.data, separators=(',', ':'))
+            else:
+                log_data['response'] = getattr(response, 'content', b'')
         return log_data
     
     def process_response(self, request, response):
