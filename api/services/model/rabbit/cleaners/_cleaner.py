@@ -162,7 +162,7 @@ class FatherRabbitCleaner(RabbitCleaner):
     def check_rabbit(cls, rabbit):
         if rabbit.is_male is None:
             raise ValidationError('The sex of the FatherRabbit must be determined')
-        if rabbit.is_male:
+        if not rabbit.is_male:
             raise ValidationError('FatherRabbit must be a male')
         if not rabbit.is_vaccinated:
             raise ValidationError('FatherRabbit must be vaccinated')

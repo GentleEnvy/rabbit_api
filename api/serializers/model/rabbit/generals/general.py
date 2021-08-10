@@ -58,7 +58,7 @@ class MotherRabbitCreateSerializer(_BaseReproductionRabbitCreateSerializer):
     is_male = serializers.HiddenField(default=False)
 
 
-class FatherRabbitCreateSerializer(BaseSupportsCageSerializer):
+class FatherRabbitCreateSerializer(_BaseReproductionRabbitCreateSerializer):
     class Meta(_BaseReproductionRabbitCreateSerializer.Meta):
         model = FatherRabbit
     
