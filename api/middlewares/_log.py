@@ -17,18 +17,14 @@ __all__ = ['RequestLogMiddleware']
 
 
 def _get_content_type(request_or_response):
-    return request_or_response.content_type or getattr(
+    return getattr(request_or_response, 'content_type', None) or getattr(
         request_or_response, 'headers', {}
     ).get('Content-Type', '')
 
 
-# noinspection PyMethodMayBeStatic
+# noinspection PyMethodMayBeStatic, PyBroadException
 class RequestLogMiddleware(MiddlewareMixin):
     """Request Logging Middleware."""
-    
-    def __init__(self, *args, **kwargs):
-        """Constructor method."""
-        super().__init__(*args, **kwargs)
     
     def process_request(self, request):
         """Set Request Start Time to measure time taken to service request."""
@@ -44,9 +40,13 @@ class RequestLogMiddleware(MiddlewareMixin):
         if request.method in ['PUT', 'POST', 'PATCH']:
             content_type = _get_content_type(response)
             if 'application/json' in content_type:
-                log_data['request'] = json.dumps(
-                    json.loads(request.req_body), separators=(',', ':')
-                )
+                try:
+                    log_data['request'] = json.dumps(
+                        json.loads(request.req_body), separators=(',', ':'),
+                        default=lambda o: str(o)
+                    )
+                except Exception:
+                    log_data['request'] = request.req_body
             else:
                 log_data['request'] = request.req_body
         if response:
@@ -54,7 +54,12 @@ class RequestLogMiddleware(MiddlewareMixin):
             if 'text/html' in content_type:
                 log_data['response'] = '<<<HTML>>>'
             elif 'application/json' in content_type:
-                log_data['response'] = json.dumps(response.data, separators=(',', ':'))
+                try:
+                    log_data['response'] = json.dumps(
+                        response.data, separators=(',', ':'), default=lambda o: str(o)
+                    )
+                except Exception:
+                    log_data['response'] = getattr(response, 'content', b'')
             else:
                 log_data['response'] = getattr(response, 'content', b'')
         return log_data

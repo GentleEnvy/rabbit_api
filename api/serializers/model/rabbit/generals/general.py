@@ -46,7 +46,10 @@ class RabbitListSerializer(serializers.ModelSerializer):
 
 class _BaseReproductionRabbitCreateSerializer(BaseSupportsCageSerializer):
     class Meta:
-        fields = ['birthday', 'breed', 'cage', 'is_male', 'is_vaccinated']
+        read_only_fields = ['id']
+        fields = read_only_fields + [
+            'birthday', 'breed', 'cage', 'is_male', 'is_vaccinated'
+        ]
     
     is_vaccinated = serializers.HiddenField(default=True)
 
