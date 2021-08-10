@@ -117,7 +117,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 if DEBUG:  # dev
     LOGGING = LogConfig(
         {
-            'api': {'level': 'INFO', 'handlers': [api_console]},
+            'api': {'handlers': [api_console]},
             'django.server': {'handlers': [web_console]}
         }
     ).to_dict()

@@ -194,6 +194,7 @@ class SlaughterInspectionTaskController(TaskController):
         fattening_rabbits = task.cage.fatteningrabbit_set.all()
         for rabbit, weight in zip(fattening_rabbits, task.weights):
             rabbit.weight = weight
+            rabbit.last_weighting = datetime.utcnow()
             rabbit.save()
 
 

@@ -38,7 +38,10 @@ class RequestLogMiddleware(MiddlewareMixin):
         if request.method in ['PUT', 'POST', 'PATCH']:
             log_data['request_body'] = request.req_body
         if response:
-            log_data['response_body'] = getattr(response, 'content', b'')
+            if 'text/html' in response.headers.get('Content-Type'):
+                log_data['response_body'] = '<<<HTML>>>'
+            else:
+                log_data['response_body'] = getattr(response, 'content', b'')
         return log_data
     
     def process_response(self, request, response):
