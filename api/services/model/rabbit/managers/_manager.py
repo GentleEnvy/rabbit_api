@@ -68,7 +68,7 @@ class FatteningRabbitManager(RabbitManager):
             return {self.STATUS_NEED_VACCINATION}
         # vaccinated
         if self.age.days >= self.__NEED_INSPECTION_AGE:
-            last_weighting = self.last_weighting
+            last_weighting = self.rabbit.last_weighting
             if last_weighting is None:
                 return {self.STATUS_NEED_INSPECTION}
             # last_weighting is not None
@@ -80,11 +80,6 @@ class FatteningRabbitManager(RabbitManager):
             return {self.STATUS_READY_TO_SLAUGHTER}
         # age < __NEED_INSPECTION_AGE
         return set()
-    
-    @property
-    def last_weighting(self) -> Optional[datetime]:
-        # FIXME
-        return None
 
 
 class BunnyManager(RabbitManager):

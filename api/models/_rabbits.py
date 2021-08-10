@@ -42,6 +42,7 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
     is_male = models.BooleanField(null=True, blank=True)
     is_vaccinated = models.BooleanField(default=False)
     weight = models.FloatField(null=True, blank=True)
+    last_weighting = models.DateTimeField(null=True, blank=True)
     breed = models.ForeignKey(Breed, on_delete=models.PROTECT)
     warning_status = MultiSelectField(
         choices=(

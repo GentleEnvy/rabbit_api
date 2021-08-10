@@ -16,9 +16,8 @@ __all__ = [
 
 
 class Task(TaskCleanerMixin, BaseModel):
+    CHAR_TYPE: str = None
     objects = InheritanceManager()
-    
-    CHAR_TYPE: str
     
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
