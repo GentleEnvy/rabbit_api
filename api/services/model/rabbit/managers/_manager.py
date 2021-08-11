@@ -114,7 +114,7 @@ class MotherRabbitManager(RabbitManager):
         rabbits_in_cage = self.rabbit.cage.manager.rabbits
         for rabbit_in_cage in rabbits_in_cage:
             if rabbit_in_cage != self.rabbit:
-                if rabbit_in_cage.current_type == models.Bunny.CHAR_TYPE:
+                if isinstance(rabbit_in_cage, models.Bunny):
                     statuses.add(self.STATUS_FEEDS_BUNNY)
                     break
         
