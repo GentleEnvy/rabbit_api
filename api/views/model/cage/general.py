@@ -71,9 +71,9 @@ class CageGeneralView(BaseGeneralView):
         if order_by == '-number':
             return queryset.order_by('-number', '-letter')
         if order_by == 'number_rabbits':
-            return sorted(queryset, key=lambda c: len(c.cast.rabbits))
+            return sorted(queryset, key=lambda c: c.manager.number_rabbits)
         if order_by == '-number_rabbits':
-            return sorted(queryset, key=lambda c: len(c.cast.rabbits), reverse=True)
+            return sorted(queryset, key=lambda c: c.manager.number_rabbits, reverse=True)
         if order_by == 'status':
             return sorted(queryset, key=lambda c: [-len(c.status), c.status])
         if order_by == '-status':
