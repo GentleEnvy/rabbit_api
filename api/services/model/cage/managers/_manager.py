@@ -1,6 +1,6 @@
 from typing import Final
 
-from django.db.models import Prefetch, Count, QuerySet
+from django.db.models import Prefetch, Count, QuerySet, Q
 from model_utils.managers import InheritanceQuerySet
 
 import api.models as models
@@ -82,6 +82,10 @@ class MotherCageManager(CageManager):
             )
         )
     
+    @classmethod
+    def prefetch_number_rabbits(cls) -> QuerySet:
+        return super().prefetch_number_rabbits().filter(~Q(mothercage=None))
+    
     @property
     def mother_rabbits(self):
         if (mother_rabbits := getattr(self.cage, 'mother_rabbits', None)) is None:
@@ -110,7 +114,7 @@ class FatteningCageManager(CageManager):
     
     @classmethod
     def prefetch_rabbits(cls) -> QuerySet:
-        return models.MotherCage.objects.prefetch_related(
+        return models.FatteningCage.objects.prefetch_related(
             Prefetch(
                 'fatherrabbit_set',
                 queryset=models.FatherRabbit.objects.all(), to_attr='father_rabbits'
@@ -121,6 +125,10 @@ class FatteningCageManager(CageManager):
                 to_attr='fattening_rabbits'
             )
         )
+    
+    @classmethod
+    def prefetch_number_rabbits(cls) -> QuerySet:
+        return super().prefetch_number_rabbits().filter(~Q(fatteningcage=None))
     
     @property
     def father_rabbits(self):

@@ -87,41 +87,25 @@ class SlaughterOperation(_BaseOperation):
 class VaccinationOperation(_BaseOperation):
     CHAR_TYPE: Final[str] = 'V'
     
-    # noinspection SpellCheckingInspection
-    _relation_id_fields = (
-        'bunnyhistory__rabbit_id', 'fatteningrabbithistory__rabbit_id',
-        'motherrabbithistory__rabbit_id', 'fatherrabbithistory__rabbit_id'
-    )
-    
     @classmethod
     def search(cls, rabbit_id=None, time_from=None, time_to=None):
         filters = {}
         if rabbit_id is not None:
-            for relation_id_field in cls._relation_id_fields:
-                filters[relation_id_field] = rabbit_id
+            filters['id'] = rabbit_id
         if time_from is not None:
-            filters['time__gt'] = time_from
+            filters['history_date__gt'] = time_from
         if time_to is not None:
-            filters['time__lt'] = time_to
-        queryset = 'RabbitHistory'.objects.filter(is_vaccinated=True, **filters)
-        operations = []
-        for rabbit_history_info in queryset.values('time', *cls._relation_id_fields):
-            try:
-                operations.append(VaccinationOperation(**rabbit_history_info))
-            except ValueError:
-                continue
-        return operations
+            filters['history_date__lt'] = time_to
+        
+        histories = FatteningRabbit.history.filter(**filters, is_vaccinated=True).values(
+            'history_date', 'id'
+        )
+        return [VaccinationOperation(**history) for history in histories]
     
-    def __init__(self, time, **relation_id_fields):
+    def __init__(self, history_date, id):
         super().__init__()
-        self.time = time
-        try:
-            self.rabbit_id = [
-                value for key, value in relation_id_fields.items()
-                if value is not None and key in self._relation_id_fields
-            ][0]
-        except IndexError:
-            raise ValueError
+        self.time = history_date
+        self.rabbit_id = id
 
 
 class MatingOperation(_BaseOperation):
