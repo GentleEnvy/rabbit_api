@@ -17,10 +17,9 @@ __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 class Cage(CageCleanerMixin, CageManagerMixin, BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
-    
-    objects = InheritanceManager()
-    
+
     CHAR_TYPE: str = None
+    objects = InheritanceManager()
     
     farm_number = models.IntegerField(
         validators=[MinValueValidator(2), MaxValueValidator(4)]
