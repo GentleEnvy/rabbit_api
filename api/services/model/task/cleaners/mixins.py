@@ -64,10 +64,10 @@ class VaccinationTaskCleanerMixin(TaskCleanerMixin):
 
 
 class SlaughterInspectionTaskCleanerMixin(TaskCleanerMixin):
-    Cleaner = SlaughterTaskCleaner
+    Cleaner = SlaughterInspectionTaskCleaner
     
     @property
-    def cleaner(self) -> SlaughterTaskCleaner:
+    def cleaner(self) -> SlaughterInspectionTaskCleaner:
         return self.Cleaner(self)
 
 
