@@ -41,10 +41,7 @@ class RequestLogMiddleware(MiddlewareMixin):
             content_type = _get_content_type(response)
             if 'application/json' in content_type:
                 try:
-                    log_data['request'] = json.dumps(
-                        json.loads(request.req_body), separators=(',', ':'),
-                        default=lambda o: str(o)
-                    )
+                    log_data['request'] = json.loads(request.req_body)
                 except Exception:
                     log_data['request'] = request.req_body
             else:
@@ -54,12 +51,7 @@ class RequestLogMiddleware(MiddlewareMixin):
             if 'text/html' in content_type and len(response.content) > 100:
                 log_data['response'] = '<<<HTML>>>'
             elif 'application/json' in content_type:
-                try:
-                    log_data['response'] = json.dumps(
-                        response.data, separators=(',', ':'), default=lambda o: str(o)
-                    )
-                except Exception:
-                    log_data['response'] = getattr(response, 'content', b'')
+                log_data['response'] = response.data
             else:
                 log_data['response'] = getattr(response, 'content', b'')
         return log_data
