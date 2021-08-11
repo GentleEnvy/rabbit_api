@@ -24,13 +24,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'model_utils',
+    'simple_history',
     
-    'api.apps.ApiConfig'
+    'api.apps.ApiConfig',
 ]
 
 # noinspection SpellCheckingInspection
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'api.paginations.BasePagination',
+    'DEFAULT_PAGINATION_CLASS': 'api.paginations.base.BasePagination',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
@@ -49,7 +50,7 @@ MIDDLEWARE = [
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
     'api.middlewares.RequestLogMiddleware'
 ]
@@ -95,6 +96,8 @@ USE_L10N = True
 USE_TZ = False
 
 STATIC_URL = '/static/'
+
+FIXTURE_DIRS = ['api/tests/fixtures/']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

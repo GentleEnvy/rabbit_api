@@ -1,0 +1,37 @@
+[
+    {
+        "model": "api.typegroup",
+        "pk": 1,
+        "fields": {
+            "type": "R"
+        }
+    },
+    {
+        "model": "api.typegroup",
+        "pk": 2,
+        "fields": {
+            "type": "Z"
+        }
+    },
+    {
+        "model": "api.typegroup",
+        "pk": 3,
+        "fields": {
+            "type": "O"
+        }
+    },
+    {
+        "model": "api.typegroup",
+        "pk": 4,
+        "fields": {
+            "type": "M"
+        }
+    },
+    {
+        "model": "api.typegroup",
+        "pk": 5,
+        "fields": {
+            "type": "V"
+        }
+    }
+]

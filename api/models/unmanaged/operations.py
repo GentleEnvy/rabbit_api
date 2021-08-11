@@ -103,7 +103,7 @@ class VaccinationOperation(_BaseOperation):
             filters['time__gt'] = time_from
         if time_to is not None:
             filters['time__lt'] = time_to
-        queryset = RabbitHistory.objects.filter(is_vaccinated=True, **filters)
+        queryset = 'RabbitHistory'.objects.filter(is_vaccinated=True, **filters)
         operations = []
         for rabbit_history_info in queryset.values('time', *cls._relation_id_fields):
             try:
@@ -139,9 +139,7 @@ class MatingOperation(_BaseOperation):
             filters['time__gt'] = time_from
         if time_to is not None:
             filters['time__lt'] = time_to
-        queryset = Mating.objects.filter(
-            **filters
-        )
+        queryset = Mating.objects.filter(**filters)
         operations = []
         for mating_info in queryset.values(
             'time', 'father_rabbit_id', 'mother_rabbit_id'

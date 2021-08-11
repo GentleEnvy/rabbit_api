@@ -11,23 +11,18 @@ __all__ = ['PredictionRabbitService']
 
 
 def _get_initial_condition() -> PredictionCondition:
-    def __get_rabbits_by_current_type(model_class):
-        return set(model_class.objects.filter(current_type=model_class.CHAR_TYPE))
-    
     predict_condition = PredictionCondition(datetime.utcnow().date())
-    for bunny in __get_rabbits_by_current_type(Bunny):
+    for bunny in Bunny.objects.all():
         predict_condition.add_bunny(
-            BunnyFuture(
-                status=bunny.manager.status, **model_to_dict(bunny)
-            )
+            BunnyFuture(status=bunny.manager.status, **model_to_dict(bunny))
         )
-    for fattening_rabbit in __get_rabbits_by_current_type(FatteningRabbit):
+    for fattening_rabbit in FatteningRabbit.objects.all():
         predict_condition.add_fattening_rabbit(
             FatteningRabbitFuture(
                 status=fattening_rabbit.manager.status, **model_to_dict(fattening_rabbit)
             )
         )
-    for mother_rabbit in __get_rabbits_by_current_type(MotherRabbit):
+    for mother_rabbit in MotherRabbit.objects.all():
         if (last_fertilization := mother_rabbit.manager.last_fertilization) is not None:
             last_fertilization = last_fertilization.date()
         predict_condition.add_mother_rabbit(
@@ -38,7 +33,7 @@ def _get_initial_condition() -> PredictionCondition:
                 **model_to_dict(mother_rabbit)
             )
         )
-    for father_rabbit in __get_rabbits_by_current_type(FatherRabbit):
+    for father_rabbit in FatherRabbit.objects.all():
         predict_condition.add_father_rabbit(
             FatherRabbitFuture(
                 status=father_rabbit.manager.status, **model_to_dict(father_rabbit)

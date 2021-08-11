@@ -44,7 +44,10 @@ class LogConfig:
     def _setup_handler(self, handler: dict[str, Any]) -> str:
         handler = deepcopy(handler)
         handler_name = handler.pop('__name__')
-        handler['formatter'] = self._setup_formatter(handler['formatter'])
+        try:
+            handler['formatter'] = self._setup_formatter(handler['formatter'])
+        except KeyError:
+            pass
         self.__dict_config['handlers'][handler_name] = handler
         return handler_name
     

@@ -1,0 +1,30 @@
+[
+    {
+        "model": "api.breed",
+        "pk": 1,
+        "fields": {
+            "title": "Паннон"
+        }
+    },
+    {
+        "model": "api.breed",
+        "pk": 2,
+        "fields": {
+            "title": "Полтавское серебро"
+        }
+    },
+    {
+        "model": "api.breed",
+        "pk": 3,
+        "fields": {
+            "title": "Новозеландский"
+        }
+    },
+    {
+        "model": "api.breed",
+        "pk": 4,
+        "fields": {
+            "title": "Калифорнийский"
+        }
+    }
+]

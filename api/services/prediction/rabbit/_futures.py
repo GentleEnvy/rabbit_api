@@ -3,7 +3,7 @@ from datetime import date, timedelta, datetime
 from typing import Final, Optional, Union
 import random
 
-from api.managers import *
+from api.services.model.rabbit.managers import *
 from api.services.prediction.rabbit import _condition as cond
 from api.utils.functions import diff_time
 

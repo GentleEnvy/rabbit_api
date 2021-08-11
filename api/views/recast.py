@@ -48,17 +48,17 @@ class _BaseRecastView(BaseView):
 
 class FatteningRabbitRecastView(_BaseRecastView):
     model = FatteningRabbit
-    queryset = FatteningRabbit.all_current.all()
+    queryset = FatteningRabbit.objects.all()
     task_model = ToReproductionTask
 
 
 class MotherRabbitRecastView(_BaseRecastView):
     model = MotherRabbit
-    queryset = MotherRabbit.all_current.all()
+    queryset = MotherRabbit.objects.all()
     task_model = ToFatteningTask
 
 
 class FatherRabbitRecastView(_BaseRecastView):
     model = FatherRabbit
-    queryset = FatherRabbit.all_current.all()
+    queryset = FatherRabbit.objects.all()
     task_model = ToFatteningTask
