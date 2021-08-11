@@ -42,6 +42,9 @@ class RabbitListSerializer(serializers.ModelSerializer):
     
     def get_breed(self, rabbit):
         return rabbit.breed.title
+    
+    def get_plan(self, rabbit):
+        return rabbit.cast.plan_id
 
 
 class _BaseReproductionRabbitCreateSerializer(BaseSupportsCageSerializer):

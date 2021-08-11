@@ -50,7 +50,7 @@ class RabbitFilterer(BaseFilterer):
                 ) and (
                     cage_number_to is None or rabbit.cast.cage.number <= cage_number_to
                 ) and (
-                    type_ is None or rabbit.cast.CHAR_TYPE == type_
+                    type_ is None or rabbit.cast.CHAR_TYPE in type_
                 )
             ]
         )
