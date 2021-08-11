@@ -51,7 +51,7 @@ class RequestLogMiddleware(MiddlewareMixin):
                 log_data['request'] = request.req_body
         if response:
             content_type = _get_content_type(response)
-            if 'text/html' in content_type:
+            if 'text/html' in content_type and len(response.content) > 100:
                 log_data['response'] = '<<<HTML>>>'
             elif 'application/json' in content_type:
                 try:
