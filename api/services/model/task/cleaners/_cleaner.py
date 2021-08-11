@@ -99,7 +99,7 @@ class BunnyJiggingTaskCleaner(TaskCleaner):
         super().clean()
         bunny_set = self.__bunny_set()
         if bunny_set.count() == 0:
-            raise ValidationError('There are no bunnies in cage_form')
+            raise ValidationError('There are no bunnies in cage_from')
         
         is_bunny_need_jigging = False
         for bunny in bunny_set.all():
