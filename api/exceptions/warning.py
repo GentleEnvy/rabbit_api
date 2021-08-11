@@ -8,10 +8,9 @@ from rest_framework.exceptions import (
 )
 
 from api.exceptions.base import *
+from api.logs import warning
 
 __all__ = ['APIWarning']
-
-from api.logs import warning
 
 
 def _cast_rest_api_exception(exception: RestAPIException):
@@ -36,7 +35,9 @@ class APIWarning(CastSupportsError):
     }
     
     def __init__(self, message=None, status=None, codes: list[str] = None):
-        super().__init__(message or 'Warning', status or rest_status.HTTP_100_CONTINUE)
+        super().__init__(
+            message or 'Warning', status or rest_status.HTTP_205_RESET_CONTENT
+        )
         self.codes: Final[tuple[str, ...]] = tuple(codes or [])
     
     def serialize(self):

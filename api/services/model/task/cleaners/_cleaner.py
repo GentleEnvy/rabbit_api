@@ -92,6 +92,15 @@ class MatingTaskCleaner(TaskCleaner):
             super().clean()
             self.task.mother_rabbit.cleaner.for_mating()
             self.task.father_rabbit.cleaner.for_mating()
+    
+    @classmethod
+    def check_exists(cls, rabbit):
+        filters = {
+            'is_confirmed': None,
+            'father_rabbit' if rabbit.is_male else 'mother_rabbit': rabbit
+        }
+        if models.MatingTask.objects.filter(**filters).first() is not None:
+            raise ValidationError('This rabbits is already waiting for mating')
 
 
 class BunnyJiggingTaskCleaner(TaskCleaner):

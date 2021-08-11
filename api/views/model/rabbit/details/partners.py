@@ -1,8 +1,10 @@
 from typing import Optional
 
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
 
+from api.exceptions import APIWarning
 from api.models import *
 from api.serializers.model.rabbit.details.partners import *
 from api.services.inbreeding import AvoidInbreedingService
@@ -25,6 +27,10 @@ class _BasePartnersView(BaseView):
     
     def get(self, request, **_):
         rabbit = self.get_object()
+        try:
+            self._clean(rabbit)
+        except ValidationError as e:
+            raise APIWarning(str(e), codes=['mating'])
         optimal_partners = _find_optimal_partners(rabbit)
         return Response(optimal_partners)
     
@@ -37,8 +43,10 @@ class _BasePartnersView(BaseView):
         self._create_task(rabbit, partner)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-    def _clean(self, rabbit):
-        raise NotImplementedError
+    @staticmethod
+    def _clean(rabbit):
+        MatingTask.Cleaner.check_exists(rabbit)
+        rabbit.cleaner.for_mating()
     
     @staticmethod
     def _create_task(rabbit, partner):
@@ -50,15 +58,9 @@ class MotherRabbitPartnersView(_BasePartnersView):
     model = MotherRabbit
     serializer_class = MotherRabbitPartnerSerializer
     queryset = MotherRabbit.objects.all()
-    
-    def _clean(self, rabbit: MotherRabbit):
-        rabbit.cleaner.for_mating()
 
 
 class FatherRabbitPartnersView(_BasePartnersView):
     model = FatherRabbit
     serializer_class = FatherRabbitPartnerSerializer
     queryset = FatherRabbit.objects.all()
-    
-    def _clean(self, rabbit):
-        rabbit.cleaner.for_mating()
