@@ -1,5 +1,6 @@
 from threading import Thread
 
+from api.logs import debug
 from api.models import *
 from api.serializers.model.task.anonymous.general import AnonymousTaskListSerializer
 from api.services.model.task.controllers import all_controllers
@@ -10,8 +11,10 @@ __all__ = ['AnonymousTaskGeneralView']
 
 
 def _update_tasks():
+    debug('started updating tasks')
     for task_controller in all_controllers:
         task_controller().update_anonymous()
+    debug('task update completed')
 
 
 class AnonymousTaskGeneralView(BaseTaskGeneralView):
