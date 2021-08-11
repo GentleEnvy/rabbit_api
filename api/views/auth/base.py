@@ -22,6 +22,7 @@ class BaseAuthView(BaseView):
     def serialize_user(user):
         # noinspection SpellCheckingInspection
         return {
+            'id': user.id,
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
