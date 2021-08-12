@@ -181,7 +181,7 @@ class JiggingOperation(_BaseOperation):
         if len(histories) > 1:
             prev = histories[0]
             for curr in histories[1:]:
-                if curr['history_date'] > time_from:
+                if time_from is None or curr['history_date'] > time_from:
                     if prev['cage'].id != curr['cage'].id:
                         operations.append(
                             JiggingOperation(
