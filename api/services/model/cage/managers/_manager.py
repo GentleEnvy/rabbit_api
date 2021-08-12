@@ -147,5 +147,5 @@ class FatteningCageManager(CageManager):
             if (fattening_rabbits := getattr(
                 self.cage.fatteningcage, 'fattening_rabbits', None
             )) is None:
-                return self.cage.fatherrabbit_set.all()
+                return self.cage.fatteningrabbit_set.all()
         return fattening_rabbits
