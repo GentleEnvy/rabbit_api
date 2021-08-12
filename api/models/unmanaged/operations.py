@@ -104,7 +104,6 @@ class VaccinationOperation(_BaseOperation):
         ).annotate(rabbit=F('id')).order_by('id').distinct('id').values(
             'history_date', 'id'
         )
-        print(histories)
         return [VaccinationOperation(**history) for history in histories]
     
     def __init__(self, history_date, id):
