@@ -6,23 +6,15 @@ from api.models import Plan, FatteningRabbit
 
 __all__ = ['PlanUpdateSerializer']
 
+_filterer = RabbitFilterer(FatteningRabbit.objects.all())
+_filterer.filter(status=[FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER])
+
 
 class PlanUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
         fields = ['rabbits']
     
-    class _RabbitsField(serializers.PrimaryKeyRelatedField):
-        def __init__(self, **kwargs):
-            super().__init__(
-                **kwargs, many=True, queryset=FatteningRabbit.objects.all(),
-                source='fatteningrabbit_set'
-            )
-        
-        def get_queryset(self):
-            queryset = super().get_queryset()
-            filterer = RabbitFilterer(queryset)
-            filterer.filter(status=[FatteningRabbitManager.STATUS_READY_TO_SLAUGHTER])
-            return filterer.queryset
-    
-    rabbits = _RabbitsField(write_only=True)
+    rabbits = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=_filterer.queryset, source='fatteningrabbit_set'
+    )
