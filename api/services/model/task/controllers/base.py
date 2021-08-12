@@ -4,6 +4,7 @@ from typing import final, Type
 from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceQuerySet
 
+from api.logs import warning
 from api.models import Task
 
 __all__ = ['TaskController']
@@ -42,7 +43,8 @@ class TaskController(ABC):
         for task in tasks.all():
             try:
                 task.full_clean()
-            except ValidationError:
+            except ValidationError as e:
+                warning(f'{task} was deleted for reason: {e}')
                 task.delete()
     
     def _create(self, tasks: InheritanceQuerySet) -> None:
