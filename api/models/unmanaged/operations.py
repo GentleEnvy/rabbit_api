@@ -4,6 +4,8 @@ from abc import ABC
 from datetime import datetime
 from typing import Any, Final, Union
 
+from django.db.models import F
+
 from api.models import *
 from api.utils.functions import to_datetime
 
@@ -97,9 +99,12 @@ class VaccinationOperation(_BaseOperation):
         if time_to is not None:
             filters['history_date__lte'] = time_to
         
-        histories = FatteningRabbit.history.filter(**filters, is_vaccinated=True).values(
+        histories = FatteningRabbit.history.filter(
+            **filters, is_vaccinated=True
+        ).annotate(rabbit=F('id')).order_by('id').distinct('id').values(
             'history_date', 'id'
         )
+        print(histories)
         return [VaccinationOperation(**history) for history in histories]
     
     def __init__(self, history_date, id):
