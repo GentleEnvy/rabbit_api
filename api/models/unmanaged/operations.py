@@ -187,7 +187,7 @@ class JiggingOperation(_BaseOperation):
             prev = histories[0]
             for curr in histories[1:]:
                 if time_from is None or curr['history_date'] > time_from:
-                    if prev['cage'].id != curr['cage'].id:
+                    if prev['cage'].id != curr['cage'].id and prev['id'] == curr['id']:
                         operations.append(
                             JiggingOperation(
                                 rabbit_id=curr['id'],
@@ -204,6 +204,7 @@ class JiggingOperation(_BaseOperation):
                                 }
                             )
                         )
+                prev = curr
         return operations
     
     def __init__(self, rabbit_id, time, old_cage: dict, new_cage: dict):
