@@ -47,7 +47,7 @@ class Cage(CageCleanerMixin, CageManagerMixin, BaseModel):
     def cast(self) -> Union[FatteningCage, MotherCage]:
         if isinstance(self, (FatteningCage, MotherCage)):
             return self
-        if (casted_cage := getattr(self, 'fateningcage', None)) is None:
+        if (casted_cage := getattr(self, 'fatteningcage', None)) is None:
             casted_cage = getattr(self, 'mothercage', None)
         if casted_cage is None:
             raise TypeError('The cage type is not defined')
