@@ -12,7 +12,7 @@ class TestReproduction(APITestCase):
     fixtures = init_fixtures
     
     @parameterized.expand([(True, 1, 382), (False, 3, 292)])
-    def test__create_mother_rabbit__suc(self, is_male, breed, cage):
+    def test__create_rabbit__suc(self, is_male, breed, cage):
         response = self.client.post(
             '/api/rabbit/reproduction/',
             data={
@@ -34,7 +34,7 @@ class TestReproduction(APITestCase):
         self.assertEqual(response.data['cage']['letter'], cage.letter)
     
     @parameterized.expand([(True, 1, 292), (False, 3, 382), (False, 100, 9)])
-    def test__create_mother_rabbit__err(self, is_male, breed, cage):
+    def test__create_rabbit__err(self, is_male, breed, cage):
         response = self.client.post(
             '/api/rabbit/reproduction/',
             data={

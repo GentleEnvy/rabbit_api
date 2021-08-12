@@ -150,8 +150,8 @@ class MotherRabbitCleaner(RabbitCleaner):
 
 class FatherRabbitCleaner(RabbitCleaner):
     @classmethod
-    def get_model(cls) -> Type['models.FatteningRabbit']:
-        return models.FatteningRabbit
+    def get_model(cls) -> Type['models.FatherRabbit']:
+        return models.FatherRabbit
     
     @classmethod
     def for_recast(cls, rabbit):

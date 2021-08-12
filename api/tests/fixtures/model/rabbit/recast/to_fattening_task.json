@@ -1,0 +1,4 @@
+[
+    {"model": "api.task", "pk": 1, "fields":  {"rabbit": 1}},
+    {"model": "api.tofatteningtask", "pk": 1, "fields":  {"rabbit": 1}}
+]

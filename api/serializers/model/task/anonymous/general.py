@@ -30,7 +30,7 @@ class _DefaultTaskListSerializer(_BaseTaskListSerializer):
     
     def _get_cage(self, task):
         if isinstance(task, (ToReproductionTask, ToFatteningTask, SlaughterTask)):
-            return task.rabbit.cage
+            return task.rabbit.cast.cage
         if isinstance(task, BunnyJiggingTask):
             return task.cage_from
         return task.cage
