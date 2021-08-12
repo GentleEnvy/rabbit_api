@@ -1,6 +1,7 @@
 from typing import Final
 
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 import api.models as models
 from api.services.model.rabbit.cleaners import FatteningRabbitCleaner
@@ -82,14 +83,24 @@ class MatingTaskCleaner(TaskCleaner):
     def clean(self):
         try:
             models.MatingTask.objects.exclude(id=self.task.id).get(
-                mother_rabbit=self.task.mother_rabbit,
-                father_rabbit=self.task.father_rabbit, is_confirmed=None
+                Q(is_confirmed=None) &
+                Q(mother_rabbit=self.task.mother_rabbit) |
+                Q(father_rabbit=self.task.father_rabbit)
             )
-            raise ValidationError('This couple is already waiting for mating')
+            raise ValidationError('This rabbits is already waiting for mating')
         except models.MatingTask.DoesNotExist:
             super().clean()
             self.task.mother_rabbit.cleaner.for_mating()
             self.task.father_rabbit.cleaner.for_mating()
+    
+    @classmethod
+    def check_exists(cls, rabbit):
+        filters = {
+            'is_confirmed': None,
+            'father_rabbit' if rabbit.is_male else 'mother_rabbit': rabbit
+        }
+        if models.MatingTask.objects.filter(**filters).first() is not None:
+            raise ValidationError('This rabbits is already waiting for mating')
 
 
 class BunnyJiggingTaskCleaner(TaskCleaner):

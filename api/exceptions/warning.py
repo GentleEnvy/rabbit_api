@@ -4,14 +4,13 @@ from django.http import Http404
 from rest_framework import status as rest_status
 from rest_framework.exceptions import (
     APIException as RestAPIException,
-    AuthenticationFailed
+    AuthenticationFailed, NotFound
 )
 
 from api.exceptions.base import *
+from api.logs import warning
 
 __all__ = ['APIWarning']
-
-from api.logs import warning
 
 
 def _cast_rest_api_exception(exception: RestAPIException):
@@ -21,7 +20,7 @@ def _cast_rest_api_exception(exception: RestAPIException):
     )
 
 
-def _cast_http_404(exception: Http404):
+def _cast_404(exception: Http404):
     return APIWarning(str(exception), rest_status.HTTP_404_NOT_FOUND, ['not_found'])
 
 
@@ -31,11 +30,14 @@ class APIWarning(CastSupportsError):
     
     EXCEPTION__CAST = {
         AuthenticationFailed: _cast_rest_api_exception,
-        Http404: _cast_http_404
+        Http404: _cast_404,
+        NotFound: _cast_404
     }
     
     def __init__(self, message=None, status=None, codes: list[str] = None):
-        super().__init__(message or 'Warning', status or rest_status.HTTP_100_CONTINUE)
+        super().__init__(
+            message or 'Warning', status or rest_status.HTTP_205_RESET_CONTENT
+        )
         self.codes: Final[tuple[str, ...]] = tuple(codes or [])
     
     def serialize(self):

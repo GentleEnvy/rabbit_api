@@ -1,0 +1,8 @@
+[
+    {"model": "api.cage", "pk": 1, "fields": {"farm_number": 2, "number": 1}},
+    {"model": "api.fatteningcage", "pk": 1, "fields": {}},
+    
+    
+    {"model": "api.rabbit", "pk": 1, "fields": {"is_male": false, "is_vaccinated": true, "breed": 1}},
+    {"model": "api.fatteningrabbit", "pk": 1, "fields": {"cage": 1}}
+]

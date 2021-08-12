@@ -22,7 +22,7 @@ class ClientError(CastSupportsError):
     
     EXCEPTION__CAST = {
         RestValidationError: _cast_rest_validation_error,
-        NotAuthenticated: _cast_rest_api_exception,
+        NotAuthenticated: _cast_rest_api_exception
     }
     
     def __init__(self, message=None, status=None):
