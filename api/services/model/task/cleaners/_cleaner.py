@@ -177,8 +177,17 @@ class SlaughterInspectionTaskCleaner(TaskCleaner):
         fattening_set = self.task.cage.fatteningrabbit_set.all()
         if fattening_set.count() == 0:
             raise ValidationError('There is no fattening rabbit in this cage')
+        
+        needs = False
         for fattening_rabbit in fattening_set:
-            fattening_rabbit.cleaner.for_slaughter_inspection()
+            try:
+                fattening_rabbit.cleaner.for_slaughter_inspection()
+                needs = True
+                break
+            except ValidationError:
+                continue
+        if not needs:
+            raise ValidationError('No rabbit in this cage needs the inspection')
         
         if self.task.weights is not None:
             self.clean_weights(self.task.weights, _fattening_rabbits=fattening_set)
