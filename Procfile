@@ -1,1 +1,1 @@
-web: gunicorn rabbit_api.wsgi
+web: gunicorn --workers=9 rabbit_api.wsgi
