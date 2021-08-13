@@ -20,7 +20,7 @@ class TaskController(ABC):
     
     @final
     def update_in_progress(self) -> None:
-        self._setup(self.in_progress)
+        self._setup_all(self.in_progress)
     
     @property
     def anonymous(self) -> InheritanceQuerySet:
@@ -50,7 +50,10 @@ class TaskController(ABC):
     def _create(self, tasks: InheritanceQuerySet) -> None:
         pass
     
-    def _setup(self, tasks: InheritanceQuerySet) -> None:
+    def _setup_all(self, tasks: InheritanceQuerySet) -> None:
+        pass
+    
+    def setup(self, task: Task) -> None:
         pass
     
     def execute(self, task: Task) -> None:

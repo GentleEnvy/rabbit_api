@@ -71,7 +71,7 @@ class _ToFatteningTaskSerializer(_BaseTaskSerializer):
     
     @_cage_serializer
     def get_cage_from(self, task):
-        return task.rabbit.cage
+        return task.rabbit.cast.cage
     
     @_cage_serializer
     def get_cage_to(self, task):
