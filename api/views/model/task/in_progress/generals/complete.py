@@ -14,7 +14,7 @@ __all__ = ['CompleteUpdateTaskGeneralView']
 def _update_all_tasks():
     for task_controller in all_controllers:
         try:
-            task_controller().update_in_progress()
+            task_controller().update_waiting_completion()
         except OverflowError as e:
             warning(f'Farm is full (controller: {task_controller.__name__})')
             raise APIWarning(str(e), codes=['overflow'])
