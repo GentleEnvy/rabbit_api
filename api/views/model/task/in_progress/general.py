@@ -28,14 +28,6 @@ class InProgressTaskGeneralView(BaseTaskGeneralView):
     model = Task
     list_serializer = InProgressTaskListSerializer
     queryset = TaskController().in_progress.all()
-    
-    def filter_queryset(self, queryset):
-        queryset = super().filter_queryset(queryset)
-        params = self.request.query_params
-        user = params.get('user')
-        if user is not None:
-            return queryset.filter(user_id=user)
-        return queryset
 
 
 # noinspection PyMethodMayBeStatic
