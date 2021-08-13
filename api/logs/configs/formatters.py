@@ -1,4 +1,4 @@
-__all__ = ['web', 'api']
+__all__ = ['web', 'api_console', 'api_file']
 
 _datefmt = '[%d.%m-%H:%M:%S]'
 _class = 'api.logs.formatters.ErrorFormatter'
@@ -10,7 +10,15 @@ web = {
     'format': 'WEB    | %(asctime)s: %(message)s'
 }
 
-api = {
+api_console = {
+    '__name__': 'api_formatter',
+    'class': _class,
+    'datefmt': _datefmt,
+    'format': '%(levelname)-7s| <%(module)s->%(funcName)s(%('
+              'lineno)d)>: %(message)s'
+}
+
+api_file = {
     '__name__': 'api_formatter',
     'class': _class,
     'datefmt': _datefmt,
