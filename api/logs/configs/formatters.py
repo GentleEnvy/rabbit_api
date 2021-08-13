@@ -11,7 +11,7 @@ web = {
 }
 
 api_console = {
-    '__name__': 'api_formatter',
+    '__name__': 'api_console_formatter',
     'class': _class,
     'datefmt': _datefmt,
     'format': '%(levelname)-7s| <%(module)s->%(funcName)s(%('
@@ -19,7 +19,7 @@ api_console = {
 }
 
 api_file = {
-    '__name__': 'api_formatter',
+    '__name__': 'api_file_formatter',
     'class': _class,
     'datefmt': _datefmt,
     'format': '%(levelname)-7s| %(name)s %(asctime)s <%(module)s->%(funcName)s(%('
