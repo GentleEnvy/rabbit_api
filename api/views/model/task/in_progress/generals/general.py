@@ -11,8 +11,8 @@ class InProgressTaskGeneralView(BaseTaskGeneralView):
     list_serializer = InProgressTaskListSerializer
     queryset = TaskController().in_progress.all()
     
-    def filter_queryset(self, queryset):
-        queryset = super().filter_queryset(queryset)
+    def _filter_queryset(self, queryset):
+        queryset = super()._filter_queryset(queryset)
         params = self.request.query_params
         
         if (is_completed := params.get('is_completed')) is not None:
