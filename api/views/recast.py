@@ -33,7 +33,7 @@ class _BaseRecastView(BaseView):
         if task is None:
             raise ClientError('The rabbit does not waiting recast')
         task.delete()
-        return Response(status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
     def _get_task_or_none(self, rabbit=None) -> Optional[Task]:
         if rabbit is None:
