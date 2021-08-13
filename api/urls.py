@@ -115,8 +115,11 @@ urlpatterns = [
             *[
                 # general
                 path('task/in_progress/', InProgressTaskGeneralView.as_view()),
-                # complete
-                path('task/in_progress/complete', CompleteTaskGeneralView.as_view())
+                # update
+                path(
+                    'task/in_progress/complete/update/',
+                    CompleteUpdateTaskGeneralView.as_view()
+                )
             ],
             # details
             *[
@@ -133,11 +136,6 @@ urlpatterns = [
                     path(
                         'task/in_progress/complete/slaughter_inspection/<int:id>/',
                         CompleteSlaughterInspectionTaskDetailView.as_view()
-                    ),
-                    # update
-                    path(
-                        'task/in_progress/update/',
-                        InProgressUpdateTaskGeneralView.as_view()
                     )
                 ],
                 # confirm

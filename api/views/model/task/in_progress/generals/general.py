@@ -1,37 +1,25 @@
-from threading import Thread
-
-from rest_framework import status
-from rest_framework.response import Response
-
-from api.exceptions import APIWarning
-from api.logs import warning
 from api.models import Task
 from api.serializers.model.task.in_progress.general import InProgressTaskListSerializer
-from api.services.model.task.controllers import all_controllers
 from api.services.model.task.controllers.base import TaskController
-from api.views.base import BaseView
 from api.views.model.task.base import BaseTaskGeneralView
 
-__all__ = ['InProgressTaskGeneralView', 'InProgressUpdateTaskGeneralView']
-
-
-def _update_all_tasks():
-    for task_controller in all_controllers:
-        try:
-            task_controller().update_in_progress()
-        except OverflowError as e:
-            warning(f'Farm is full (controller: {task_controller.__name__})')
-            raise APIWarning(str(e), codes=['overflow'])
+__all__ = ['InProgressTaskGeneralView']
 
 
 class InProgressTaskGeneralView(BaseTaskGeneralView):
     model = Task
     list_serializer = InProgressTaskListSerializer
     queryset = TaskController().in_progress.all()
-
-
-# noinspection PyMethodMayBeStatic
-class InProgressUpdateTaskGeneralView(BaseView):
-    def post(self, request, *args, **kwargs):
-        Thread(target=_update_all_tasks).start()
-        return Response(status=status.HTTP_202_ACCEPTED)
+    
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        params = self.request.query_params
+        
+        if (is_completed := params.get('is_completed')) is not None:
+            is_completed = int(is_completed)
+            if is_completed:
+                queryset = queryset.exclude(completed_at=None)
+            else:
+                queryset = queryset.filter(completed_at=None)
+        
+        return queryset
