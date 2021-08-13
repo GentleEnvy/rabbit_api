@@ -29,6 +29,12 @@ class TaskController(ABC):
     @property
     def in_progress(self) -> InheritanceQuerySet:
         return self.task_model.objects.select_subclasses().exclude(user=None).filter(
+            is_confirmed=None
+        )
+    
+    @property
+    def waiting_completion(self) -> InheritanceQuerySet:
+        return self.task_model.objects.select_subclasses().exclude(user=None).filter(
             completed_at=None
         )
     

@@ -5,27 +5,27 @@ from api.services.model.task.controllers.base import TaskController
 from api.views.model.base import BaseDetailView
 
 __all__ = [
-    'InProgressTaskDetailView', 'InProgressBunnyJiggingTaskDetailView',
-    'InProgressSlaughterInspectionTaskDetailView'
+    'CompleteTaskDetailView', 'CompleteBunnyJiggingTaskDetailView',
+    'CompleteSlaughterInspectionTaskDetailView'
 ]
 
 
-class InProgressTaskDetailView(BaseDetailView):
+class CompleteTaskDetailView(BaseDetailView):
     model = Task
-    queryset = TaskController().in_progress.filter(
+    queryset = TaskController().waiting_completion.filter(
         bunnyjiggingtask=None, slaughterinspectiontask=None
     )
     lookup_url_kwarg = 'id'
     update_serializer = CompleteTaskUpdateSerializer
 
 
-class InProgressBunnyJiggingTaskDetailView(InProgressTaskDetailView):
+class CompleteBunnyJiggingTaskDetailView(CompleteTaskDetailView):
     model = BunnyJiggingTask
     queryset = BunnyJiggingTaskController().in_progress
     update_serializer = CompleteBunnyJiggingTaskUpdateSerializer
 
 
-class InProgressSlaughterInspectionTaskDetailView(InProgressTaskDetailView):
+class CompleteSlaughterInspectionTaskDetailView(CompleteTaskDetailView):
     model = SlaughterInspectionTask
     queryset = SlaughterInspectionTaskController().in_progress
     update_serializer = CompleteSlaughterInspectionTaskUpdateSerializer

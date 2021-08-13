@@ -111,22 +111,41 @@ urlpatterns = [
         ],
         # in_progress
         *[
-            # general
-            path('task/in_progress/', InProgressTaskGeneralView.as_view()),
-            # detail
+            # generals
             *[
-                path('task/in_progress/<int:id>/', InProgressTaskDetailView.as_view()),
-                path(
-                    'task/in_progress/bunny_jigging/<int:id>/',
-                    InProgressBunnyJiggingTaskDetailView.as_view()
-                ),
-                path(
-                    'task/in_progress/slaughter_inspection/<int:id>/',
-                    InProgressSlaughterInspectionTaskDetailView.as_view()
-                )
+                # general
+                path('task/in_progress/', InProgressTaskGeneralView.as_view()),
+                # complete
+                path('task/in_progress/complete', CompleteTaskGeneralView.as_view())
             ],
-            # update
-            path('task/in_progress/update/', InProgressUpdateTaskGeneralView.as_view())
+            # details
+            *[
+                # complete
+                *[
+                    path(
+                        'task/in_progress/complete/<int:id>/',
+                        CompleteTaskDetailView.as_view()
+                    ),
+                    path(
+                        'task/in_progress/complete/bunny_jigging/<int:id>/',
+                        CompleteBunnyJiggingTaskDetailView.as_view()
+                    ),
+                    path(
+                        'task/in_progress/complete/slaughter_inspection/<int:id>/',
+                        CompleteSlaughterInspectionTaskDetailView.as_view()
+                    ),
+                    # update
+                    path(
+                        'task/in_progress/update/',
+                        InProgressUpdateTaskGeneralView.as_view()
+                    )
+                ],
+                # confirm
+                path(
+                    'task/in_progress/confirm/<int:id>/',
+                    ConfirmTaskDetailView.as_view()
+                )
+            ]
         ]
     ],
     # birth

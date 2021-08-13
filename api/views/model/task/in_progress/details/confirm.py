@@ -4,12 +4,12 @@ from api.services.model.task.controllers import all_controllers
 from api.services.model.task.controllers.base import TaskController
 from api.views.model.base import BaseDetailView
 
-__all__ = ['WaitingConfirmationTaskDetailView']
+__all__ = ['ConfirmTaskDetailView']
 
 _task__controller = {controller.task_model: controller for controller in all_controllers}
 
 
-class WaitingConfirmationTaskDetailView(BaseDetailView):
+class ConfirmTaskDetailView(BaseDetailView):
     model = Task
     queryset = TaskController().waiting_confirmation.all()
     lookup_url_kwarg = 'id'
