@@ -127,19 +127,7 @@ urlpatterns = [
             ],
             # update
             path('task/in_progress/update/', InProgressUpdateTaskGeneralView.as_view())
-        ],
-        # waiting_confirmation
-        *[
-            # general
-            path(
-                'task/waiting_confirmation/', WaitingConfirmationTaskGeneralView.as_view()
-            ),
-            # detail
-            path(
-                'task/waiting_confirmation/<int:id>/',
-                WaitingConfirmationTaskDetailView.as_view()
-            ),
-        ],
+        ]
     ],
     # birth
     *[

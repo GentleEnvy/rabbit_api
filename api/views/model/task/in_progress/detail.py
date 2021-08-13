@@ -1,5 +1,5 @@
 from api.models import *
-from api.serializers.model.task.in_progress.detail import *
+from api.serializers.model.task.in_progress.details.complete import *
 from api.services.model.task.controllers import *
 from api.services.model.task.controllers.base import TaskController
 from api.views.model.base import BaseDetailView
@@ -16,16 +16,16 @@ class InProgressTaskDetailView(BaseDetailView):
         bunnyjiggingtask=None, slaughterinspectiontask=None
     )
     lookup_url_kwarg = 'id'
-    update_serializer = InProgressTaskUpdateSerializer
+    update_serializer = CompleteTaskUpdateSerializer
 
 
 class InProgressBunnyJiggingTaskDetailView(InProgressTaskDetailView):
     model = BunnyJiggingTask
     queryset = BunnyJiggingTaskController().in_progress
-    update_serializer = InProgressBunnyJiggingTaskUpdateSerializer
+    update_serializer = CompleteBunnyJiggingTaskUpdateSerializer
 
 
 class InProgressSlaughterInspectionTaskDetailView(InProgressTaskDetailView):
     model = SlaughterInspectionTask
     queryset = SlaughterInspectionTaskController().in_progress
-    update_serializer = InProgressSlaughterInspectionTaskUpdateSerializer
+    update_serializer = CompleteSlaughterInspectionTaskUpdateSerializer
