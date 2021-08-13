@@ -6,7 +6,6 @@ from api.views.model.task.base import BaseTaskGeneralView
 __all__ = ['WaitingConfirmationTaskGeneralView']
 
 
-# TODO: base TaskGeneralView
 class WaitingConfirmationTaskGeneralView(BaseTaskGeneralView):
     model = Task
     list_serializer = WaitingConfirmationTaskListSerializer

@@ -136,7 +136,7 @@ class BunnyJiggingTaskController(TaskController):
                     is_found_for_male = True
                 except ValidationError:
                     continue
-            else:
+            else:  # found for males
                 try:
                     task.female_cage_to = nearest_cage
                     task.cleaner.clean_female_cage_to()
