@@ -54,7 +54,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
-    'api.middlewares.RequestLogMiddleware'
+    'api.middlewares.RequestLogMiddleware',
+    'api.middlewares.NotEmptyResponseMiddleware'
 ]
 
 ROOT_URLCONF = 'rabbit_api.urls'
