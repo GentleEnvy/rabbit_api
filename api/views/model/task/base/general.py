@@ -16,6 +16,11 @@ class BaseTaskGeneralView(BaseGeneralView):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         
+        user = params.get('user')
+        if user is not None:
+            queryset = queryset.filter(user_id=user)
+        
         if order := params.get('__order_by__'):
             return queryset.order_by(_char_type__task_class[order].__name__.lower())
+        
         return queryset
