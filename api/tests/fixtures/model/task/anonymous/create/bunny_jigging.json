@@ -1,0 +1,14 @@
+[
+    {"model": "api.cage", "pk": 1, "fields": {"farm_number": 2, "number": 1}},
+    {"model": "api.mothercage", "pk": 1, "fields": {}},
+    
+    
+    {"model": "api.rabbit", "pk": 1, "fields": {"birthday": "2021-01-01", "breed": 1}},
+    {"model": "api.bunny", "pk": 1, "fields": {"cage": 1}},
+    
+    {"model": "api.rabbit", "pk": 2, "fields": {"birthday": "2021-01-01", "breed": 1}},
+    {"model": "api.bunny", "pk": 2, "fields": {"cage": 1}},
+    
+    {"model": "api.rabbit", "pk": 3, "fields": {"birthday": "2021-01-01", "breed": 1}},
+    {"model": "api.bunny", "pk": 3, "fields": {"cage": 1}}
+]
