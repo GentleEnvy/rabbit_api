@@ -18,12 +18,16 @@ def _cage_serializer(get_cage):
 class _BaseTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'type', 'created_at', 'user']
+        fields = ['id', 'type', 'is_completed', 'created_at', 'user']
     
     type = serializers.SerializerMethodField()
+    is_completed = serializers.SerializerMethodField()
     
     def get_type(self, task):
         return task.CHAR_TYPE
+    
+    def get_is_completed(self, task):
+        return task.completed_at is not None
 
 
 # noinspection PyMethodMayBeStatic
@@ -71,7 +75,7 @@ class _ToFatteningTaskSerializer(_BaseTaskSerializer):
     
     @_cage_serializer
     def get_cage_from(self, task):
-        return task.rabbit.cage
+        return task.rabbit.cast.cage
     
     @_cage_serializer
     def get_cage_to(self, task):
@@ -145,7 +149,7 @@ class _SlaughterInspectionTaskSerializer(_CageTaskSerializer):
 class _SlaughterTaskSerializer(_CageTaskSerializer):
     class Meta(_CageTaskSerializer.Meta):
         model = SlaughterTask
-        fields = _BaseTaskSerializer.Meta.fields + ['weight']
+        fields = _CageTaskSerializer.Meta.fields + ['weight']
     
     weight = serializers.SerializerMethodField()
     

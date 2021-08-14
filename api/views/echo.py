@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 
+from api.serializers.base import EmptySerializer
 from api.views.base import BaseView
 
 __all__ = ['EchoView']
@@ -7,6 +8,7 @@ __all__ = ['EchoView']
 
 # noinspection PyMethodMayBeStatic
 class EchoView(BaseView):
+    serializer_class = EmptySerializer
     # permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):

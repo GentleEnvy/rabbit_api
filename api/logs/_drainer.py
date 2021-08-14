@@ -10,7 +10,7 @@ __all__ = ['LogsDrainer']
 
 class LogsDrainer:
     def __init__(
-        self, path_to_logs_file: str, max_line_count: int = 1000,
+        self, path_to_logs_file: str, max_line_count: int = 5000,
         directory_to_upload: str = '/logs'
     ):
         """
@@ -27,7 +27,7 @@ class LogsDrainer:
         
         self.__file_store = YandexDisk()
         
-        atexit.register(self._upload_logs_and_clear)
+        atexit.register(self.__upload_if_not_empty)
     
     def check(self) -> None:
         with open(self._path_to_logs_file, 'r') as logs_file:
@@ -48,3 +48,8 @@ class LogsDrainer:
         with open(self._path_to_logs_file, 'rb') as logs_file:
             self.__file_store.upload(logs_file, self._path_to_upload)
         open(self._path_to_logs_file, 'w').close()  # clear logs file
+    
+    def __upload_if_not_empty(self) -> None:
+        with open(self._path_to_logs_file, 'r') as logs_file:
+            if file_line_count(logs_file) > 0:
+                self._upload_logs_and_clear()

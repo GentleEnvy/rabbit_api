@@ -11,7 +11,7 @@ import time
 
 from django.utils.deprecation import MiddlewareMixin
 
-from api.logs import debug
+from api.logs import debug, info
 
 __all__ = ['RequestLogMiddleware']
 
@@ -67,5 +67,8 @@ class RequestLogMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         """Log data using logger_config."""
         log_data = self.extract_log_info(request=request, response=response)
-        debug(msg=log_data)
+        if request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            info(log_data)
+        else:
+            debug(log_data)
         return response

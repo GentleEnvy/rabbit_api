@@ -1,2 +1,2 @@
-from api.views.model.task.in_progress.general import *
-from api.views.model.task.in_progress.detail import *
+from api.views.model.task.in_progress.generals import *
+from api.views.model.task.in_progress.details import *

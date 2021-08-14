@@ -11,10 +11,10 @@ __all__ = ['AnonymousTaskGeneralView']
 
 
 def _update_tasks():
-    debug('started updating tasks')
+    debug('<< start updating anonymous tasks')
     for task_controller in all_controllers:
         task_controller().update_anonymous()
-    debug('task update completed')
+    debug('anonymous tasks update completed >>')
 
 
 class AnonymousTaskGeneralView(BaseTaskGeneralView):
