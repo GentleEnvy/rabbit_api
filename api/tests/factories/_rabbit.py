@@ -2,8 +2,8 @@ import factory
 from factory.django import DjangoModelFactory
 
 from api.models import *
-from api.tests.factories.breed import BreedFactory
-from api.tests.factories.cage import MotherCageFactory, FatteningCageFactory
+from api.tests.factories._breed import BreedFactory
+from api.tests.factories._cage import MotherCageFactory, FatteningCageFactory
 
 __all__ = [
     'MotherRabbitFactory', 'FatherRabbitFactory', 'BunnyFactory', 'FatteningRabbitFactory'

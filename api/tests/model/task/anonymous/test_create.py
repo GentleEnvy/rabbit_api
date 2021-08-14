@@ -22,7 +22,7 @@ class CreateBunnyJiggingTask(TestCase):
         self.assertEqual(task.CHAR_TYPE, BunnyJiggingTask.CHAR_TYPE)
         self.assertEqual(task.cage_from, MotherCage.objects.get())
     
-    def test__err(self):
+    def test__fail(self):
         BunnyJiggingTaskController().update_anonymous()
         self.assertEqual(Task.objects.count(), 0)
 
@@ -36,8 +36,9 @@ class CreateVaccinationTask(TestCase):
         self.assertEqual(task.CHAR_TYPE, VaccinationTask.CHAR_TYPE)
         self.assertEqual(task.cage, FatteningCage.objects.get())
     
-    def test__err(self):
+    def test__fail(self):
         FatteningRabbit.objects.update(id=1, is_vaccinated=True)
+        VaccinationTaskController().update_anonymous()
         self.assertEqual(Task.objects.count(), 0)
 
 
@@ -57,3 +58,30 @@ class CreateSlaughterInspectionTask(TestCase):
         task = Task.objects.select_subclasses().get()
         self.assertEqual(task.CHAR_TYPE, SlaughterInspectionTask.CHAR_TYPE)
         self.assertEqual(task.cage, self.cage)
+    
+    def test__fail(self):
+        SlaughterInspectionTaskController().update_anonymous()
+        self.assertEqual(Task.objects.count(), 0)
+
+
+class CreateSlaughterTask(TestCase):
+    def test__suc(self):
+        plan = PlanFactory(quantity=3)
+        cage = FatteningCageFactory()
+        
+        with mock.patch(
+            'api.services.model.rabbit.managers._manager.FatteningRabbitManager.status',
+            mock.PropertyMock(
+                return_value={FatteningRabbit.Manager.STATUS_READY_TO_SLAUGHTER}
+            )
+        ):
+            FatteningRabbitFactory.create_batch(2, is_male=True, plan=plan, cage=cage)
+            SlaughterTaskController().update_anonymous()
+        self.assertEqual(Task.objects.count(), 2)
+        for task in Task.objects.select_subclasses():
+            self.assertEqual(task.CHAR_TYPE, SlaughterTask.CHAR_TYPE)
+            self.assertEqual(task.cage, cage)
+    
+    def test__fail(self):
+        SlaughterTaskController().update_anonymous()
+        self.assertEqual(Task.objects.count(), 0)
