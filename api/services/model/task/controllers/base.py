@@ -15,12 +15,13 @@ class TaskController(ABC):
     
     @final
     def update_anonymous(self) -> None:
-        self._clear(self.anonymous | self.in_progress)
-        self._create(self.anonymous | self.in_progress | self.waiting_confirmation)
+        self._clear(self.anonymous)
+        self._create(self.anonymous | self.in_progress)
     
     @final
-    def update_in_progress(self) -> None:
-        self._setup_all(self.in_progress)
+    def update_waiting_completion(self) -> None:
+        self._setup_all(self.waiting_completion)
+        self._clear(self.waiting_completion)
     
     @property
     def anonymous(self) -> InheritanceQuerySet:
@@ -28,6 +29,12 @@ class TaskController(ABC):
     
     @property
     def in_progress(self) -> InheritanceQuerySet:
+        return self.task_model.objects.select_subclasses().exclude(user=None).filter(
+            is_confirmed=None
+        )
+    
+    @property
+    def waiting_completion(self) -> InheritanceQuerySet:
         return self.task_model.objects.select_subclasses().exclude(user=None).filter(
             completed_at=None
         )

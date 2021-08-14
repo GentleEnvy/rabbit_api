@@ -23,9 +23,9 @@ class CageCleaner:
         if models.Cage.NEED_CLEAN in self.cage.status:
             raise ValidationError('This cage needs cleaning')
     
-    def for_task(self):
+    def for_task(self, task=None):
         id = self.cage.id
-        if models.Task.objects.filter(
+        if models.Task.objects.exclude(**{} if task is None else {'id': task.id}).filter(
             Q(is_confirmed=None) & (
                 Q(toreproductiontask__cage_to__id=id) |
                 Q(tofatteningtask__cage_to__id=id) |

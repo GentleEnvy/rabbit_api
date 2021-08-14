@@ -2,10 +2,10 @@ from rest_framework import serializers
 
 from api.models import Task
 
-__all__ = ['WaitingConfirmationTaskUpdateSerializer']
+__all__ = ['ConfirmTaskUpdateSerializer']
 
 
-class WaitingConfirmationTaskUpdateSerializer(serializers.ModelSerializer):
+class ConfirmTaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['is_confirmed']

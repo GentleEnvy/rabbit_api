@@ -2,7 +2,6 @@ from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from api.logs import debug
 from api.models import *
 from api.serializers.model.rabbit.generals.general import *
 from api.services.model.rabbit.filterer import RabbitFilterer
