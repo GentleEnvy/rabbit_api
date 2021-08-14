@@ -2,7 +2,7 @@ from django.test import TestCase
 from freezegun import freeze_time
 
 from api.models import *
-from api.services.model.task.controllers import BunnyJiggingTaskController
+from api.services.model.task.controllers import *
 
 fp = 'model/task/anonymous/create'
 
@@ -20,4 +20,18 @@ class CreateBunnyJiggingTask(TestCase):
     @freeze_time("2021-02-14")
     def test__err(self):
         BunnyJiggingTaskController().update_anonymous()
+        self.assertEqual(Task.objects.count(), 0)
+
+
+class CreateVaccinationTask(TestCase):
+    fixtures = ['init/breed', f'{fp}/vaccination']
+    
+    def test__suc(self):
+        VaccinationTaskController().update_anonymous()
+        task = Task.objects.select_subclasses().get()
+        self.assertEqual(task.CHAR_TYPE, VaccinationTask.CHAR_TYPE)
+        self.assertEqual(task.cage, FatteningCage.objects.get())
+    
+    def test__err(self):
+        FatteningRabbit.objects.update(id=1, is_vaccinated=True)
         self.assertEqual(Task.objects.count(), 0)
