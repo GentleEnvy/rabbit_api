@@ -149,7 +149,7 @@ class _SlaughterInspectionTaskSerializer(_CageTaskSerializer):
 class _SlaughterTaskSerializer(_CageTaskSerializer):
     class Meta(_CageTaskSerializer.Meta):
         model = SlaughterTask
-        fields = _BaseTaskSerializer.Meta.fields + ['weight']
+        fields = _CageTaskSerializer.Meta.fields + ['weight']
     
     weight = serializers.SerializerMethodField()
     
