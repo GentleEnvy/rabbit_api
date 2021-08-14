@@ -3,12 +3,12 @@
     {"model": "api.mothercage", "pk": 1, "fields": {}},
     
     
-    {"model": "api.rabbit", "pk": 1, "fields": {"birthday": "2021-01-01", "breed": 1}},
+    {"model": "api.rabbit", "pk": 1, "fields": {"breed": 1}},
     {"model": "api.bunny", "pk": 1, "fields": {"cage": 1}},
     
-    {"model": "api.rabbit", "pk": 2, "fields": {"birthday": "2021-01-01", "breed": 1}},
+    {"model": "api.rabbit", "pk": 2, "fields": {"breed": 1}},
     {"model": "api.bunny", "pk": 2, "fields": {"cage": 1}},
     
-    {"model": "api.rabbit", "pk": 3, "fields": {"birthday": "2021-01-01", "breed": 1}},
+    {"model": "api.rabbit", "pk": 3, "fields": {"breed": 1}},
     {"model": "api.bunny", "pk": 3, "fields": {"cage": 1}}
 ]

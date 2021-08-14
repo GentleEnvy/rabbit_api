@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.test import TestCase
 from freezegun import freeze_time
 
@@ -10,9 +12,14 @@ fp = 'model/task/anonymous/create'
 class CreateBunnyJiggingTask(TestCase):
     fixtures = ['init/breed', f'{fp}/bunny_jigging']
     
-    @freeze_time("2021-02-15")
+    # @freeze_time("2021-02-15")
     def test__suc(self):
-        BunnyJiggingTaskController().update_anonymous()
+        with mock.Mock(
+            'api.services.model.rabbit.managers._manager.BunnyManager.status',
+            return_value={Bunny.Manager.STATUS_NEED_JIGGING}
+        ) as m:
+            print(m)
+            BunnyJiggingTaskController().update_anonymous()
         task = Task.objects.select_subclasses().get()
         self.assertEqual(task.CHAR_TYPE, BunnyJiggingTask.CHAR_TYPE)
         self.assertEqual(task.cage_from, MotherCage.objects.get())
