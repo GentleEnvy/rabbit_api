@@ -67,7 +67,6 @@ class CreateSlaughterInspectionTask(TestCase):
 class CreateSlaughterTask(TestCase):
     def test__suc(self):
         plan = PlanFactory(quantity=3)
-        cage = FatteningCageFactory()
         
         with mock.patch(
             'api.services.model.rabbit.managers._manager.FatteningRabbitManager.status',
@@ -75,12 +74,14 @@ class CreateSlaughterTask(TestCase):
                 return_value={FatteningRabbit.Manager.STATUS_READY_TO_SLAUGHTER}
             )
         ):
-            FatteningRabbitFactory.create_batch(2, is_male=True, plan=plan, cage=cage)
+            fattening_rabbits = FatteningRabbitFactory.create_batch(
+                2, is_male=True, plan=plan
+            )
             SlaughterTaskController().update_anonymous()
         self.assertEqual(Task.objects.count(), 2)
         for task in Task.objects.select_subclasses():
             self.assertEqual(task.CHAR_TYPE, SlaughterTask.CHAR_TYPE)
-            self.assertEqual(task.cage, cage)
+            self.assertIn(task.rabbit, fattening_rabbits)
     
     def test__fail(self):
         SlaughterTaskController().update_anonymous()
