@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
-DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
+DEBUG = False if (_debug := os.getenv('DJANGO_DEBUG')) is None else bool(int(_debug))
 
 ALLOWED_HOSTS = ['*']
 
@@ -115,7 +115,31 @@ FIXTURE_DIRS = ['api/tests/fixtures/']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+ADMINS = [('envy', 'envy15@mail.ru'), ('envy', 'komarov.sergei163@gmail.com')]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+###
+# Custom
+
+TEST = False if (_test := os.getenv('DJANGO_TEST')) is None else bool(int(_test))
+YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
+
+# Custom
+###
+
 if DEBUG:  # dev
+    LOGGING = LogConfig(
+        {
+            'api': {'handlers': [api_console]},
+            'django.server': {'handlers': [web_console]}
+        }
+    ).to_dict()
+elif TEST:  # test
     LOGGING = LogConfig(
         {
             'api': {'handlers': [api_console]},
@@ -129,19 +153,3 @@ else:  # prod
             'django.server': {'handlers': [web_file, web_console]}
         }
     ).to_dict()
-
-ADMINS = [('envy', 'envy15@mail.ru'), ('envy', 'komarov.sergei163@gmail.com')]
-
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
-###
-# Custom
-
-YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
-
-# Custom
-###
