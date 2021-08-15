@@ -71,6 +71,10 @@ class AvoidInbreedingService:
         for top_partner_id, top_partner in id__top_partners.items():
             try:
                 top_partner.cleaner.for_mating()
+                if rabbit.is_male:
+                    MatingTask.Cleaner.for_pair(rabbit, top_partner)
+                else:
+                    MatingTask.Cleaner.for_pair(top_partner, rabbit)
             except ValidationError:
                 continue
             validated_top_partner_ids__kinship[top_partner_id] = top_partner_ids__kinship[
