@@ -36,7 +36,7 @@ class APIWarning(CastSupportsError):
     
     def __init__(self, message=None, status=None, codes: list[str] = None):
         super().__init__(
-            message or 'Warning', status or rest_status.HTTP_205_RESET_CONTENT
+            message or 'Warning', status or rest_status.HTTP_200_OK
         )
         self.codes: Final[tuple[str, ...]] = tuple(codes or [])
     

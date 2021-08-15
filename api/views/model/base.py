@@ -32,7 +32,6 @@ class BaseDetailView(RetrieveUpdateAPIView, BaseView):
     
     retrieve_serializer: serializers.ModelSerializer = None
     update_serializer: serializers.ModelSerializer = None
-    destroy_serializer: serializers.ModelSerializer = None
     
     def get_serializer_class(self):
         request = self.request
@@ -42,9 +41,6 @@ class BaseDetailView(RetrieveUpdateAPIView, BaseView):
         elif request.method.upper() in ('PUT', 'PATCH'):
             if self.update_serializer is not None:
                 return self.update_serializer
-        elif request.method.upper() == 'DELETE':
-            if self.destroy_serializer is not None:
-                return self.destroy_serializer
         if settings.DEBUG:
             return self._EmptySerializer
         self.http_method_not_allowed(request)
