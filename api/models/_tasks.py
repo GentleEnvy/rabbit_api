@@ -27,7 +27,7 @@ class Task(TaskCleanerMixin, BaseModel):
     is_confirmed = models.BooleanField(null=True, blank=True)
     
     def save(self, *args, **kwargs):
-        BaseModel.save(self)
+        super().save(self)
         if self.is_confirmed is not None:
             self.delete()
 

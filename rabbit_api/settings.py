@@ -142,8 +142,8 @@ if DEBUG:  # dev
 elif TEST:  # test
     LOGGING = LogConfig(
         {
-            'api': {'handlers': [api_file, api_console]},
-            'django.server': {'handlers': [web_file, web_console]}
+            'api': {'handlers': [api_console]},
+            'django.server': {'handlers': [web_console]}
         }
     ).to_dict()
 else:  # prod

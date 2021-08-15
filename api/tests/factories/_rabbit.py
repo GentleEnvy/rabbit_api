@@ -48,3 +48,4 @@ class FatteningRabbitFactory(DjangoModelFactory):
     cage = factory.SubFactory(FatteningCageFactory)
     mother = factory.SubFactory(MotherRabbitFactory)
     father = factory.SubFactory(FatherRabbitFactory)
+    is_male = True
