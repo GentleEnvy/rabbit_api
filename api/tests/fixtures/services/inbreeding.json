@@ -1,0 +1,3753 @@
+[
+    {
+        "model": "auth.permission",
+        "pk": 1,
+        "fields": {
+            "name": "Can add log entry",
+            "content_type": 1,
+            "codename": "add_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 2,
+        "fields": {
+            "name": "Can change log entry",
+            "content_type": 1,
+            "codename": "change_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 3,
+        "fields": {
+            "name": "Can delete log entry",
+            "content_type": 1,
+            "codename": "delete_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 4,
+        "fields": {
+            "name": "Can view log entry",
+            "content_type": 1,
+            "codename": "view_logentry"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 5,
+        "fields": {
+            "name": "Can add permission",
+            "content_type": 2,
+            "codename": "add_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 6,
+        "fields": {
+            "name": "Can change permission",
+            "content_type": 2,
+            "codename": "change_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 7,
+        "fields": {
+            "name": "Can delete permission",
+            "content_type": 2,
+            "codename": "delete_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 8,
+        "fields": {
+            "name": "Can view permission",
+            "content_type": 2,
+            "codename": "view_permission"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 9,
+        "fields": {
+            "name": "Can add group",
+            "content_type": 3,
+            "codename": "add_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 10,
+        "fields": {
+            "name": "Can change group",
+            "content_type": 3,
+            "codename": "change_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 11,
+        "fields": {
+            "name": "Can delete group",
+            "content_type": 3,
+            "codename": "delete_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 12,
+        "fields": {
+            "name": "Can view group",
+            "content_type": 3,
+            "codename": "view_group"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 13,
+        "fields": {
+            "name": "Can add user",
+            "content_type": 4,
+            "codename": "add_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 14,
+        "fields": {
+            "name": "Can change user",
+            "content_type": 4,
+            "codename": "change_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 15,
+        "fields": {
+            "name": "Can delete user",
+            "content_type": 4,
+            "codename": "delete_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 16,
+        "fields": {
+            "name": "Can view user",
+            "content_type": 4,
+            "codename": "view_user"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 17,
+        "fields": {
+            "name": "Can add content type",
+            "content_type": 5,
+            "codename": "add_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 18,
+        "fields": {
+            "name": "Can change content type",
+            "content_type": 5,
+            "codename": "change_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 19,
+        "fields": {
+            "name": "Can delete content type",
+            "content_type": 5,
+            "codename": "delete_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 20,
+        "fields": {
+            "name": "Can view content type",
+            "content_type": 5,
+            "codename": "view_contenttype"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 21,
+        "fields": {
+            "name": "Can add session",
+            "content_type": 6,
+            "codename": "add_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 22,
+        "fields": {
+            "name": "Can change session",
+            "content_type": 6,
+            "codename": "change_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 23,
+        "fields": {
+            "name": "Can delete session",
+            "content_type": 6,
+            "codename": "delete_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 24,
+        "fields": {
+            "name": "Can view session",
+            "content_type": 6,
+            "codename": "view_session"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 25,
+        "fields": {
+            "name": "Can add cage",
+            "content_type": 7,
+            "codename": "add_cage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 26,
+        "fields": {
+            "name": "Can change cage",
+            "content_type": 7,
+            "codename": "change_cage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 27,
+        "fields": {
+            "name": "Can delete cage",
+            "content_type": 7,
+            "codename": "delete_cage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 28,
+        "fields": {
+            "name": "Can view cage",
+            "content_type": 7,
+            "codename": "view_cage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 29,
+        "fields": {
+            "name": "Can add plan",
+            "content_type": 8,
+            "codename": "add_plan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 30,
+        "fields": {
+            "name": "Can change plan",
+            "content_type": 8,
+            "codename": "change_plan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 31,
+        "fields": {
+            "name": "Can delete plan",
+            "content_type": 8,
+            "codename": "delete_plan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 32,
+        "fields": {
+            "name": "Can view plan",
+            "content_type": 8,
+            "codename": "view_plan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 33,
+        "fields": {
+            "name": "Can add rabbit",
+            "content_type": 9,
+            "codename": "add_rabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 34,
+        "fields": {
+            "name": "Can change rabbit",
+            "content_type": 9,
+            "codename": "change_rabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 35,
+        "fields": {
+            "name": "Can delete rabbit",
+            "content_type": 9,
+            "codename": "delete_rabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 36,
+        "fields": {
+            "name": "Can view rabbit",
+            "content_type": 9,
+            "codename": "view_rabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 37,
+        "fields": {
+            "name": "Can add rabbit history",
+            "content_type": 10,
+            "codename": "add_rabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 38,
+        "fields": {
+            "name": "Can change rabbit history",
+            "content_type": 10,
+            "codename": "change_rabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 39,
+        "fields": {
+            "name": "Can delete rabbit history",
+            "content_type": 10,
+            "codename": "delete_rabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 40,
+        "fields": {
+            "name": "Can view rabbit history",
+            "content_type": 10,
+            "codename": "view_rabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 41,
+        "fields": {
+            "name": "Can add task",
+            "content_type": 11,
+            "codename": "add_task"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 42,
+        "fields": {
+            "name": "Can change task",
+            "content_type": 11,
+            "codename": "change_task"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 43,
+        "fields": {
+            "name": "Can delete task",
+            "content_type": 11,
+            "codename": "delete_task"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 44,
+        "fields": {
+            "name": "Can view task",
+            "content_type": 11,
+            "codename": "view_task"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 45,
+        "fields": {
+            "name": "Can add bunny",
+            "content_type": 12,
+            "codename": "add_bunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 46,
+        "fields": {
+            "name": "Can change bunny",
+            "content_type": 12,
+            "codename": "change_bunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 47,
+        "fields": {
+            "name": "Can delete bunny",
+            "content_type": 12,
+            "codename": "delete_bunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 48,
+        "fields": {
+            "name": "Can view bunny",
+            "content_type": 12,
+            "codename": "view_bunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 49,
+        "fields": {
+            "name": "Can add dead rabbit",
+            "content_type": 13,
+            "codename": "add_deadrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 50,
+        "fields": {
+            "name": "Can change dead rabbit",
+            "content_type": 13,
+            "codename": "change_deadrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 51,
+        "fields": {
+            "name": "Can delete dead rabbit",
+            "content_type": 13,
+            "codename": "delete_deadrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 52,
+        "fields": {
+            "name": "Can view dead rabbit",
+            "content_type": 13,
+            "codename": "view_deadrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 53,
+        "fields": {
+            "name": "Can add father rabbit",
+            "content_type": 14,
+            "codename": "add_fatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 54,
+        "fields": {
+            "name": "Can change father rabbit",
+            "content_type": 14,
+            "codename": "change_fatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 55,
+        "fields": {
+            "name": "Can delete father rabbit",
+            "content_type": 14,
+            "codename": "delete_fatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 56,
+        "fields": {
+            "name": "Can view father rabbit",
+            "content_type": 14,
+            "codename": "view_fatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 57,
+        "fields": {
+            "name": "Can add fattening cage",
+            "content_type": 15,
+            "codename": "add_fatteningcage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 58,
+        "fields": {
+            "name": "Can change fattening cage",
+            "content_type": 15,
+            "codename": "change_fatteningcage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 59,
+        "fields": {
+            "name": "Can delete fattening cage",
+            "content_type": 15,
+            "codename": "delete_fatteningcage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 60,
+        "fields": {
+            "name": "Can view fattening cage",
+            "content_type": 15,
+            "codename": "view_fatteningcage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 61,
+        "fields": {
+            "name": "Can add fattening rabbit",
+            "content_type": 16,
+            "codename": "add_fatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 62,
+        "fields": {
+            "name": "Can change fattening rabbit",
+            "content_type": 16,
+            "codename": "change_fatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 63,
+        "fields": {
+            "name": "Can delete fattening rabbit",
+            "content_type": 16,
+            "codename": "delete_fatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 64,
+        "fields": {
+            "name": "Can view fattening rabbit",
+            "content_type": 16,
+            "codename": "view_fatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 65,
+        "fields": {
+            "name": "Can add mating plan",
+            "content_type": 17,
+            "codename": "add_matingplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 66,
+        "fields": {
+            "name": "Can change mating plan",
+            "content_type": 17,
+            "codename": "change_matingplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 67,
+        "fields": {
+            "name": "Can delete mating plan",
+            "content_type": 17,
+            "codename": "delete_matingplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 68,
+        "fields": {
+            "name": "Can view mating plan",
+            "content_type": 17,
+            "codename": "view_matingplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 69,
+        "fields": {
+            "name": "Can add mother cage",
+            "content_type": 18,
+            "codename": "add_mothercage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 70,
+        "fields": {
+            "name": "Can change mother cage",
+            "content_type": 18,
+            "codename": "change_mothercage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 71,
+        "fields": {
+            "name": "Can delete mother cage",
+            "content_type": 18,
+            "codename": "delete_mothercage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 72,
+        "fields": {
+            "name": "Can view mother cage",
+            "content_type": 18,
+            "codename": "view_mothercage"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 73,
+        "fields": {
+            "name": "Can add mother rabbit",
+            "content_type": 19,
+            "codename": "add_motherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 74,
+        "fields": {
+            "name": "Can change mother rabbit",
+            "content_type": 19,
+            "codename": "change_motherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 75,
+        "fields": {
+            "name": "Can delete mother rabbit",
+            "content_type": 19,
+            "codename": "delete_motherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 76,
+        "fields": {
+            "name": "Can view mother rabbit",
+            "content_type": 19,
+            "codename": "view_motherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 77,
+        "fields": {
+            "name": "Can add slaughter plan",
+            "content_type": 20,
+            "codename": "add_slaughterplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 78,
+        "fields": {
+            "name": "Can change slaughter plan",
+            "content_type": 20,
+            "codename": "change_slaughterplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 79,
+        "fields": {
+            "name": "Can delete slaughter plan",
+            "content_type": 20,
+            "codename": "delete_slaughterplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 80,
+        "fields": {
+            "name": "Can view slaughter plan",
+            "content_type": 20,
+            "codename": "view_slaughterplan"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 81,
+        "fields": {
+            "name": "Can add before slaughter inspection",
+            "content_type": 21,
+            "codename": "add_beforeslaughterinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 82,
+        "fields": {
+            "name": "Can change before slaughter inspection",
+            "content_type": 21,
+            "codename": "change_beforeslaughterinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 83,
+        "fields": {
+            "name": "Can delete before slaughter inspection",
+            "content_type": 21,
+            "codename": "delete_beforeslaughterinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 84,
+        "fields": {
+            "name": "Can view before slaughter inspection",
+            "content_type": 21,
+            "codename": "view_beforeslaughterinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 85,
+        "fields": {
+            "name": "Can add slaughter task",
+            "content_type": 22,
+            "codename": "add_slaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 86,
+        "fields": {
+            "name": "Can change slaughter task",
+            "content_type": 22,
+            "codename": "change_slaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 87,
+        "fields": {
+            "name": "Can delete slaughter task",
+            "content_type": 22,
+            "codename": "delete_slaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 88,
+        "fields": {
+            "name": "Can view slaughter task",
+            "content_type": 22,
+            "codename": "view_slaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 89,
+        "fields": {
+            "name": "Can add mother rabbit history",
+            "content_type": 23,
+            "codename": "add_motherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 90,
+        "fields": {
+            "name": "Can change mother rabbit history",
+            "content_type": 23,
+            "codename": "change_motherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 91,
+        "fields": {
+            "name": "Can delete mother rabbit history",
+            "content_type": 23,
+            "codename": "delete_motherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 92,
+        "fields": {
+            "name": "Can view mother rabbit history",
+            "content_type": 23,
+            "codename": "view_motherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 93,
+        "fields": {
+            "name": "Can add mating task",
+            "content_type": 24,
+            "codename": "add_matingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 94,
+        "fields": {
+            "name": "Can change mating task",
+            "content_type": 24,
+            "codename": "change_matingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 95,
+        "fields": {
+            "name": "Can delete mating task",
+            "content_type": 24,
+            "codename": "delete_matingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 96,
+        "fields": {
+            "name": "Can view mating task",
+            "content_type": 24,
+            "codename": "view_matingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 97,
+        "fields": {
+            "name": "Can add fattening rabbit history",
+            "content_type": 25,
+            "codename": "add_fatteningrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 98,
+        "fields": {
+            "name": "Can change fattening rabbit history",
+            "content_type": 25,
+            "codename": "change_fatteningrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 99,
+        "fields": {
+            "name": "Can delete fattening rabbit history",
+            "content_type": 25,
+            "codename": "delete_fatteningrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 100,
+        "fields": {
+            "name": "Can view fattening rabbit history",
+            "content_type": 25,
+            "codename": "view_fatteningrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 101,
+        "fields": {
+            "name": "Can add father rabbit history",
+            "content_type": 26,
+            "codename": "add_fatherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 102,
+        "fields": {
+            "name": "Can change father rabbit history",
+            "content_type": 26,
+            "codename": "change_fatherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 103,
+        "fields": {
+            "name": "Can delete father rabbit history",
+            "content_type": 26,
+            "codename": "delete_fatherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 104,
+        "fields": {
+            "name": "Can view father rabbit history",
+            "content_type": 26,
+            "codename": "view_fatherrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 105,
+        "fields": {
+            "name": "Can add bunny history",
+            "content_type": 27,
+            "codename": "add_bunnyhistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 106,
+        "fields": {
+            "name": "Can change bunny history",
+            "content_type": 27,
+            "codename": "change_bunnyhistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 107,
+        "fields": {
+            "name": "Can delete bunny history",
+            "content_type": 27,
+            "codename": "delete_bunnyhistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 108,
+        "fields": {
+            "name": "Can view bunny history",
+            "content_type": 27,
+            "codename": "view_bunnyhistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 109,
+        "fields": {
+            "name": "Can add pregnancy inspection",
+            "content_type": 28,
+            "codename": "add_pregnancyinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 110,
+        "fields": {
+            "name": "Can change pregnancy inspection",
+            "content_type": 28,
+            "codename": "change_pregnancyinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 111,
+        "fields": {
+            "name": "Can delete pregnancy inspection",
+            "content_type": 28,
+            "codename": "delete_pregnancyinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 112,
+        "fields": {
+            "name": "Can view pregnancy inspection",
+            "content_type": 28,
+            "codename": "view_pregnancyinspection"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 113,
+        "fields": {
+            "name": "Can add mating",
+            "content_type": 29,
+            "codename": "add_mating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 114,
+        "fields": {
+            "name": "Can change mating",
+            "content_type": 29,
+            "codename": "change_mating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 115,
+        "fields": {
+            "name": "Can delete mating",
+            "content_type": 29,
+            "codename": "delete_mating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 116,
+        "fields": {
+            "name": "Can view mating",
+            "content_type": 29,
+            "codename": "view_mating"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 117,
+        "fields": {
+            "name": "Can add breed",
+            "content_type": 30,
+            "codename": "add_breed"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 118,
+        "fields": {
+            "name": "Can change breed",
+            "content_type": 30,
+            "codename": "change_breed"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 119,
+        "fields": {
+            "name": "Can delete breed",
+            "content_type": 30,
+            "codename": "delete_breed"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 120,
+        "fields": {
+            "name": "Can view breed",
+            "content_type": 30,
+            "codename": "view_breed"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 121,
+        "fields": {
+            "name": "Can add dead rabbit history",
+            "content_type": 31,
+            "codename": "add_deadrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 122,
+        "fields": {
+            "name": "Can change dead rabbit history",
+            "content_type": 31,
+            "codename": "change_deadrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 123,
+        "fields": {
+            "name": "Can delete dead rabbit history",
+            "content_type": 31,
+            "codename": "delete_deadrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 124,
+        "fields": {
+            "name": "Can view dead rabbit history",
+            "content_type": 31,
+            "codename": "view_deadrabbithistory"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 125,
+        "fields": {
+            "name": "Can add feed batch",
+            "content_type": 32,
+            "codename": "add_feedbatch"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 126,
+        "fields": {
+            "name": "Can change feed batch",
+            "content_type": 32,
+            "codename": "change_feedbatch"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 127,
+        "fields": {
+            "name": "Can delete feed batch",
+            "content_type": 32,
+            "codename": "delete_feedbatch"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 128,
+        "fields": {
+            "name": "Can view feed batch",
+            "content_type": 32,
+            "codename": "view_feedbatch"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 129,
+        "fields": {
+            "name": "Can add type group",
+            "content_type": 33,
+            "codename": "add_typegroup"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 130,
+        "fields": {
+            "name": "Can change type group",
+            "content_type": 33,
+            "codename": "change_typegroup"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 131,
+        "fields": {
+            "name": "Can delete type group",
+            "content_type": 33,
+            "codename": "delete_typegroup"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 132,
+        "fields": {
+            "name": "Can view type group",
+            "content_type": 33,
+            "codename": "view_typegroup"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 133,
+        "fields": {
+            "name": "Can add vaccination task",
+            "content_type": 34,
+            "codename": "add_vaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 134,
+        "fields": {
+            "name": "Can change vaccination task",
+            "content_type": 34,
+            "codename": "change_vaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 135,
+        "fields": {
+            "name": "Can delete vaccination task",
+            "content_type": 34,
+            "codename": "delete_vaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 136,
+        "fields": {
+            "name": "Can view vaccination task",
+            "content_type": 34,
+            "codename": "view_vaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 137,
+        "fields": {
+            "name": "Can add to reproduction task",
+            "content_type": 35,
+            "codename": "add_toreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 138,
+        "fields": {
+            "name": "Can change to reproduction task",
+            "content_type": 35,
+            "codename": "change_toreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 139,
+        "fields": {
+            "name": "Can delete to reproduction task",
+            "content_type": 35,
+            "codename": "delete_toreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 140,
+        "fields": {
+            "name": "Can view to reproduction task",
+            "content_type": 35,
+            "codename": "view_toreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 141,
+        "fields": {
+            "name": "Can add slaughter inspection task",
+            "content_type": 36,
+            "codename": "add_slaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 142,
+        "fields": {
+            "name": "Can change slaughter inspection task",
+            "content_type": 36,
+            "codename": "change_slaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 143,
+        "fields": {
+            "name": "Can delete slaughter inspection task",
+            "content_type": 36,
+            "codename": "delete_slaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 144,
+        "fields": {
+            "name": "Can view slaughter inspection task",
+            "content_type": 36,
+            "codename": "view_slaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 145,
+        "fields": {
+            "name": "Can add fattening slaughter task",
+            "content_type": 37,
+            "codename": "add_fatteningslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 146,
+        "fields": {
+            "name": "Can change fattening slaughter task",
+            "content_type": 37,
+            "codename": "change_fatteningslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 147,
+        "fields": {
+            "name": "Can delete fattening slaughter task",
+            "content_type": 37,
+            "codename": "delete_fatteningslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 148,
+        "fields": {
+            "name": "Can view fattening slaughter task",
+            "content_type": 37,
+            "codename": "view_fatteningslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 149,
+        "fields": {
+            "name": "Can add bunny jigging task",
+            "content_type": 38,
+            "codename": "add_bunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 150,
+        "fields": {
+            "name": "Can change bunny jigging task",
+            "content_type": 38,
+            "codename": "change_bunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 151,
+        "fields": {
+            "name": "Can delete bunny jigging task",
+            "content_type": 38,
+            "codename": "delete_bunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 152,
+        "fields": {
+            "name": "Can view bunny jigging task",
+            "content_type": 38,
+            "codename": "view_bunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 153,
+        "fields": {
+            "name": "Can add Token",
+            "content_type": 39,
+            "codename": "add_token"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 154,
+        "fields": {
+            "name": "Can change Token",
+            "content_type": 39,
+            "codename": "change_token"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 155,
+        "fields": {
+            "name": "Can delete Token",
+            "content_type": 39,
+            "codename": "delete_token"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 156,
+        "fields": {
+            "name": "Can view Token",
+            "content_type": 39,
+            "codename": "view_token"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 157,
+        "fields": {
+            "name": "Can add token",
+            "content_type": 40,
+            "codename": "add_tokenproxy"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 158,
+        "fields": {
+            "name": "Can change token",
+            "content_type": 40,
+            "codename": "change_tokenproxy"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 159,
+        "fields": {
+            "name": "Can delete token",
+            "content_type": 40,
+            "codename": "delete_tokenproxy"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 160,
+        "fields": {
+            "name": "Can view token",
+            "content_type": 40,
+            "codename": "view_tokenproxy"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 161,
+        "fields": {
+            "name": "Can add common feeds",
+            "content_type": 41,
+            "codename": "add_commonfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 162,
+        "fields": {
+            "name": "Can change common feeds",
+            "content_type": 41,
+            "codename": "change_commonfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 163,
+        "fields": {
+            "name": "Can delete common feeds",
+            "content_type": 41,
+            "codename": "delete_commonfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 164,
+        "fields": {
+            "name": "Can view common feeds",
+            "content_type": 41,
+            "codename": "view_commonfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 165,
+        "fields": {
+            "name": "Can add nursing mother feeds",
+            "content_type": 42,
+            "codename": "add_nursingmotherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 166,
+        "fields": {
+            "name": "Can change nursing mother feeds",
+            "content_type": 42,
+            "codename": "change_nursingmotherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 167,
+        "fields": {
+            "name": "Can delete nursing mother feeds",
+            "content_type": 42,
+            "codename": "delete_nursingmotherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 168,
+        "fields": {
+            "name": "Can view nursing mother feeds",
+            "content_type": 42,
+            "codename": "view_nursingmotherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 169,
+        "fields": {
+            "name": "Can add to fattening task",
+            "content_type": 43,
+            "codename": "add_tofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 170,
+        "fields": {
+            "name": "Can change to fattening task",
+            "content_type": 43,
+            "codename": "change_tofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 171,
+        "fields": {
+            "name": "Can delete to fattening task",
+            "content_type": 43,
+            "codename": "delete_tofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 172,
+        "fields": {
+            "name": "Can view to fattening task",
+            "content_type": 43,
+            "codename": "view_tofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 173,
+        "fields": {
+            "name": "Can add feeds",
+            "content_type": 44,
+            "codename": "add_feeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 174,
+        "fields": {
+            "name": "Can change feeds",
+            "content_type": 44,
+            "codename": "change_feeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 175,
+        "fields": {
+            "name": "Can delete feeds",
+            "content_type": 44,
+            "codename": "delete_feeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 176,
+        "fields": {
+            "name": "Can view feeds",
+            "content_type": 44,
+            "codename": "view_feeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 177,
+        "fields": {
+            "name": "Can add fattening feeds",
+            "content_type": 45,
+            "codename": "add_fatteningfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 178,
+        "fields": {
+            "name": "Can change fattening feeds",
+            "content_type": 45,
+            "codename": "change_fatteningfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 179,
+        "fields": {
+            "name": "Can delete fattening feeds",
+            "content_type": 45,
+            "codename": "delete_fatteningfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 180,
+        "fields": {
+            "name": "Can view fattening feeds",
+            "content_type": 45,
+            "codename": "view_fatteningfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 181,
+        "fields": {
+            "name": "Can add mother feeds",
+            "content_type": 46,
+            "codename": "add_motherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 182,
+        "fields": {
+            "name": "Can change mother feeds",
+            "content_type": 46,
+            "codename": "change_motherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 183,
+        "fields": {
+            "name": "Can delete mother feeds",
+            "content_type": 46,
+            "codename": "delete_motherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 184,
+        "fields": {
+            "name": "Can view mother feeds",
+            "content_type": 46,
+            "codename": "view_motherfeeds"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 185,
+        "fields": {
+            "name": "Can add historical mother rabbit",
+            "content_type": 47,
+            "codename": "add_historicalmotherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 186,
+        "fields": {
+            "name": "Can change historical mother rabbit",
+            "content_type": 47,
+            "codename": "change_historicalmotherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 187,
+        "fields": {
+            "name": "Can delete historical mother rabbit",
+            "content_type": 47,
+            "codename": "delete_historicalmotherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 188,
+        "fields": {
+            "name": "Can view historical mother rabbit",
+            "content_type": 47,
+            "codename": "view_historicalmotherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 189,
+        "fields": {
+            "name": "Can add historical fattening rabbit",
+            "content_type": 48,
+            "codename": "add_historicalfatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 190,
+        "fields": {
+            "name": "Can change historical fattening rabbit",
+            "content_type": 48,
+            "codename": "change_historicalfatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 191,
+        "fields": {
+            "name": "Can delete historical fattening rabbit",
+            "content_type": 48,
+            "codename": "delete_historicalfatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 192,
+        "fields": {
+            "name": "Can view historical fattening rabbit",
+            "content_type": 48,
+            "codename": "view_historicalfatteningrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 193,
+        "fields": {
+            "name": "Can add historical father rabbit",
+            "content_type": 49,
+            "codename": "add_historicalfatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 194,
+        "fields": {
+            "name": "Can change historical father rabbit",
+            "content_type": 49,
+            "codename": "change_historicalfatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 195,
+        "fields": {
+            "name": "Can delete historical father rabbit",
+            "content_type": 49,
+            "codename": "delete_historicalfatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 196,
+        "fields": {
+            "name": "Can view historical father rabbit",
+            "content_type": 49,
+            "codename": "view_historicalfatherrabbit"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 197,
+        "fields": {
+            "name": "Can add historical bunny",
+            "content_type": 50,
+            "codename": "add_historicalbunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 198,
+        "fields": {
+            "name": "Can change historical bunny",
+            "content_type": 50,
+            "codename": "change_historicalbunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 199,
+        "fields": {
+            "name": "Can delete historical bunny",
+            "content_type": 50,
+            "codename": "delete_historicalbunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 200,
+        "fields": {
+            "name": "Can view historical bunny",
+            "content_type": 50,
+            "codename": "view_historicalbunny"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 201,
+        "fields": {
+            "name": "Can add historical vaccination task",
+            "content_type": 51,
+            "codename": "add_historicalvaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 202,
+        "fields": {
+            "name": "Can change historical vaccination task",
+            "content_type": 51,
+            "codename": "change_historicalvaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 203,
+        "fields": {
+            "name": "Can delete historical vaccination task",
+            "content_type": 51,
+            "codename": "delete_historicalvaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 204,
+        "fields": {
+            "name": "Can view historical vaccination task",
+            "content_type": 51,
+            "codename": "view_historicalvaccinationtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 205,
+        "fields": {
+            "name": "Can add historical to reproduction task",
+            "content_type": 52,
+            "codename": "add_historicaltoreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 206,
+        "fields": {
+            "name": "Can change historical to reproduction task",
+            "content_type": 52,
+            "codename": "change_historicaltoreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 207,
+        "fields": {
+            "name": "Can delete historical to reproduction task",
+            "content_type": 52,
+            "codename": "delete_historicaltoreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 208,
+        "fields": {
+            "name": "Can view historical to reproduction task",
+            "content_type": 52,
+            "codename": "view_historicaltoreproductiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 209,
+        "fields": {
+            "name": "Can add historical to fattening task",
+            "content_type": 53,
+            "codename": "add_historicaltofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 210,
+        "fields": {
+            "name": "Can change historical to fattening task",
+            "content_type": 53,
+            "codename": "change_historicaltofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 211,
+        "fields": {
+            "name": "Can delete historical to fattening task",
+            "content_type": 53,
+            "codename": "delete_historicaltofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 212,
+        "fields": {
+            "name": "Can view historical to fattening task",
+            "content_type": 53,
+            "codename": "view_historicaltofatteningtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 213,
+        "fields": {
+            "name": "Can add historical slaughter task",
+            "content_type": 54,
+            "codename": "add_historicalslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 214,
+        "fields": {
+            "name": "Can change historical slaughter task",
+            "content_type": 54,
+            "codename": "change_historicalslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 215,
+        "fields": {
+            "name": "Can delete historical slaughter task",
+            "content_type": 54,
+            "codename": "delete_historicalslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 216,
+        "fields": {
+            "name": "Can view historical slaughter task",
+            "content_type": 54,
+            "codename": "view_historicalslaughtertask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 217,
+        "fields": {
+            "name": "Can add historical slaughter inspection task",
+            "content_type": 55,
+            "codename": "add_historicalslaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 218,
+        "fields": {
+            "name": "Can change historical slaughter inspection task",
+            "content_type": 55,
+            "codename": "change_historicalslaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 219,
+        "fields": {
+            "name": "Can delete historical slaughter inspection task",
+            "content_type": 55,
+            "codename": "delete_historicalslaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 220,
+        "fields": {
+            "name": "Can view historical slaughter inspection task",
+            "content_type": 55,
+            "codename": "view_historicalslaughterinspectiontask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 221,
+        "fields": {
+            "name": "Can add historical mating task",
+            "content_type": 56,
+            "codename": "add_historicalmatingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 222,
+        "fields": {
+            "name": "Can change historical mating task",
+            "content_type": 56,
+            "codename": "change_historicalmatingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 223,
+        "fields": {
+            "name": "Can delete historical mating task",
+            "content_type": 56,
+            "codename": "delete_historicalmatingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 224,
+        "fields": {
+            "name": "Can view historical mating task",
+            "content_type": 56,
+            "codename": "view_historicalmatingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 225,
+        "fields": {
+            "name": "Can add historical bunny jigging task",
+            "content_type": 57,
+            "codename": "add_historicalbunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 226,
+        "fields": {
+            "name": "Can change historical bunny jigging task",
+            "content_type": 57,
+            "codename": "change_historicalbunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 227,
+        "fields": {
+            "name": "Can delete historical bunny jigging task",
+            "content_type": 57,
+            "codename": "delete_historicalbunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.permission",
+        "pk": 228,
+        "fields": {
+            "name": "Can view historical bunny jigging task",
+            "content_type": 57,
+            "codename": "view_historicalbunnyjiggingtask"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2021-07-10T00:28:41.090",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 1,
+        "fields": {
+            "app_label": "admin",
+            "model": "logentry"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 2,
+        "fields": {
+            "app_label": "auth",
+            "model": "permission"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 3,
+        "fields": {
+            "app_label": "auth",
+            "model": "group"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 4,
+        "fields": {
+            "app_label": "auth",
+            "model": "user"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 5,
+        "fields": {
+            "app_label": "contenttypes",
+            "model": "contenttype"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 6,
+        "fields": {
+            "app_label": "sessions",
+            "model": "session"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 7,
+        "fields": {
+            "app_label": "api",
+            "model": "cage"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 8,
+        "fields": {
+            "app_label": "api",
+            "model": "plan"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 9,
+        "fields": {
+            "app_label": "api",
+            "model": "rabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 10,
+        "fields": {
+            "app_label": "api",
+            "model": "rabbithistory"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 11,
+        "fields": {
+            "app_label": "api",
+            "model": "task"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 12,
+        "fields": {
+            "app_label": "api",
+            "model": "bunny"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 13,
+        "fields": {
+            "app_label": "api",
+            "model": "deadrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 14,
+        "fields": {
+            "app_label": "api",
+            "model": "fatherrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 15,
+        "fields": {
+            "app_label": "api",
+            "model": "fatteningcage"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 16,
+        "fields": {
+            "app_label": "api",
+            "model": "fatteningrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 17,
+        "fields": {
+            "app_label": "api",
+            "model": "matingplan"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 18,
+        "fields": {
+            "app_label": "api",
+            "model": "mothercage"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 19,
+        "fields": {
+            "app_label": "api",
+            "model": "motherrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 20,
+        "fields": {
+            "app_label": "api",
+            "model": "slaughterplan"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 21,
+        "fields": {
+            "app_label": "api",
+            "model": "beforeslaughterinspection"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 22,
+        "fields": {
+            "app_label": "api",
+            "model": "slaughtertask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 23,
+        "fields": {
+            "app_label": "api",
+            "model": "motherrabbithistory"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 24,
+        "fields": {
+            "app_label": "api",
+            "model": "matingtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 25,
+        "fields": {
+            "app_label": "api",
+            "model": "fatteningrabbithistory"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 26,
+        "fields": {
+            "app_label": "api",
+            "model": "fatherrabbithistory"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 27,
+        "fields": {
+            "app_label": "api",
+            "model": "bunnyhistory"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 28,
+        "fields": {
+            "app_label": "api",
+            "model": "pregnancyinspection"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 29,
+        "fields": {
+            "app_label": "api",
+            "model": "mating"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 30,
+        "fields": {
+            "app_label": "api",
+            "model": "breed"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 31,
+        "fields": {
+            "app_label": "api",
+            "model": "deadrabbithistory"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 32,
+        "fields": {
+            "app_label": "api",
+            "model": "feedbatch"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 33,
+        "fields": {
+            "app_label": "api",
+            "model": "typegroup"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 34,
+        "fields": {
+            "app_label": "api",
+            "model": "vaccinationtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 35,
+        "fields": {
+            "app_label": "api",
+            "model": "toreproductiontask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 36,
+        "fields": {
+            "app_label": "api",
+            "model": "slaughterinspectiontask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 37,
+        "fields": {
+            "app_label": "api",
+            "model": "fatteningslaughtertask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 38,
+        "fields": {
+            "app_label": "api",
+            "model": "bunnyjiggingtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 39,
+        "fields": {
+            "app_label": "authtoken",
+            "model": "token"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 40,
+        "fields": {
+            "app_label": "authtoken",
+            "model": "tokenproxy"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 41,
+        "fields": {
+            "app_label": "api",
+            "model": "commonfeeds"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 42,
+        "fields": {
+            "app_label": "api",
+            "model": "nursingmotherfeeds"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 43,
+        "fields": {
+            "app_label": "api",
+            "model": "tofatteningtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 44,
+        "fields": {
+            "app_label": "api",
+            "model": "feeds"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 45,
+        "fields": {
+            "app_label": "api",
+            "model": "fatteningfeeds"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 46,
+        "fields": {
+            "app_label": "api",
+            "model": "motherfeeds"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 47,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalmotherrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 48,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalfatteningrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 49,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalfatherrabbit"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 50,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalbunny"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 51,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalvaccinationtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 52,
+        "fields": {
+            "app_label": "api",
+            "model": "historicaltoreproductiontask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 53,
+        "fields": {
+            "app_label": "api",
+            "model": "historicaltofatteningtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 54,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalslaughtertask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 55,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalslaughterinspectiontask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 56,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalmatingtask"
+        }
+    },
+    {
+        "model": "contenttypes.contenttype",
+        "pk": 57,
+        "fields": {
+            "app_label": "api",
+            "model": "historicalbunnyjiggingtask"
+        }
+    },
+    {
+        "model": "api.breed",
+        "pk": 1,
+        "fields": {
+            "title": "Паннон"
+        }
+    },
+    {
+        "model": "api.breed",
+        "pk": 2,
+        "fields": {
+            "title": "Серебро"
+        }
+    },
+    {
+        "model": "api.breed",
+        "pk": 3,
+        "fields": {
+            "title": "Калифорнийский"
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 1,
+        "fields": {
+            "farm_number": 3,
+            "number": 1,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 2,
+        "fields": {
+            "farm_number": 2,
+            "number": 1,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 3,
+        "fields": {
+            "farm_number": 3,
+            "number": 1,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 4,
+        "fields": {
+            "farm_number": 2,
+            "number": 1,
+            "letter": "г",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 5,
+        "fields": {
+            "farm_number": 2,
+            "number": 2,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 6,
+        "fields": {
+            "farm_number": 4,
+            "number": 2,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 7,
+        "fields": {
+            "farm_number": 2,
+            "number": 2,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 8,
+        "fields": {
+            "farm_number": 3,
+            "number": 2,
+            "letter": "г",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 9,
+        "fields": {
+            "farm_number": 2,
+            "number": 3,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 10,
+        "fields": {
+            "farm_number": 3,
+            "number": 3,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 11,
+        "fields": {
+            "farm_number": 3,
+            "number": 3,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 12,
+        "fields": {
+            "farm_number": 4,
+            "number": 3,
+            "letter": "г",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 13,
+        "fields": {
+            "farm_number": 3,
+            "number": 4,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 14,
+        "fields": {
+            "farm_number": 3,
+            "number": 4,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 15,
+        "fields": {
+            "farm_number": 4,
+            "number": 4,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 16,
+        "fields": {
+            "farm_number": 2,
+            "number": 5,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 17,
+        "fields": {
+            "farm_number": 3,
+            "number": 5,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 18,
+        "fields": {
+            "farm_number": 3,
+            "number": 5,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 19,
+        "fields": {
+            "farm_number": 3,
+            "number": 5,
+            "letter": "г",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 20,
+        "fields": {
+            "farm_number": 4,
+            "number": 6,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 21,
+        "fields": {
+            "farm_number": 2,
+            "number": 6,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 22,
+        "fields": {
+            "farm_number": 4,
+            "number": 6,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 23,
+        "fields": {
+            "farm_number": 2,
+            "number": 6,
+            "letter": "г",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 24,
+        "fields": {
+            "farm_number": 3,
+            "number": 7,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 25,
+        "fields": {
+            "farm_number": 3,
+            "number": 7,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 26,
+        "fields": {
+            "farm_number": 2,
+            "number": 7,
+            "letter": "в",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 27,
+        "fields": {
+            "farm_number": 4,
+            "number": 7,
+            "letter": "г",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 28,
+        "fields": {
+            "farm_number": 3,
+            "number": 8,
+            "letter": "а",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.cage",
+        "pk": 29,
+        "fields": {
+            "farm_number": 2,
+            "number": 8,
+            "letter": "б",
+            "status": ""
+        }
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 16,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 17,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 18,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 19,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 20,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 21,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 22,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 23,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 24,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 25,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 26,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 27,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 28,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningcage",
+        "pk": 29,
+        "fields": {}
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 1,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 2,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 3,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 4,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 5,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 6,
+        "fields": {
+            "has_right_womb": true
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 7,
+        "fields": {
+            "has_right_womb": true
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 8,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 9,
+        "fields": {
+            "has_right_womb": true
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 10,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 11,
+        "fields": {
+            "has_right_womb": true
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 12,
+        "fields": {
+            "has_right_womb": true
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 13,
+        "fields": {
+            "has_right_womb": true
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 14,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.mothercage",
+        "pk": 15,
+        "fields": {
+            "has_right_womb": false
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 1,
+        "fields": {
+            "birthday": "2021-07-11T01:18:46.682",
+            "mother": null,
+            "father": null,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.5,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 2,
+        "fields": {
+            "birthday": "2021-07-11T01:18:47.593",
+            "mother": null,
+            "father": null,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.3,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 3,
+        "fields": {
+            "birthday": "2021-07-11T01:18:48.505",
+            "mother": null,
+            "father": null,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.7,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 4,
+        "fields": {
+            "birthday": "2021-07-11T01:18:49.413",
+            "mother": null,
+            "father": null,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 4.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 5,
+        "fields": {
+            "birthday": "2021-07-11T01:19:36.339",
+            "mother": null,
+            "father": null,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 6,
+        "fields": {
+            "birthday": "2021-07-11T01:19:37.236",
+            "mother": null,
+            "father": null,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.5,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": "NE"
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 7,
+        "fields": {
+            "birthday": "2021-07-11T01:19:38.123",
+            "mother": null,
+            "father": null,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.3,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": "GS"
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 8,
+        "fields": {
+            "birthday": "2021-07-11T01:19:39.010",
+            "mother": null,
+            "father": null,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.1,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 9,
+        "fields": {
+            "birthday": "2021-07-11T01:23:36.478",
+            "mother": 1,
+            "father": 5,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.5,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 10,
+        "fields": {
+            "birthday": "2021-07-11T01:23:37.561",
+            "mother": 1,
+            "father": 5,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.3,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 11,
+        "fields": {
+            "birthday": "2021-07-11T01:23:38.631",
+            "mother": 3,
+            "father": 7,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.7,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 12,
+        "fields": {
+            "birthday": "2021-07-11T01:23:39.690",
+            "mother": 4,
+            "father": 8,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 4.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 13,
+        "fields": {
+            "birthday": "2021-07-11T01:24:23.754",
+            "mother": 2,
+            "father": 6,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 14,
+        "fields": {
+            "birthday": "2021-07-11T01:24:24.838",
+            "mother": null,
+            "father": null,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.5,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": "NE"
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 15,
+        "fields": {
+            "birthday": "2021-07-11T01:24:25.752",
+            "mother": null,
+            "father": null,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.3,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": "GS"
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 16,
+        "fields": {
+            "birthday": "2021-07-11T01:29:02.841",
+            "mother": 10,
+            "father": 13,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.5,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 17,
+        "fields": {
+            "birthday": "2021-07-11T01:29:03.921",
+            "mother": 10,
+            "father": 13,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.3,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 18,
+        "fields": {
+            "birthday": "2021-07-11T01:29:04.984",
+            "mother": 11,
+            "father": 14,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.7,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 19,
+        "fields": {
+            "birthday": "2021-07-11T01:29:06.053",
+            "mother": 11,
+            "father": 14,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 4.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 20,
+        "fields": {
+            "birthday": "2021-07-11T01:29:07.120",
+            "mother": 12,
+            "father": 15,
+            "is_male": false,
+            "is_vaccinated": true,
+            "weight": 3.7,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 21,
+        "fields": {
+            "birthday": "2021-07-11T01:31:43.033",
+            "mother": 10,
+            "father": 13,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 22,
+        "fields": {
+            "birthday": "2021-07-11T01:31:44.114",
+            "mother": 11,
+            "father": 14,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.5,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 23,
+        "fields": {
+            "birthday": "2021-07-11T01:31:45.179",
+            "mother": 12,
+            "father": 15,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.3,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 24,
+        "fields": {
+            "birthday": "2021-07-11T01:31:46.241",
+            "mother": 12,
+            "father": 15,
+            "is_male": true,
+            "is_vaccinated": true,
+            "weight": 5.0,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 25,
+        "fields": {
+            "birthday": "2021-07-11T01:35:27.110",
+            "mother": 17,
+            "father": 22,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 26,
+        "fields": {
+            "birthday": "2021-07-11T01:35:28.224",
+            "mother": 17,
+            "father": 22,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 27,
+        "fields": {
+            "birthday": "2021-07-11T01:35:29.338",
+            "mother": 17,
+            "father": 22,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 28,
+        "fields": {
+            "birthday": "2021-07-11T01:35:30.446",
+            "mother": 17,
+            "father": 22,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 29,
+        "fields": {
+            "birthday": "2021-07-11T01:35:31.554",
+            "mother": 19,
+            "father": 23,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 30,
+        "fields": {
+            "birthday": "2021-07-11T01:35:32.662",
+            "mother": 19,
+            "father": 23,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.rabbit",
+        "pk": 31,
+        "fields": {
+            "birthday": "2021-07-11T01:35:33.766",
+            "mother": 19,
+            "father": 23,
+            "is_male": null,
+            "is_vaccinated": false,
+            "weight": null,
+            "last_weighting": null,
+            "breed": 1,
+            "warning_status": ""
+        }
+    },
+    {
+        "model": "api.fatteningrabbit",
+        "pk": 16,
+        "fields": {
+            "cage": 20,
+            "plan": null
+        }
+    },
+    {
+        "model": "api.fatteningrabbit",
+        "pk": 18,
+        "fields": {
+            "cage": 26,
+            "plan": null
+        }
+    },
+    {
+        "model": "api.fatteningrabbit",
+        "pk": 20,
+        "fields": {
+            "cage": 23,
+            "plan": null
+        }
+    },
+    {
+        "model": "api.fatteningrabbit",
+        "pk": 21,
+        "fields": {
+            "cage": 27,
+            "plan": null
+        }
+    },
+    {
+        "model": "api.fatteningrabbit",
+        "pk": 24,
+        "fields": {
+            "cage": 19,
+            "plan": null
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 25,
+        "fields": {
+            "cage": 3
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 26,
+        "fields": {
+            "cage": 12
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 27,
+        "fields": {
+            "cage": 9
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 28,
+        "fields": {
+            "cage": 11
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 29,
+        "fields": {
+            "cage": 1
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 30,
+        "fields": {
+            "cage": 10
+        }
+    },
+    {
+        "model": "api.bunny",
+        "pk": 31,
+        "fields": {
+            "cage": 15
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 1,
+        "fields": {
+            "cage": 12
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 2,
+        "fields": {
+            "cage": 8
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 3,
+        "fields": {
+            "cage": 14
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 4,
+        "fields": {
+            "cage": 5
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 9,
+        "fields": {
+            "cage": 8
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 10,
+        "fields": {
+            "cage": 10
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 11,
+        "fields": {
+            "cage": 10
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 12,
+        "fields": {
+            "cage": 1
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 17,
+        "fields": {
+            "cage": 15
+        }
+    },
+    {
+        "model": "api.motherrabbit",
+        "pk": 19,
+        "fields": {
+            "cage": 7
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 5,
+        "fields": {
+            "cage": 18
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 6,
+        "fields": {
+            "cage": 17
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 7,
+        "fields": {
+            "cage": 29
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 8,
+        "fields": {
+            "cage": 20
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 13,
+        "fields": {
+            "cage": 20
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 14,
+        "fields": {
+            "cage": 19
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 15,
+        "fields": {
+            "cage": 17
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 22,
+        "fields": {
+            "cage": 21
+        }
+    },
+    {
+        "model": "api.fatherrabbit",
+        "pk": 23,
+        "fields": {
+            "cage": 21
+        }
+    },
+    {
+        "model": "api.feeds",
+        "pk": 1,
+        "fields": {
+            "time": "2021-07-02T20:52:59.239",
+            "stocks": 5
+        }
+    },
+    {
+        "model": "api.feeds",
+        "pk": 2,
+        "fields": {
+            "time": "2021-07-03T20:53:19.063",
+            "stocks": -3
+        }
+    },
+    {
+        "model": "api.feeds",
+        "pk": 3,
+        "fields": {
+            "time": "2021-08-02T20:53:33.381",
+            "stocks": 3
+        }
+    },
+    {
+        "model": "api.feeds",
+        "pk": 4,
+        "fields": {
+            "time": "2021-08-02T20:53:41.177",
+            "stocks": -1
+        }
+    },
+    {
+        "model": "api.fatteningfeeds",
+        "pk": 1,
+        "fields": {}
+    },
+    {
+        "model": "api.fatteningfeeds",
+        "pk": 2,
+        "fields": {}
+    },
+    {
+        "model": "api.motherfeeds",
+        "pk": 3,
+        "fields": {}
+    },
+    {
+        "model": "api.motherfeeds",
+        "pk": 4,
+        "fields": {}
+    }
+]
