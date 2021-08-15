@@ -45,7 +45,6 @@ class _BasePartnersView(BaseView):
     
     @staticmethod
     def _clean(rabbit):
-        MatingTask.Cleaner.check_exists(rabbit)
         rabbit.cleaner.for_mating()
     
     @staticmethod

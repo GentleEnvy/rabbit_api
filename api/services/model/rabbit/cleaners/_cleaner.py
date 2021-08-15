@@ -144,6 +144,10 @@ class MotherRabbitCleaner(RabbitCleaner):
         CONFIRMED_PREGNANT = MotherRabbitManager.STATUS_CONFIRMED_PREGNANT
         if CONFIRMED_PREGNANT in mother_status:
             raise ValidationError('The female already pregnancy (confirmed)')
+        if models.MatingTask.objects.filter(
+            is_confirmed=None, mother_rabbit=self.rabbit
+        ).exists():
+            raise ValidationError('This mother rabbit is already waiting for mating')
     
     def for_recast_to_fattening(self):
         FatteningRabbitCleaner.for_recast(self.rabbit)
@@ -173,8 +177,7 @@ class FatherRabbitCleaner(RabbitCleaner):
         self.check_rabbit(self.rabbit)
     
     def for_mating(self):
-        if not isinstance(self.rabbit, models.FatherRabbit):
-            raise ValidationError('This rabbit is not father')
+        self.check_type()
         READY_FOR_FERTILIZATION = FatherRabbitManager.STATUS_READY_FOR_FERTILIZATION
         if READY_FOR_FERTILIZATION not in self.rabbit.manager.status:
             raise ValidationError('The male is not ready for fertilization')
