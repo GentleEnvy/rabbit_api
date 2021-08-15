@@ -9,7 +9,7 @@ from api.logs.configs.handlers import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = False if (_debug := os.environ.get('DJANGO_DEBUG')) is None else bool(int(_debug))
+DEBUG = False if (_debug := os.getenv('DJANGO_DEBUG')) is None else bool(int(_debug))
 
 # noinspection SpellCheckingInspection
 INSTALLED_APPS = [
@@ -102,21 +102,6 @@ FIXTURE_DIRS = ['api/tests/fixtures/']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-if DEBUG:  # dev
-    LOGGING = LogConfig(
-        {
-            'api': {'handlers': [api_file, api_console]},
-            'gunicorn.access': {'handlers': [web_file]}
-        }
-    ).to_dict()
-else:  # prod
-    LOGGING = LogConfig(
-        {
-            'api': {'handlers': [api_file, api_console, email_admins]},
-            'gunicorn.access': {'handlers': [web_file]}
-        }
-    ).to_dict()
-
 ADMINS = [('envy', 'envy15@mail.ru'), ('envy', 'komarov.sergei163@gmail.com')]
 
 EMAIL_HOST = 'smtp.gmail.com'
@@ -128,10 +113,33 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 ###
 # Custom
 
+TEST = False if (_test := os.getenv('DJANGO_TEST')) is None else bool(int(_test))
 YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
 
 # Custom
 ###
+
+if DEBUG:  # dev
+    LOGGING = LogConfig(
+        {
+            'api': {'handlers': [api_file, api_console]},
+            'gunicorn.access': {'handlers': [web_file]}
+        }
+    ).to_dict()
+elif TEST:  # test
+    LOGGING = LogConfig(
+        {
+            'api': {'handlers': [api_console]},
+            'django.server': {'handlers': [web_console]}
+        }
+    ).to_dict()
+else:  # prod
+    LOGGING = LogConfig(
+        {
+            'api': {'handlers': [api_file, api_console, email_admins]},
+            'gunicorn.access': {'handlers': [web_file]}
+        }
+    ).to_dict()
 
 ###
 # Heroku

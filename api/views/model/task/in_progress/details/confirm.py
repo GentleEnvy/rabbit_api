@@ -19,4 +19,5 @@ class ConfirmTaskDetailView(BaseDetailView):
         super().perform_update(serializer)
         task = serializer.instance
         controller = _task__controller[type(task)]
-        controller().execute(task)
+        if task.is_confirmed:
+            controller().execute(task)

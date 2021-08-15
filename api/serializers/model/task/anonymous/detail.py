@@ -9,9 +9,4 @@ class AnonymousTaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['user']
-    
-    def update(self, instance, validated_data):
-        user = validated_data['user']
-        instance.user = user
-        instance.save()
-        return instance
+        extra_kwargs = {'user': {'required': True, 'allow_null': False}}

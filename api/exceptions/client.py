@@ -1,7 +1,7 @@
 from rest_framework import status as rest_status
 from rest_framework.exceptions import (
     ValidationError as RestValidationError, APIException as RestAPIException,
-    NotAuthenticated
+    NotAuthenticated, MethodNotAllowed
 )
 
 from api.exceptions.base import *
@@ -22,7 +22,8 @@ class ClientError(CastSupportsError):
     
     EXCEPTION__CAST = {
         RestValidationError: _cast_rest_validation_error,
-        NotAuthenticated: _cast_rest_api_exception
+        NotAuthenticated: _cast_rest_api_exception,
+        MethodNotAllowed: _cast_rest_api_exception
     }
     
     def __init__(self, message=None, status=None):
