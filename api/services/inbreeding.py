@@ -71,6 +71,9 @@ class AvoidInbreedingService:
         for top_partner_id, top_partner in id__top_partners.items():
             try:
                 top_partner.cleaner.for_mating()
+                if not top_partner.is_male:
+                    top_partner.cleaner.check_task()
+                    top_partner.cleaner.check_womb()
                 if rabbit.is_male:
                     MatingTask.Cleaner.for_pair(rabbit, top_partner)
                 else:
@@ -94,25 +97,14 @@ class AvoidInbreedingService:
                 Rabbit.objects.filter(mother=rabbit)]
         return previous_partners
     
-    def validate_rabbit(self, rabbit):
+    @staticmethod
+    def validate_rabbit(rabbit):
         if not (isinstance(rabbit, (MotherRabbit, FatherRabbit))):
             raise ValidationError(
                 f'Expected mother or father rabbit, but given '
                 f'{re.sub(r"(?<!^)(?=[A-Z])", " ", type(rabbit.cast).__name__).lower()}'
             )
-        if isinstance(rabbit, MotherRabbit):
-            rabbit.cleaner.for_mating()
-            if rabbit.manager.last_fertilization is not None and (
-                rabbit.manager.last_fertilization - datetime.today()
-            ).days < self.days_for_safe_fertilization:
-                # MAYBE: delete
-                raise ValidationError(
-                    'This rabbit is pregnant, no partner should be found'
-                )
-        else:  # rabbit is FatherRabbit
-            rabbit.cast.cleaner.for_mating()
-        if rabbit.warning_status:
-            raise ValidationError('This rabbit is ill')
+        rabbit.cleaner.for_mating()
     
     @staticmethod
     def sort_rabbits_by_output_efficiency(rabbits: QuerySet) -> list:

@@ -113,7 +113,7 @@ class MotherCageManager(CageManager):
                 When(
                     Q(left_cage__isnull=False) & Q(lc_has_right_womb=True),
                     then=F('left_cage')
-                ),
+                )
             )
         )
     
