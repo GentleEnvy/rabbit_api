@@ -178,6 +178,8 @@ class BunnyJiggingTaskController(TaskController):
             female.cage = task.female_cage_to
         for fattening_rabbit in fattening_rabbits:
             fattening_rabbit.save()
+        if Cage.NEED_CLEAN not in task.cage_from.status:
+            task.cage_from.status.append(Cage.NEED_CLEAN)
 
 
 class VaccinationTaskController(TaskController):
@@ -222,6 +224,9 @@ class SlaughterTaskController(TaskController):
                     continue
     
     def execute(self, task: SlaughterTask):
+        if task.rabbit.cage.manager.number_rabbits == 0:
+            if Cage.NEED_CLEAN not in task.rabbit.cage.status:
+                task.rabbit.cage.status.append(Cage.NEED_CLEAN)
         dead_rabbit = DeadRabbit.recast(task.rabbit)
         dead_rabbit.death_cause = DeadRabbit.CAUSE_SLAUGHTER
         dead_rabbit.save()
