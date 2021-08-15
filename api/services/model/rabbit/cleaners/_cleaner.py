@@ -155,8 +155,9 @@ class MotherRabbitCleaner(RabbitCleaner):
     
     def check_womb(self):
         womb_cage = self.rabbit.cage.manager.womb_cage
-        if len(womb_cage.manager.bunnies) > 0:
-            raise ValidationError('The womb is busy')
+        if womb_cage is not None:
+            if len(womb_cage.manager.bunnies) > 0:
+                raise ValidationError('The womb is busy')
     
     def for_recast_to_fattening(self):
         FatteningRabbitCleaner.for_recast(self.rabbit)
