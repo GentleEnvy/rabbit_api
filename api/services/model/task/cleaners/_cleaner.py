@@ -91,7 +91,7 @@ class MatingTaskCleaner(TaskCleaner):
         except models.MatingTask.DoesNotExist:
             super().clean()
             self.task.mother_rabbit.cleaner.for_mating()
-            self.task.mother_rabbit.cleaner.check_task()
+            self.task.mother_rabbit.cleaner.check_task(exclude=self.task)
             self.task.mother_rabbit.cleaner.check_womb()
             self.task.father_rabbit.cleaner.for_mating()
     
