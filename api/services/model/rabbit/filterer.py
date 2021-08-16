@@ -37,7 +37,7 @@ class RabbitFilterer(BaseFilterer):
             queryset = queryset.filter(weight__gte=weight_from)
         if weight_to is not None:
             queryset = queryset.filter(weight__lte=weight_to)
-        if plan is not None:
+        if plan is not _NOT_PROVIDED:
             if queryset.model is Rabbit:
                 queryset = queryset.filter(fatteningrabbit__plan__id=plan)
             elif queryset.model is FatteningRabbit:
