@@ -1,12 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.mixins import DestroyModelMixin
 
 from api.models import *
 from api.serializers.model.task.in_progress.details.complete import *
 from api.services.model.task.controllers import *
 from api.services.model.task.controllers.base import TaskController
-from api.views.base import BaseView
 from api.views.model.base import BaseDetailView
 
 __all__ = [
@@ -34,13 +32,15 @@ class CompleteTaskDetailView(BaseDetailView):
         return queryset.filter(bunnyjiggingtask=None, slaughterinspectiontask=None)
 
 
-class CompleteBunnyJiggingTaskDetailView(CompleteTaskDetailView):
+class CompleteBunnyJiggingTaskDetailView(BaseDetailView):
     model = BunnyJiggingTask
     queryset = BunnyJiggingTaskController().in_progress
+    lookup_url_kwarg = 'id'
     update_serializer = CompleteBunnyJiggingTaskUpdateSerializer
 
 
-class CompleteSlaughterInspectionTaskDetailView(CompleteTaskDetailView):
+class CompleteSlaughterInspectionTaskDetailView(BaseDetailView):
     model = SlaughterInspectionTask
     queryset = SlaughterInspectionTaskController().in_progress
+    lookup_url_kwarg = 'id'
     update_serializer = CompleteSlaughterInspectionTaskUpdateSerializer
