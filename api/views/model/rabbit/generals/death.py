@@ -28,7 +28,12 @@ class RabbitDeathView(BaseView):
         cage = serializer.validated_data['cage']
         death_cause = serializer.validated_data['death_cause']
         
-        rabbit = None
+        rabbits = list(cage.manager.rabbits)
+        if len(rabbits) == 0:
+            raise APIWarning(
+                'There are no rabbits in this cage', codes=['death', 'not_rabbits']
+            )
+        
         if death_cause == DeadRabbit.CAUSE_ILLNESS:
             for sick_rabbit in cage.manager.rabbits:
                 self._die(sick_rabbit, DeadRabbit.CAUSE_ILLNESS)
@@ -36,12 +41,12 @@ class RabbitDeathView(BaseView):
             self._death_by_mother(cage)
         elif cage.CHAR_TYPE == MotherCage.CHAR_TYPE:
             rabbit = cage.bunny_set.first()
+            if rabbit is None:
+                self._die(cage.manager.rabbits[0], death_cause)
+            else:
+                self._die(rabbit, death_cause)
         
-        if rabbit is None:
-            rabbit = next(iter(cage.manager.rabbits))
-        self._die(rabbit, death_cause)
-        
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
     def _death_by_mother(self, cage):
         if cage.CHAR_TYPE != MotherCage.CHAR_TYPE:
