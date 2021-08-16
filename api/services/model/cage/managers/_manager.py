@@ -52,11 +52,11 @@ class CageManager:
     @property
     def rabbits(self) -> list:
         rabbits = []
-        manager = self.cage.cast.manager
-        rabbits.extend(getattr(manager, 'mother_rabbits', []))
-        rabbits.extend(getattr(manager, 'bunnies', []))
-        rabbits.extend(getattr(manager, 'fattening_rabbits', []))
-        rabbits.extend(getattr(manager, 'father_rabbits', []))
+        manager_ = self.cage.cast.manager
+        rabbits.extend(getattr(manager_, 'mother_rabbits', []))
+        rabbits.extend(getattr(manager_, 'bunnies', []))
+        rabbits.extend(getattr(manager_, 'fattening_rabbits', []))
+        rabbits.extend(getattr(manager_, 'father_rabbits', []))
         return rabbits
     
     @property
@@ -90,7 +90,7 @@ class MotherCageManager(CageManager):
         return queryset.filter(~Q(mothercage=None))
     
     @classmethod
-    def prefetch_womb_cage(cls, queryset=None) -> QuerySet:
+    def prefetch_womb_cage_id(cls, queryset=None) -> QuerySet:
         if queryset is None:
             queryset = models.MotherCage.objects.all()
         sub_right_cage = models.MotherCage.objects.filter(
@@ -105,9 +105,12 @@ class MotherCageManager(CageManager):
             right_cage=Subquery(sub_right_cage.values('id')[:1]),
             left_cage=Subquery(sub_left_cage.values('id')[:1]),
             lc_has_right_womb=Subquery(sub_left_cage.values('has_right_womb')[:1]),
-            womb_cage=Case(
+            womb_cage_id=Case(
                 When(
-                    Q(has_right_womb=True) & Q(right_cage__isnull=False),
+                    Q(
+                        **{f'{"mothercage__" if queryset.model is models.Cage else ""}'
+                         f'has_right_womb': True}
+                    ) & Q(right_cage__isnull=False),
                     then=F('right_cage')
                 ),
                 When(
