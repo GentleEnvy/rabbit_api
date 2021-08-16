@@ -103,7 +103,7 @@ urlpatterns = [
     # task
     *[
         # detail
-        path('task/mating/<int:id>', MatingTaskDetailView.as_view()),
+        path('task/mating/<int:id>/', MatingTaskDetailView.as_view()),
         # anonymous
         *[
             # general
