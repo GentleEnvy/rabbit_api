@@ -30,8 +30,11 @@ class RabbitGeneralView(BaseGeneralView):
         params = self.request.query_params
         filters = {}
         
-        if plan := params.get('plan'):
-            filters['plan'] = int(plan)
+        if (plan := params.get('plan')) is not None:
+            if not plan:
+                filters['plan'] = None
+            else:
+                filters['plan'] = int(plan)
         if is_male := params.get('is_male'):
             filters['is_male'] = bool(int(is_male))
         if type_ := params.get('type'):
