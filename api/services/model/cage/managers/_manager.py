@@ -155,6 +155,12 @@ class MotherCageManager(CageManager):
         except models.MotherCage.DoesNotExist:
             return None
         return None
+    
+    @property
+    def is_parallel(self) -> bool:
+        if getattr(self.cage, 'womb_cage_id', None) is not None:
+            return False
+        return self.womb_cage is None
 
 
 class FatteningCageManager(CageManager):
