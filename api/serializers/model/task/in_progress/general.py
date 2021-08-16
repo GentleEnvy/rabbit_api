@@ -50,10 +50,14 @@ class _CageTaskSerializer(_BaseTaskSerializer):
 class _ToReproductionTaskSerializer(_BaseTaskSerializer):
     class Meta(_BaseTaskSerializer.Meta):
         model = ToReproductionTask
-        fields = _BaseTaskSerializer.Meta.fields + ['cage_from', 'cage_to']
+        fields = _BaseTaskSerializer.Meta.fields + ['weight', 'cage_from', 'cage_to']
     
+    weight = serializers.SerializerMethodField()
     cage_from = serializers.SerializerMethodField()
     cage_to = serializers.SerializerMethodField()
+    
+    def get_weight(self, task):
+        return task.rabbit.weight
     
     @_cage_serializer
     def get_cage_from(self, task):

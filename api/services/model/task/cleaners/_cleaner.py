@@ -83,14 +83,16 @@ class MatingTaskCleaner(TaskCleaner):
     def clean(self):
         try:
             models.MatingTask.objects.exclude(id=self.task.id).get(
-                Q(is_confirmed=None) &
-                Q(mother_rabbit=self.task.mother_rabbit) |
-                Q(father_rabbit=self.task.father_rabbit)
+                is_confirmed=None,
+                mother_rabbit=self.task.mother_rabbit,
+                father_rabbit=self.task.father_rabbit
             )
             raise ValidationError('This rabbits is already waiting for mating')
         except models.MatingTask.DoesNotExist:
             super().clean()
             self.task.mother_rabbit.cleaner.for_mating()
+            self.task.mother_rabbit.cleaner.check_task(exclude=self.task)
+            self.task.mother_rabbit.cleaner.check_womb()
             self.task.father_rabbit.cleaner.for_mating()
     
     @classmethod
@@ -99,7 +101,15 @@ class MatingTaskCleaner(TaskCleaner):
             'is_confirmed': None,
             'father_rabbit' if rabbit.is_male else 'mother_rabbit': rabbit
         }
-        if models.MatingTask.objects.filter(**filters).first() is not None:
+        if models.MatingTask.objects.filter(**filters).exists():
+            raise ValidationError('This rabbit is already waiting for mating')
+    
+    @classmethod
+    def for_pair(cls, father_rabbit, mother_rabbit):
+        if models.MatingTask.objects.filter(
+            Q(is_confirmed=None) &
+            (Q(mother_rabbit=mother_rabbit) | Q(father_rabbit=father_rabbit))
+        ).exists():
             raise ValidationError('This rabbits is already waiting for mating')
 
 

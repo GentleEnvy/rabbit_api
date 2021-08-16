@@ -18,6 +18,8 @@ class _BasePartnerSerializer(serializers.Serializer):
             else:  # partner is female
                 partner: MotherRabbit
                 partner.cleaner.for_mating()
+                partner.cleaner.check_task()
+                partner.cleaner.check_womb()
             return partner
     
     partner: _PartnerField

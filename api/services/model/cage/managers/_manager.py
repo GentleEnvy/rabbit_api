@@ -1,6 +1,7 @@
 from typing import Final
 
-from django.db.models import Prefetch, Count, QuerySet, Q
+from django.db.models import *
+from django.db.models.functions import *
 from model_utils.managers import InheritanceQuerySet
 
 import api.models as models
@@ -83,8 +84,38 @@ class MotherCageManager(CageManager):
         )
     
     @classmethod
-    def prefetch_number_rabbits(cls) -> QuerySet:
-        return super().prefetch_number_rabbits().filter(~Q(mothercage=None))
+    def prefetch_number_rabbits(cls, queryset=None) -> QuerySet:
+        if queryset is None:
+            queryset = super().prefetch_number_rabbits()
+        return queryset.filter(~Q(mothercage=None))
+    
+    @classmethod
+    def prefetch_womb_cage(cls, queryset=None) -> QuerySet:
+        if queryset is None:
+            queryset = models.MotherCage.objects.all()
+        sub_right_cage = models.MotherCage.objects.filter(
+            farm_number=OuterRef('farm_number'), number=OuterRef('number'),
+            letter=Chr(Ord(OuterRef('letter')) + 1)
+        )
+        sub_left_cage = models.MotherCage.objects.filter(
+            farm_number=OuterRef('farm_number'), number=OuterRef('number'),
+            letter=Chr(Ord(OuterRef('letter')) - 1)
+        )
+        return queryset.annotate(
+            right_cage=Subquery(sub_right_cage.values('id')[:1]),
+            left_cage=Subquery(sub_left_cage.values('id')[:1]),
+            lc_has_right_womb=Subquery(sub_left_cage.values('has_right_womb')[:1]),
+            womb_cage=Case(
+                When(
+                    Q(has_right_womb=True) & Q(right_cage__isnull=False),
+                    then=F('right_cage')
+                ),
+                When(
+                    Q(left_cage__isnull=False) & Q(lc_has_right_womb=True),
+                    then=F('left_cage')
+                )
+            )
+        )
     
     @property
     def mother_rabbits(self):
@@ -105,8 +136,22 @@ class MotherCageManager(CageManager):
         return bunnies
     
     @property
-    def is_parallel(self) -> bool:
-        return not self.cage.has_right_womb
+    def womb_cage(self) -> 'models.MotherCage | None':
+        if self.cage.has_right_womb:
+            return models.MotherCage.objects.get(
+                farm_number=self.cage.farm_number, number=self.cage.number,
+                letter=chr(ord(self.cage.letter) + 1)
+            )
+        try:
+            left_cage = models.MotherCage.objects.get(
+                farm_number=self.cage.farm_number, number=self.cage.number,
+                letter=chr(ord(self.cage.letter) - 1)
+            )
+            if left_cage.has_right_womb:
+                return left_cage
+        except models.MotherCage.DoesNotExist:
+            return None
+        return None
 
 
 class FatteningCageManager(CageManager):

@@ -27,16 +27,13 @@ class _BasePartnersView(BaseView):
     
     def get(self, request, **_):
         rabbit = self.get_object()
-        try:
-            self._clean(rabbit)
-        except ValidationError as e:
-            raise APIWarning(str(e), codes=['mating'])
+        self._clean(rabbit)
         optimal_partners = _find_optimal_partners(rabbit)
         return Response(optimal_partners)
     
     def post(self, request, **_):
         rabbit = self.get_object()
-        self._clean(rabbit)
+        rabbit.cleaner.for_mating()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         partner = serializer.validated_data['partner']
@@ -45,8 +42,20 @@ class _BasePartnersView(BaseView):
     
     @staticmethod
     def _clean(rabbit):
-        MatingTask.Cleaner.check_exists(rabbit)
-        rabbit.cleaner.for_mating()
+        try:
+            rabbit.cleaner.for_mating()
+        except ValidationError as e:
+            raise APIWarning(str(e), codes=['mating'])
+        if not rabbit.is_male:
+            rabbit: MotherRabbit
+            try:
+                rabbit.cleaner.check_task()
+            except ValidationError as e:
+                raise APIWarning(str(e), codes=['mating', 'task'])
+            try:
+                rabbit.cleaner.check_womb()
+            except ValidationError as e:
+                raise APIWarning(str(e), codes=['mating', 'womb'])
     
     @staticmethod
     def _create_task(rabbit, partner):
