@@ -12,7 +12,9 @@ class CageGeneralView(BaseGeneralView):
     model = Cage
     list_serializer = CageListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Cage.Manager.prefetch_number_rabbits().order_by('id')
+    queryset = MotherCage.Manager.prefetch_womb_cage_id(
+        Cage.Manager.prefetch_number_rabbits()
+    ).order_by('id')
     
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
