@@ -43,6 +43,15 @@ class RabbitFilterer(BaseFilterer):
             elif queryset.model is FatteningRabbit:
                 queryset = queryset.filter(plan__id=plan)
         
+        if all(
+            map(
+                lambda attr: attr is None,
+                [status, farm_number, cage_number_from, cage_number_to, type_]
+            )
+        ):
+            self.queryset = queryset
+            return
+        
         self.queryset = queryset.filter(
             id__in=[
                 rabbit.id for rabbit in queryset
