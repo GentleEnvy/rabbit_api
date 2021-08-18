@@ -67,3 +67,9 @@ class MotherCage(MotherCageCleanerMixin, MotherCageManagerMixin, Cage):
     womb = models.OneToOneField(
         'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='ref_womb'
     )
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.womb is not None:
+            self.womb.womb = self
+            Cage.save(self.womb)

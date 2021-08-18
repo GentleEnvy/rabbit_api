@@ -103,6 +103,11 @@ class FatteningCageCleaner(CageCleaner):
 class MotherCageCleaner(CageCleaner):
     cage: 'models.MotherCage'
     
+    @classmethod
+    def _for_mother(cls, mother: 'models.Rabbit'):
+        if not isinstance(mother, models.MotherRabbit):
+            raise ValidationError('This rabbit is not currently MotherRabbit')
+    
     def clean(self):
         super().clean()
         rabbits = list(self.cage.manager.rabbits)
@@ -122,11 +127,5 @@ class MotherCageCleaner(CageCleaner):
     
     def for_jigging_mother(self):
         self.for_jigging()
-        if len(self.cage.manager.mother_rabbits) > 0:
-            raise ValidationError('Mother rabbit is already sitting in this cage')
-    
-    def _for_mother(self, mother: 'models.Rabbit'):
-        if not isinstance(mother, models.MotherRabbit):
-            raise ValidationError('This rabbit is not currently MotherRabbit')
         if len(self.cage.manager.mother_rabbits) > 0:
             raise ValidationError('Mother rabbit is already sitting in this cage')

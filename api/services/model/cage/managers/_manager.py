@@ -1,7 +1,6 @@
 from typing import Final
 
 from django.db.models import *
-from django.db.models.functions import *
 from model_utils.managers import InheritanceQuerySet
 
 import api.models as models
@@ -89,12 +88,6 @@ class MotherCageManager(CageManager):
             queryset = super().prefetch_number_rabbits()
         return queryset.filter(~Q(mothercage=None))
     
-    @classmethod
-    def prefetch_womb_cage_id(cls, queryset=None) -> QuerySet:
-        if queryset is None:
-            queryset = models.MotherCage.objects.all()
-        return queryset.select_related('womb', 'ref_womb')
-    
     @property
     def mother_rabbits(self):
         if (mother_rabbits := getattr(self.cage, 'mother_rabbits', None)) is None:
@@ -112,16 +105,6 @@ class MotherCageManager(CageManager):
             if (bunnies := getattr(self.cage.mothercage, 'bunnies', None)) is None:
                 return self.cage.bunny_set.all()
         return bunnies
-    
-    @property
-    def womb_cage(self) -> 'models.MotherCage | None':
-        if (womb := self.cage.womb) is None:
-            return self.cage.ref_womb
-        return womb
-    
-    @property
-    def is_parallel(self) -> bool:
-        return self.womb_cage is None
 
 
 class FatteningCageManager(CageManager):
