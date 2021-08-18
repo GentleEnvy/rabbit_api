@@ -6,6 +6,7 @@
 .idea/
 api/services/file/loader/_temp/*
 dumps/
+staticfiles/
 
 # Custom
 ###
