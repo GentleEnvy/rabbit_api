@@ -1,5 +1,3 @@
-from django.db.models import Prefetch
-
 from api.serializers.birth.general import BirthListSerializer
 from api.services.model.rabbit.filterer import RabbitFilterer
 from api.services.model.rabbit.managers import MotherRabbitManager
@@ -13,14 +11,9 @@ class _BaseBirthGeneralView(BaseGeneralView):
     list_serializer = BirthListSerializer
     queryset = MotherRabbit.Manager.prefetch_children(
         MotherRabbit.Manager.prefetch_matings(
-            MotherRabbit.objects.select_related(
-                'cage'
-            ).prefetch_related(
-                Prefetch('cage__bunny_set', to_attr='bunnies'),
-                Prefetch(
-                    'pregnancyinspection_set',
-                    queryset=PregnancyInspection.objects.order_by('time'),
-                    to_attr='pregnancy_inspections'
+            MotherRabbit.Manager.prefetch_bunnies(
+                MotherRabbit.Manager.prefetch_pregnancy_inspections(
+                    MotherRabbit.objects.all()
                 )
             )
         )

@@ -25,8 +25,15 @@ def _get_output(rabbit):
     return len(births)
 
 
+# noinspection PyUnresolvedReferences
 def _get_output_efficiency(rabbit, dead_causes):
     if (children := getattr(rabbit, 'children', None)) is None:
+        if isinstance(rabbit, models.MotherRabbit):
+            children = getattr(rabbit.motherrabbit, 'children', None)
+        else:
+            children = getattr(rabbit.fatherrabbit, 'children', None)
+    
+    if children is None:
         efficiency_children = rabbit.rabbit_set.filter(
             ~Q(fatteningrabbit=None) | ~Q(motherrabbit=None) | ~Q(fatherrabbit=None) |
             ~Q(deadrabbit=None) & ~Q(deadrabbit__death_cause__in=dead_causes)
@@ -122,7 +129,7 @@ class MotherRabbitManager(RabbitManager):
     def prefetch_children(cls, queryset=None):
         if queryset is None:
             queryset = models.MotherRabbit.objects.all()
-        queryset = queryset.prefetch_related(
+        return queryset.prefetch_related(
             Prefetch(
                 f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}'
                 f'rabbit_set',
@@ -130,19 +137,47 @@ class MotherRabbitManager(RabbitManager):
                 to_attr='children'
             )
         )
-        return queryset
     
     @classmethod
     def prefetch_matings(cls, queryset=None):
         if queryset is None:
             queryset = models.MotherRabbit.objects.all()
-        queryset = queryset.prefetch_related(
+        return queryset.prefetch_related(
             Prefetch(
-                'mating_set', queryset=models.Mating.objects.order_by('time'),
+                f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}'
+                f'mating_set',
+                queryset=models.Mating.objects.order_by('time'),
                 to_attr='matings'
             )
         )
-        return queryset
+    
+    @classmethod
+    def prefetch_bunnies(cls, queryset=None):
+        if queryset is None:
+            queryset = models.MotherRabbit.objects.all()
+        return queryset.select_related(
+            f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}cage'
+        ).prefetch_related(
+            Prefetch(
+                f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}'
+                f'cage__bunny_set', to_attr='bunnies'
+            )
+        )
+    
+    @classmethod
+    def prefetch_pregnancy_inspections(cls, queryset=None):
+        if queryset is None:
+            queryset = models.MotherRabbit.objects.all()
+        return queryset.select_related(
+            f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}cage'
+        ).prefetch_related(
+            Prefetch(
+                f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}'
+                'pregnancyinspection_set',
+                queryset=models.PregnancyInspection.objects.order_by('time'),
+                to_attr='pregnancy_inspections'
+            )
+        )
     
     @property
     def status(self):
@@ -201,19 +236,23 @@ class MotherRabbitManager(RabbitManager):
     @property
     def children(self):
         if (children := getattr(self.rabbit, 'children', None)) is None:
-            try:
-                return self.rabbit.rabbit_set.select_subclasses().all()
-            except models.Bunny.DoesNotExist:
-                return None
+            # noinspection PyUnresolvedReferences
+            if (children := getattr(self.rabbit.motherrabbit, 'children', None)) is None:
+                try:
+                    return self.rabbit.rabbit_set.select_subclasses().all()
+                except models.Bunny.DoesNotExist:
+                    return None
         return children
     
     @property
     def last_births(self) -> 'date | None':
         if (children := getattr(self.rabbit, 'children', None)) is None:
-            try:
-                return self.rabbit.rabbit_set.latest('birthday').birthday
-            except models.Rabbit.DoesNotExist:
-                return None
+            # noinspection PyUnresolvedReferences
+            if (children := getattr(self.rabbit.motherrabbit, 'children', None)) is None:
+                try:
+                    return self.rabbit.rabbit_set.latest('birthday').birthday
+                except models.Rabbit.DoesNotExist:
+                    return None
         try:
             return children[-1].birthday
         except IndexError:
@@ -222,10 +261,12 @@ class MotherRabbitManager(RabbitManager):
     @property
     def last_mating(self) -> 'models.Mating | None':
         if (matings := getattr(self.rabbit, 'matings', None)) is None:
-            try:
-                return self.rabbit.mating_set.latest('time')
-            except models.Mating.DoesNotExist:
-                return None
+            # noinspection PyUnresolvedReferences
+            if (matings := getattr(self.rabbit.motherrabbit, 'matings', None)) is None:
+                try:
+                    return self.rabbit.mating_set.latest('time')
+                except models.Mating.DoesNotExist:
+                    return None
         try:
             return matings[-1]
         except IndexError:
@@ -276,10 +317,12 @@ class FatherRabbitManager(RabbitManager):
     @property
     def children(self):
         if (children := getattr(self.rabbit, 'children', None)) is None:
-            try:
-                return self.rabbit.rabbit_set.select_subclasses().all()
-            except models.Rabbit.DoesNotExist:
-                return None
+            # noinspection PyUnresolvedReferences
+            if (children := getattr(self.rabbit.fatherrabbit, 'children', None)) is None:
+                try:
+                    return self.rabbit.rabbit_set.select_subclasses().all()
+                except models.Rabbit.DoesNotExist:
+                    return None
         return children
     
     @property

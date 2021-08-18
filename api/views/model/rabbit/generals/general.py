@@ -14,9 +14,13 @@ class RabbitGeneralView(BaseGeneralView):
     model = Rabbit
     list_serializer = RabbitListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Rabbit.live.select_subclasses().select_related(
-        'breed', 'bunny__cage', 'fatteningrabbit__cage', 'motherrabbit__cage',
-        'fatherrabbit__cage'
+    queryset = MotherRabbit.Manager.prefetch_children(
+        MotherRabbit.Manager.prefetch_matings(
+            Rabbit.live.select_subclasses().select_related(
+                'breed', 'bunny__cage', 'fatteningrabbit__cage',
+                'motherrabbit__cage', 'fatherrabbit__cage'
+            )
+        )
     )
     
     def filter_queryset(self, queryset):
