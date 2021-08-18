@@ -1,8 +1,7 @@
 from abc import abstractmethod
-from datetime import timedelta, date, datetime
-from typing import Optional
+from datetime import *
 
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 
 from api.utils.functions import diff_time, to_datetime
 from api import models as models
@@ -14,7 +13,7 @@ __all__ = [
 
 
 def _get_output(rabbit):
-    children = rabbit.rabbit_set.all()
+    children = rabbit.manager.children
     if len(children) == 0:
         return 0
     births = [children[0].birthday]
@@ -27,10 +26,23 @@ def _get_output(rabbit):
 
 
 def _get_output_efficiency(rabbit, dead_causes):
-    efficiency_children = rabbit.rabbit_set.filter(
-        ~Q(fatteningrabbit=None) | ~Q(motherrabbit=None) | ~Q(fatherrabbit=None) |
-        ~Q(deadrabbit=None) & ~Q(deadrabbit__death_cause__in=dead_causes)
-    ).count()
+    if (children := getattr(rabbit, 'children', None)) is None:
+        efficiency_children = rabbit.rabbit_set.filter(
+            ~Q(fatteningrabbit=None) | ~Q(motherrabbit=None) | ~Q(fatherrabbit=None) |
+            ~Q(deadrabbit=None) & ~Q(deadrabbit__death_cause__in=dead_causes)
+        ).count()
+    else:
+        efficiency_children = 0
+        for child in children:
+            if isinstance(
+                child, (models.FatteningRabbit, models.MotherRabbit, models.FatherRabbit)
+            ):
+                efficiency_children += 1
+            elif isinstance(
+                child, models.DeadRabbit
+            ) and child.death_cause in dead_causes:
+                efficiency_children += 1
+    
     output = _get_output(rabbit)
     if output == 0:
         return None
@@ -106,17 +118,38 @@ class MotherRabbitManager(RabbitManager):
     
     __READY_FOR_FERTILIZATION_AGE = 110
     
+    @classmethod
+    def prefetch_children(cls, queryset=None):
+        if queryset is None:
+            queryset = models.MotherRabbit.objects.all()
+        queryset = queryset.prefetch_related(
+            Prefetch(
+                f'{"motherrabbit__" if queryset.model is models.Rabbit else ""}'
+                f'rabbit_set',
+                queryset=models.Rabbit.objects.select_subclasses().order_by('birthday'),
+                to_attr='children'
+            )
+        )
+        return queryset
+    
+    @classmethod
+    def prefetch_matings(cls, queryset=None):
+        if queryset is None:
+            queryset = models.MotherRabbit.objects.all()
+        queryset = queryset.prefetch_related(
+            Prefetch(
+                'mating_set', queryset=models.Mating.objects.order_by('time'),
+                to_attr='matings'
+            )
+        )
+        return queryset
+    
     @property
     def status(self):
-        PregnancyInspection = models.PregnancyInspection
         statuses = set()
         
-        rabbits_in_cage = self.rabbit.cage.manager.rabbits
-        for rabbit_in_cage in rabbits_in_cage:
-            if rabbit_in_cage != self.rabbit:
-                if isinstance(rabbit_in_cage, models.Bunny):
-                    statuses.add(self.STATUS_FEEDS_BUNNY)
-                    break
+        if len(self.rabbit.cage.manager.bunnies):
+            statuses.add(self.STATUS_FEEDS_BUNNY)
         
         if self.age.days < self.__READY_FOR_FERTILIZATION_AGE:
             return statuses
@@ -134,11 +167,25 @@ class MotherRabbitManager(RabbitManager):
             return statuses
         # last_fertilization is not None and isn't overdue
         if last_births is None or last_births < last_fertilization:
-            try:
-                last_pregnancy_inspection = PregnancyInspection.objects.filter(
-                    mother_rabbit=self.rabbit, time__gte=last_fertilization
-                ).latest('time')
-            except PregnancyInspection.DoesNotExist:
+            last_pregnancy_inspection = None
+            if (
+                pregnancy_inspections := getattr(
+                    self.rabbit, 'pregnancy_inspections'
+                ), None
+            ) is not None:
+                for pregnancy_inspection in pregnancy_inspections[::-1]:
+                    if pregnancy_inspection.time >= last_fertilization:
+                        last_pregnancy_inspection = pregnancy_inspection
+                        break
+            else:
+                try:
+                    last_pregnancy_inspection = \
+                        self.rabbit.pregnancyinspection_set.filter(
+                            time__gte=last_fertilization
+                        ).latest('time')
+                except models.PregnancyInspection.DoesNotExist:
+                    last_pregnancy_inspection = None
+            if last_pregnancy_inspection is None:
                 statuses.add(self.STATUS_UNCONFIRMED_PREGNANT)
                 return statuses
             if last_pregnancy_inspection.is_pregnant:
@@ -152,25 +199,40 @@ class MotherRabbitManager(RabbitManager):
         return statuses
     
     @property
-    def last_births(self) -> Optional[date]:
+    def children(self):
+        if (children := getattr(self.rabbit, 'children', None)) is None:
+            try:
+                return self.rabbit.rabbit_set.select_subclasses().all()
+            except models.Bunny.DoesNotExist:
+                return None
+        return children
+    
+    @property
+    def last_births(self) -> 'date | None':
+        if (children := getattr(self.rabbit, 'children', None)) is None:
+            try:
+                return self.rabbit.rabbit_set.latest('birthday').birthday
+            except models.Rabbit.DoesNotExist:
+                return None
         try:
-            return models.Bunny.objects.filter(
-                mother=self.rabbit
-            ).latest('birthday').birthday
-        except models.Bunny.DoesNotExist:
+            return children[-1].birthday
+        except IndexError:
             return None
     
     @property
-    def last_mating(self) -> Optional['models.Mating']:
+    def last_mating(self) -> 'models.Mating | None':
+        if (matings := getattr(self.rabbit, 'matings', None)) is None:
+            try:
+                return self.rabbit.mating_set.latest('time')
+            except models.Mating.DoesNotExist:
+                return None
         try:
-            return models.Mating.objects.filter(
-                mother_rabbit=self.rabbit
-            ).latest('time')
-        except models.Mating.DoesNotExist:
+            return matings[-1]
+        except IndexError:
             return None
     
     @property
-    def last_fertilization(self) -> Optional[datetime]:
+    def last_fertilization(self) -> 'datetime | None':
         last_mating = self.last_mating
         if last_mating is None:
             return None
@@ -182,7 +244,7 @@ class MotherRabbitManager(RabbitManager):
         return _get_output(self.rabbit)
     
     @property
-    def output_efficiency(self) -> Optional[float]:
+    def output_efficiency(self) -> 'float | None':
         # noinspection PyTypeChecker
         return _get_output_efficiency(
             self.rabbit,
@@ -197,6 +259,29 @@ class FatherRabbitManager(RabbitManager):
     
     __READY_FOR_FERTILIZATION_AGE = 110
     
+    @classmethod
+    def prefetch_children(cls, queryset=None):
+        if queryset is None:
+            queryset = models.FatherRabbit.objects.all()
+        queryset = queryset.prefetch_related(
+            Prefetch(
+                f'{"fatherrabbit__" if queryset.model is models.Rabbit else ""}'
+                f'rabbit_set',
+                queryset=models.Rabbit.objects.select_subclasses().order_by('birthday'),
+                to_attr='children'
+            )
+        )
+        return queryset
+    
+    @property
+    def children(self):
+        if (children := getattr(self.rabbit, 'children', None)) is None:
+            try:
+                return self.rabbit.rabbit_set.select_subclasses().all()
+            except models.Rabbit.DoesNotExist:
+                return None
+        return children
+    
     @property
     def status(self):
         if self.age.days >= self.__READY_FOR_FERTILIZATION_AGE:
@@ -209,7 +294,7 @@ class FatherRabbitManager(RabbitManager):
         return _get_output(self.rabbit)
     
     @property
-    def output_efficiency(self) -> Optional[float]:
+    def output_efficiency(self) -> 'float | None':
         # noinspection PyTypeChecker
         return _get_output_efficiency(
             self.rabbit,

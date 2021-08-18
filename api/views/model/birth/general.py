@@ -1,3 +1,5 @@
+from django.db.models import Prefetch
+
 from api.serializers.birth.general import BirthListSerializer
 from api.services.model.rabbit.filterer import RabbitFilterer
 from api.services.model.rabbit.managers import MotherRabbitManager
@@ -9,7 +11,20 @@ __all__ = ['BirthConfirmedGeneralView', 'BirthUnconfirmedGeneralView']
 
 class _BaseBirthGeneralView(BaseGeneralView):
     list_serializer = BirthListSerializer
-    queryset = MotherRabbit.objects.all()
+    queryset = MotherRabbit.Manager.prefetch_children(
+        MotherRabbit.Manager.prefetch_matings(
+            MotherRabbit.objects.select_related(
+                'cage'
+            ).prefetch_related(
+                Prefetch('cage__bunny_set', to_attr='bunnies'),
+                Prefetch(
+                    'pregnancyinspection_set',
+                    queryset=PregnancyInspection.objects.order_by('time'),
+                    to_attr='pregnancy_inspections'
+                )
+            )
+        )
+    )
     _allow_statuses: list[str]
     
     __BIRTH_TIME_ORDER = 'birth_time'
