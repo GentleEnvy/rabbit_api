@@ -93,32 +93,7 @@ class MotherCageManager(CageManager):
     def prefetch_womb_cage_id(cls, queryset=None) -> QuerySet:
         if queryset is None:
             queryset = models.MotherCage.objects.all()
-        sub_right_cage = models.MotherCage.objects.filter(
-            farm_number=OuterRef('farm_number'), number=OuterRef('number'),
-            letter=Chr(Ord(OuterRef('letter')) + 1)
-        )
-        sub_left_cage = models.MotherCage.objects.filter(
-            farm_number=OuterRef('farm_number'), number=OuterRef('number'),
-            letter=Chr(Ord(OuterRef('letter')) - 1)
-        )
-        return queryset.annotate(
-            right_cage=Subquery(sub_right_cage.values('id')[:1]),
-            left_cage=Subquery(sub_left_cage.values('id')[:1]),
-            lc_has_right_womb=Subquery(sub_left_cage.values('has_right_womb')[:1]),
-            womb_cage_id=Case(
-                When(
-                    Q(
-                        **{f'{"mothercage__" if queryset.model is models.Cage else ""}'
-                         f'has_right_womb': True}
-                    ) & Q(right_cage__isnull=False),
-                    then=F('right_cage')
-                ),
-                When(
-                    Q(left_cage__isnull=False) & Q(lc_has_right_womb=True),
-                    then=F('left_cage')
-                )
-            )
-        )
+        return queryset.select_related('womb', 'ref_womb')
     
     @property
     def mother_rabbits(self):
@@ -140,26 +115,12 @@ class MotherCageManager(CageManager):
     
     @property
     def womb_cage(self) -> 'models.MotherCage | None':
-        if self.cage.has_right_womb:
-            return models.MotherCage.objects.get(
-                farm_number=self.cage.farm_number, number=self.cage.number,
-                letter=chr(ord(self.cage.letter) + 1)
-            )
-        try:
-            left_cage = models.MotherCage.objects.get(
-                farm_number=self.cage.farm_number, number=self.cage.number,
-                letter=chr(ord(self.cage.letter) - 1)
-            )
-            if left_cage.has_right_womb:
-                return left_cage
-        except models.MotherCage.DoesNotExist:
-            return None
-        return None
+        if (womb := self.cage.womb) is None:
+            return self.cage.ref_womb
+        return womb
     
     @property
     def is_parallel(self) -> bool:
-        if getattr(self.cage, 'womb_cage_id', None) is not None:
-            return False
         return self.womb_cage is None
 
 
