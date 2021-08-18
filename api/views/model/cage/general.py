@@ -55,7 +55,9 @@ class CageGeneralView(BaseGeneralView):
                     ) and (
                         type_ is None or cage.CHAR_TYPE in type_
                     ) and (
-                        is_parallel is None or cage.manager.is_parallel == is_parallel
+                        is_parallel is None or isinstance(
+                            cage, FatteningCage
+                        ) or cage.manager.is_parallel == is_parallel
                     )
                 )
             ]

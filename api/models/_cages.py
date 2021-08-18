@@ -65,3 +65,4 @@ class MotherCage(MotherCageCleanerMixin, MotherCageManagerMixin, Cage):
     CHAR_TYPE = 'M'
     
     has_right_womb = models.BooleanField(default=False)
+    womb = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)

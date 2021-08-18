@@ -109,20 +109,22 @@ class MotherCageCleaner(CageCleaner):
         if len(rabbits) > 0:
             if len(rabbits) == 1:
                 self._for_mother(rabbits[0])
-        if self.cage.has_right_womb:
-            try:
-                models.MotherCage.objects.get(
-                    farm_number=self.cage.farm_number, number=self.cage.number,
-                    letter=chr(ord(self.cage.letter) + 1)
+        if self.cage.womb is not None:
+            if models.MotherCage.objects.filter(
+                farm_number=self.cage.farm_number, number=self.cage.number,
+                letter__in=[
+                    chr(ord(self.cage.letter) + 1), chr(ord(self.cage.letter) - 1)
+                ]
+            ).count() == 0:
+                raise ValidationError(
+                    'The cage with the same womb should be adjacent to this cage'
                 )
-            except models.MotherCage.DoesNotExist:
-                raise ValidationError('There are no cages to the right of this cage')
     
     def for_jigging_mother(self):
         self.for_jigging()
         if len(self.cage.manager.mother_rabbits) > 0:
             raise ValidationError('Mother rabbit is already sitting in this cage')
-
+    
     def _for_mother(self, mother: 'models.Rabbit'):
         if not isinstance(mother, models.MotherRabbit):
             raise ValidationError('This rabbit is not currently MotherRabbit')
