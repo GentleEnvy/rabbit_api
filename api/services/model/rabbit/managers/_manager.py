@@ -170,8 +170,8 @@ class MotherRabbitManager(RabbitManager):
             last_pregnancy_inspection = None
             if (
                 pregnancy_inspections := getattr(
-                    self.rabbit, 'pregnancy_inspections'
-                ), None
+                    self.rabbit, 'pregnancy_inspections', None
+                )
             ) is not None:
                 for pregnancy_inspection in pregnancy_inspections[::-1]:
                     if pregnancy_inspection.time >= last_fertilization:
