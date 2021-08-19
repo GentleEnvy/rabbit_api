@@ -17,7 +17,7 @@ __all__ = ['Cage', 'FatteningCage', 'MotherCage']
 class Cage(CageCleanerMixin, CageManagerMixin, BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = ('farm_number', 'number', 'letter')
-
+    
     CHAR_TYPE: str = None
     objects = InheritanceManager()
     
@@ -64,4 +64,12 @@ class FatteningCage(FatteningCageCleanerMixin, FatteningCageManagerMixin, Cage):
 class MotherCage(MotherCageCleanerMixin, MotherCageManagerMixin, Cage):
     CHAR_TYPE = 'M'
     
-    has_right_womb = models.BooleanField(default=False)
+    womb = models.OneToOneField(
+        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='ref_womb'
+    )
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.womb is not None:
+            self.womb.womb = self
+            Cage.save(self.womb)

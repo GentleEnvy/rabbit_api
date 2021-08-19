@@ -1,7 +1,6 @@
 from typing import Final
 
 from django.db.models import *
-from django.db.models.functions import *
 from model_utils.managers import InheritanceQuerySet
 
 import api.models as models
@@ -52,11 +51,11 @@ class CageManager:
     @property
     def rabbits(self) -> list:
         rabbits = []
-        manager = self.cage.cast.manager
-        rabbits.extend(getattr(manager, 'mother_rabbits', []))
-        rabbits.extend(getattr(manager, 'bunnies', []))
-        rabbits.extend(getattr(manager, 'fattening_rabbits', []))
-        rabbits.extend(getattr(manager, 'father_rabbits', []))
+        manager_ = self.cage.cast.manager
+        rabbits.extend(getattr(manager_, 'mother_rabbits', []) or [])
+        rabbits.extend(getattr(manager_, 'bunnies', []) or [])
+        rabbits.extend(getattr(manager_, 'fattening_rabbits', []) or [])
+        rabbits.extend(getattr(manager_, 'father_rabbits', []) or [])
         return rabbits
     
     @property
@@ -89,69 +88,29 @@ class MotherCageManager(CageManager):
             queryset = super().prefetch_number_rabbits()
         return queryset.filter(~Q(mothercage=None))
     
-    @classmethod
-    def prefetch_womb_cage(cls, queryset=None) -> QuerySet:
-        if queryset is None:
-            queryset = models.MotherCage.objects.all()
-        sub_right_cage = models.MotherCage.objects.filter(
-            farm_number=OuterRef('farm_number'), number=OuterRef('number'),
-            letter=Chr(Ord(OuterRef('letter')) + 1)
-        )
-        sub_left_cage = models.MotherCage.objects.filter(
-            farm_number=OuterRef('farm_number'), number=OuterRef('number'),
-            letter=Chr(Ord(OuterRef('letter')) - 1)
-        )
-        return queryset.annotate(
-            right_cage=Subquery(sub_right_cage.values('id')[:1]),
-            left_cage=Subquery(sub_left_cage.values('id')[:1]),
-            lc_has_right_womb=Subquery(sub_left_cage.values('has_right_womb')[:1]),
-            womb_cage=Case(
-                When(
-                    Q(has_right_womb=True) & Q(right_cage__isnull=False),
-                    then=F('right_cage')
-                ),
-                When(
-                    Q(left_cage__isnull=False) & Q(lc_has_right_womb=True),
-                    then=F('left_cage')
-                )
-            )
-        )
-    
     @property
     def mother_rabbits(self):
         if (mother_rabbits := getattr(self.cage, 'mother_rabbits', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (
-                mother_rabbits := getattr(self.cage.mothercage, 'mother_rabbits', None)
-            ) is None:
-                return self.cage.motherrabbit_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (mother_rabbits := getattr(
+                    self.cage.mothercage, 'mother_rabbits', None
+                )) is None:
+                    return self.cage.motherrabbit_set.all()
+            except models.MotherCage.DoesNotExist:
+                return None
         return mother_rabbits
     
     @property
     def bunnies(self):
         if (bunnies := getattr(self.cage, 'bunnies', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (bunnies := getattr(self.cage.mothercage, 'bunnies', None)) is None:
-                return self.cage.bunny_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (bunnies := getattr(self.cage.mothercage, 'bunnies', None)) is None:
+                    return self.cage.bunny_set.all()
+            except models.MotherCage.DoesNotExist:
+                return None
         return bunnies
-    
-    @property
-    def womb_cage(self) -> 'models.MotherCage | None':
-        if self.cage.has_right_womb:
-            return models.MotherCage.objects.get(
-                farm_number=self.cage.farm_number, number=self.cage.number,
-                letter=chr(ord(self.cage.letter) + 1)
-            )
-        try:
-            left_cage = models.MotherCage.objects.get(
-                farm_number=self.cage.farm_number, number=self.cage.number,
-                letter=chr(ord(self.cage.letter) - 1)
-            )
-            if left_cage.has_right_womb:
-                return left_cage
-        except models.MotherCage.DoesNotExist:
-            return None
-        return None
 
 
 class FatteningCageManager(CageManager):
@@ -178,19 +137,25 @@ class FatteningCageManager(CageManager):
     @property
     def father_rabbits(self):
         if (father_rabbits := getattr(self.cage, 'father_rabbits', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (
-                father_rabbits := getattr(self.cage.fatteningcage, 'father_rabbits', None)
-            ) is None:
-                return self.cage.fatherrabbit_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (father_rabbits := getattr(
+                    self.cage.fatteningcage, 'father_rabbits', None
+                )) is None:
+                    return self.cage.fatherrabbit_set.all()
+            except models.FatteningCage.DoesNotExist:
+                return None
         return father_rabbits
     
     @property
     def fattening_rabbits(self):
         if (fattening_rabbits := getattr(self.cage, 'fattening_rabbits', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (fattening_rabbits := getattr(
-                self.cage.fatteningcage, 'fattening_rabbits', None
-            )) is None:
-                return self.cage.fatteningrabbit_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (fattening_rabbits := getattr(
+                    self.cage.fatteningcage, 'fattening_rabbits', None
+                )) is None:
+                    return self.cage.fatteningrabbit_set.all()
+            except models.FatteningCage.DoesNotExist:
+                return None
         return fattening_rabbits

@@ -12,7 +12,9 @@ class CageGeneralView(BaseGeneralView):
     model = Cage
     list_serializer = CageListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Cage.Manager.prefetch_number_rabbits().order_by('id')
+    queryset = Cage.Manager.prefetch_number_rabbits().select_related(
+        'mothercage__womb'
+    ).order_by('id')
     
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
@@ -22,7 +24,6 @@ class CageGeneralView(BaseGeneralView):
             queryset = queryset.filter(farm_number__in=farm_number.split(','))
         if is_parallel := params.get('is_parallel'):
             is_parallel = bool(int(is_parallel))
-            queryset = Cage.objects.filter(mothercage__has_right_womb=not is_parallel)
         if status := params.get('status'):
             status = status.split(',')
             if len(status) == 1:
@@ -53,6 +54,11 @@ class CageGeneralView(BaseGeneralView):
                         number_rabbits_to >= cage.manager.number_rabbits
                     ) and (
                         type_ is None or cage.CHAR_TYPE in type_
+                    ) and (
+                        is_parallel is None or
+                        isinstance(cage, FatteningCage) or (
+                            cage.womb is None
+                        ) == is_parallel
                     )
                 )
             ]

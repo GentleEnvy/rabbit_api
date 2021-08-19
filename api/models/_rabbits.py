@@ -5,7 +5,7 @@ from typing import Final, Any, Type
 
 from django.db import models
 from django.urls import reverse
-from model_utils.managers import QueryManager, InheritanceManager
+from model_utils.managers import QueryManager, InheritanceManager, QueryManagerMixin
 from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords
 
@@ -23,6 +23,10 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
+class _InheritanceQueryManager(QueryManagerMixin, InheritanceManager):
+    pass
+
+
 class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
     @classmethod
     def get_subclasses(cls) -> tuple[Type[Rabbit], ...]:
@@ -30,7 +34,7 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
     
     CHAR_TYPE: str = None
     objects = InheritanceManager()
-    live = QueryManager(deadrabbit=None)
+    live = _InheritanceQueryManager(deadrabbit=None)
     
     birthday = models.DateTimeField(default=datetime.utcnow)
     mother = models.ForeignKey(

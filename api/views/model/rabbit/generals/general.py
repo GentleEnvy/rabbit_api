@@ -14,22 +14,25 @@ class RabbitGeneralView(BaseGeneralView):
     model = Rabbit
     list_serializer = RabbitListSerializer
     # noinspection SpellCheckingInspection
-    queryset = Rabbit.live.select_related(
-        'breed',
-        'bunny', 'bunny__cage',
-        'fatteningrabbit', 'fatteningrabbit__cage',
-        'motherrabbit', 'motherrabbit__cage',
-        'fatherrabbit', 'fatherrabbit__cage'
-    ).prefetch_related(
-        'motherrabbit__rabbit_set', 'motherrabbit__cage__bunny_set',
-        'fatherrabbit__rabbit_set'
-    ).all()
+    queryset = MotherRabbit.Manager.prefetch_children(
+        MotherRabbit.Manager.prefetch_matings(
+            Rabbit.live.select_subclasses().select_related(
+                'breed', 'bunny__cage', 'fatteningrabbit__cage',
+                'motherrabbit__cage', 'fatherrabbit__cage'
+            )
+        )
+    )
     
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         params = self.request.query_params
         filters = {}
         
+        if (plan := params.get('plan')) is not None:
+            if not plan:
+                filters['plan'] = None
+            else:
+                filters['plan'] = int(plan)
         if is_male := params.get('is_male'):
             filters['is_male'] = bool(int(is_male))
         if type_ := params.get('type'):

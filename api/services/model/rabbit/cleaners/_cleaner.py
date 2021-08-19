@@ -147,14 +147,15 @@ class MotherRabbitCleaner(RabbitCleaner):
         if CONFIRMED_PREGNANT in mother_status:
             raise ValidationError('The female already pregnancy (confirmed)')
     
-    def check_task(self):
-        if models.MatingTask.objects.filter(
-            is_confirmed=None, mother_rabbit=self.rabbit
-        ).exists():
+    def check_task(self, exclude=None):
+        queryset = models.MatingTask.objects
+        if exclude is not None:
+            queryset = queryset.exclude(id=exclude.id)
+        if queryset.filter(is_confirmed=None, mother_rabbit=self.rabbit).exists():
             raise ValidationError('This mother rabbit is already waiting for mating')
     
     def check_womb(self):
-        womb_cage = self.rabbit.cage.manager.womb_cage
+        womb_cage = self.rabbit.cage.womb
         if womb_cage is not None:
             if len(womb_cage.manager.bunnies) > 0:
                 raise ValidationError('The womb is busy')

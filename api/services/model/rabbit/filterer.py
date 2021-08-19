@@ -7,6 +7,8 @@ from api.services.model.base.filterer import BaseFilterer
 
 __all__ = ['RabbitFilterer']
 
+_NOT_PROVIDED = object()
+
 
 class RabbitFilterer(BaseFilterer):
     model = Rabbit
@@ -16,7 +18,7 @@ class RabbitFilterer(BaseFilterer):
         breed: list[int] = None, age_from: int = None, age_to: int = None,
         weight_from: float = None, weight_to: float = None, status: list[str] = None,
         farm_number: list[int] = None, cage_number_from: int = None,
-        cage_number_to: int = None
+        cage_number_to: int = None, plan: 'int | None' = _NOT_PROVIDED
     ):
         queryset = self.queryset
         if is_male is not None:
@@ -35,6 +37,20 @@ class RabbitFilterer(BaseFilterer):
             queryset = queryset.filter(weight__gte=weight_from)
         if weight_to is not None:
             queryset = queryset.filter(weight__lte=weight_to)
+        if plan is not _NOT_PROVIDED:
+            if queryset.model is Rabbit:
+                queryset = queryset.filter(fatteningrabbit__plan__id=plan)
+            elif queryset.model is FatteningRabbit:
+                queryset = queryset.filter(plan__id=plan)
+        
+        if all(
+            map(
+                lambda attr: attr is None,
+                [status, farm_number, cage_number_from, cage_number_to, type_]
+            )
+        ):
+            self.queryset = queryset
+            return
         
         self.queryset = queryset.filter(
             id__in=[

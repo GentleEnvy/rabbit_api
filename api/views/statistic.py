@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 
+from api.models.unmanaged.operations import *
 from api.services.model.rabbit.managers import *
 from api.models import *
 from api.views.base import BaseView
@@ -17,7 +18,12 @@ class StatisticView(BaseView):
         rabbits = Rabbit.live.count()
         cages = Cage.objects.count()
         bunnies = Bunny.objects.count()
-        # TODO: operations
+        operations = []
+        for operation_class in (
+            BirthOperation, SlaughterOperation, VaccinationOperation, MatingOperation,
+            JiggingOperation
+        ):
+            operations.extend(operation_class.search())
         ready_to_slaughter = 0
         for fattening_rabbit in FatteningRabbit.objects.all():
             if READY_TO_SLAUGHTER in fattening_rabbit.manager.status:

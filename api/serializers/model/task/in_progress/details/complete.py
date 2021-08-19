@@ -39,5 +39,5 @@ class CompleteSlaughterInspectionTaskUpdateSerializer(CompleteTaskUpdateSerializ
         }
     
     def validate_weights(self, weights):
-        self.instance.clean_weights(weights)
+        self.instance.cleaner.clean_weights(weights)
         return weights
