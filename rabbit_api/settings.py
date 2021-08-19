@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'model_utils',
     'simple_history',
-    'debug_toolbar',
+    # 'debug_toolbar',
     
     'api.apps.ApiConfig'
 ]
@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     
     'api.middlewares.RequestLogMiddleware',
     'api.middlewares.NotEmptyResponseMiddleware'
