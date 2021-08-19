@@ -28,10 +28,13 @@ def _get_output(rabbit):
 # noinspection PyUnresolvedReferences
 def _get_output_efficiency(rabbit, dead_causes):
     if (children := getattr(rabbit, 'children', None)) is None:
-        if isinstance(rabbit, models.MotherRabbit):
-            children = getattr(rabbit.motherrabbit, 'children', None)
-        else:
-            children = getattr(rabbit.fatherrabbit, 'children', None)
+        try:
+            if isinstance(rabbit, models.MotherRabbit):
+                children = getattr(rabbit.motherrabbit, 'children', None)
+            else:
+                children = getattr(rabbit.fatherrabbit, 'children', None)
+        except (models.MotherRabbit.DoesNotExist, models.FatherRabbit.DoesNotExist):
+            children = None
     
     if children is None:
         efficiency_children = rabbit.rabbit_set.filter(
@@ -183,7 +186,7 @@ class MotherRabbitManager(RabbitManager):
     def status(self):
         statuses = set()
         
-        if len(self.rabbit.cage.manager.bunnies):
+        if len(self.rabbit.cage.manager.bunnies or []):
             statuses.add(self.STATUS_FEEDS_BUNNY)
         
         if self.age.days < self.__READY_FOR_FERTILIZATION_AGE:
@@ -236,23 +239,33 @@ class MotherRabbitManager(RabbitManager):
     @property
     def children(self):
         if (children := getattr(self.rabbit, 'children', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (children := getattr(self.rabbit.motherrabbit, 'children', None)) is None:
-                try:
-                    return self.rabbit.rabbit_set.select_subclasses().all()
-                except models.Bunny.DoesNotExist:
-                    return None
+            try:
+                # noinspection PyUnresolvedReferences
+                if (children := getattr(
+                    self.rabbit.motherrabbit, 'children', None
+                )) is None:
+                    try:
+                        return self.rabbit.rabbit_set.select_subclasses().all()
+                    except models.Bunny.DoesNotExist:
+                        return None
+            except models.MotherRabbit.DoesNotExist:
+                return None
         return children
     
     @property
     def last_births(self) -> 'date | None':
         if (children := getattr(self.rabbit, 'children', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (children := getattr(self.rabbit.motherrabbit, 'children', None)) is None:
-                try:
-                    return self.rabbit.rabbit_set.latest('birthday').birthday
-                except models.Rabbit.DoesNotExist:
-                    return None
+            try:
+                # noinspection PyUnresolvedReferences
+                if (children := getattr(
+                    self.rabbit.motherrabbit, 'children', None
+                )) is None:
+                    try:
+                        return self.rabbit.rabbit_set.latest('birthday').birthday
+                    except models.Rabbit.DoesNotExist:
+                        return None
+            except models.MotherRabbit.DoesNotExist:
+                return None
         try:
             return children[-1].birthday
         except IndexError:
@@ -261,12 +274,17 @@ class MotherRabbitManager(RabbitManager):
     @property
     def last_mating(self) -> 'models.Mating | None':
         if (matings := getattr(self.rabbit, 'matings', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (matings := getattr(self.rabbit.motherrabbit, 'matings', None)) is None:
-                try:
-                    return self.rabbit.mating_set.latest('time')
-                except models.Mating.DoesNotExist:
-                    return None
+            try:
+                # noinspection PyUnresolvedReferences
+                if (matings := getattr(
+                    self.rabbit.motherrabbit, 'matings', None
+                )) is None:
+                    try:
+                        return self.rabbit.mating_set.latest('time')
+                    except models.Mating.DoesNotExist:
+                        return None
+            except models.MotherRabbit:
+                return None
         try:
             return matings[-1]
         except IndexError:
@@ -317,12 +335,17 @@ class FatherRabbitManager(RabbitManager):
     @property
     def children(self):
         if (children := getattr(self.rabbit, 'children', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (children := getattr(self.rabbit.fatherrabbit, 'children', None)) is None:
-                try:
-                    return self.rabbit.rabbit_set.select_subclasses().all()
-                except models.Rabbit.DoesNotExist:
-                    return None
+            try:
+                # noinspection PyUnresolvedReferences
+                if (children := getattr(
+                    self.rabbit.fatherrabbit, 'children', None
+                )) is None:
+                    try:
+                        return self.rabbit.rabbit_set.select_subclasses().all()
+                    except models.Rabbit.DoesNotExist:
+                        return None
+            except models.FatherRabbit.DoesNotExist:
+                return None
         return children
     
     @property

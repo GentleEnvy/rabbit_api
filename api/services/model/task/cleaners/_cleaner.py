@@ -81,6 +81,7 @@ class MatingTaskCleaner(TaskCleaner):
     task: 'models.MatingTask'
     
     def clean(self):
+        super().clean()
         try:
             models.MatingTask.objects.exclude(id=self.task.id).get(
                 is_confirmed=None,
@@ -89,7 +90,6 @@ class MatingTaskCleaner(TaskCleaner):
             )
             raise ValidationError('This rabbits is already waiting for mating')
         except models.MatingTask.DoesNotExist:
-            super().clean()
             self.task.mother_rabbit.cleaner.for_mating()
             self.task.mother_rabbit.cleaner.check_task(exclude=self.task)
             self.task.mother_rabbit.cleaner.check_womb()

@@ -52,10 +52,10 @@ class CageManager:
     def rabbits(self) -> list:
         rabbits = []
         manager_ = self.cage.cast.manager
-        rabbits.extend(getattr(manager_, 'mother_rabbits', []))
-        rabbits.extend(getattr(manager_, 'bunnies', []))
-        rabbits.extend(getattr(manager_, 'fattening_rabbits', []))
-        rabbits.extend(getattr(manager_, 'father_rabbits', []))
+        rabbits.extend(getattr(manager_, 'mother_rabbits', []) or [])
+        rabbits.extend(getattr(manager_, 'bunnies', []) or [])
+        rabbits.extend(getattr(manager_, 'fattening_rabbits', []) or [])
+        rabbits.extend(getattr(manager_, 'father_rabbits', []) or [])
         return rabbits
     
     @property
@@ -91,19 +91,25 @@ class MotherCageManager(CageManager):
     @property
     def mother_rabbits(self):
         if (mother_rabbits := getattr(self.cage, 'mother_rabbits', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (
-                mother_rabbits := getattr(self.cage.mothercage, 'mother_rabbits', None)
-            ) is None:
-                return self.cage.motherrabbit_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (mother_rabbits := getattr(
+                    self.cage.mothercage, 'mother_rabbits', None
+                )) is None:
+                    return self.cage.motherrabbit_set.all()
+            except models.MotherCage.DoesNotExist:
+                return None
         return mother_rabbits
     
     @property
     def bunnies(self):
         if (bunnies := getattr(self.cage, 'bunnies', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (bunnies := getattr(self.cage.mothercage, 'bunnies', None)) is None:
-                return self.cage.bunny_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (bunnies := getattr(self.cage.mothercage, 'bunnies', None)) is None:
+                    return self.cage.bunny_set.all()
+            except models.MotherCage.DoesNotExist:
+                return None
         return bunnies
 
 
@@ -131,19 +137,25 @@ class FatteningCageManager(CageManager):
     @property
     def father_rabbits(self):
         if (father_rabbits := getattr(self.cage, 'father_rabbits', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (
-                father_rabbits := getattr(self.cage.fatteningcage, 'father_rabbits', None)
-            ) is None:
-                return self.cage.fatherrabbit_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (father_rabbits := getattr(
+                    self.cage.fatteningcage, 'father_rabbits', None
+                )) is None:
+                    return self.cage.fatherrabbit_set.all()
+            except models.FatteningCage.DoesNotExist:
+                return None
         return father_rabbits
     
     @property
     def fattening_rabbits(self):
         if (fattening_rabbits := getattr(self.cage, 'fattening_rabbits', None)) is None:
-            # noinspection PyUnresolvedReferences
-            if (fattening_rabbits := getattr(
-                self.cage.fatteningcage, 'fattening_rabbits', None
-            )) is None:
-                return self.cage.fatteningrabbit_set.all()
+            try:
+                # noinspection PyUnresolvedReferences
+                if (fattening_rabbits := getattr(
+                    self.cage.fatteningcage, 'fattening_rabbits', None
+                )) is None:
+                    return self.cage.fatteningrabbit_set.all()
+            except models.FatteningCage.DoesNotExist:
+                return None
         return fattening_rabbits

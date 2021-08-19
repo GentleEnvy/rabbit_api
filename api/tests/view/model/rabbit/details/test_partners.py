@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import *
 from unittest import mock
 
 from rest_framework.test import APITestCase
