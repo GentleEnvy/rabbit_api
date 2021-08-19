@@ -33,4 +33,4 @@ class CageListSerializer(serializers.ModelSerializer):
         return cage.CHAR_TYPE
     
     def get_is_parallel(self, cage: MotherCage):
-        return cage.manager.is_parallel
+        return cage.womb is None

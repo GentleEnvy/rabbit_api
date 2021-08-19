@@ -11,6 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False if (_debug := os.getenv('DJANGO_DEBUG')) is None else bool(int(_debug))
 
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
+
 # noinspection SpellCheckingInspection
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,8 +29,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'model_utils',
     'simple_history',
+    'debug_toolbar',
     
-    'api.apps.ApiConfig',
+    'api.apps.ApiConfig'
 ]
 
 # noinspection SpellCheckingInspection
@@ -51,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     
     'api.middlewares.RequestLogMiddleware',
     'api.middlewares.NotEmptyResponseMiddleware'
@@ -69,9 +75,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
+            ]
+        }
+    }
 ]
 
 WSGI_APPLICATION = 'rabbit_api.wsgi.application'
@@ -79,13 +85,13 @@ WSGI_APPLICATION = 'rabbit_api.wsgi.application'
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation'
-                '.UserAttributeSimilarityValidator',
+                '.UserAttributeSimilarityValidator'
     }, {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'
     }, {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
     }, {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'
     }
 ]
 
@@ -97,6 +103,7 @@ USE_L10N = True
 USE_TZ = False
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
 
 FIXTURE_DIRS = ['api/tests/fixtures/']
 

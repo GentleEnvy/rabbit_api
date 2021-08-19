@@ -12,8 +12,8 @@ class CageGeneralView(BaseGeneralView):
     model = Cage
     list_serializer = CageListSerializer
     # noinspection SpellCheckingInspection
-    queryset = MotherCage.Manager.prefetch_womb_cage_id(
-        Cage.Manager.prefetch_number_rabbits()
+    queryset = Cage.Manager.prefetch_number_rabbits().select_related(
+        'mothercage__womb'
     ).order_by('id')
     
     def filter_queryset(self, queryset):
@@ -55,7 +55,10 @@ class CageGeneralView(BaseGeneralView):
                     ) and (
                         type_ is None or cage.CHAR_TYPE in type_
                     ) and (
-                        is_parallel is None or cage.manager.is_parallel == is_parallel
+                        is_parallel is None or
+                        isinstance(cage, FatteningCage) or (
+                            cage.womb is None
+                        ) == is_parallel
                     )
                 )
             ]

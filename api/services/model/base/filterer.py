@@ -11,7 +11,10 @@ class BaseFilterer(ABC):
     model: Type[models.Model]
     
     def __init__(self, queryset: QuerySet = None):
-        self.queryset: QuerySet = queryset or self.model.objects.all()
+        if queryset is None:
+            self.queryset: QuerySet = self.model.objects
+        else:
+            self.queryset: QuerySet = queryset
     
     def filter(self, **kwargs) -> None:
         raise NotImplementedError
