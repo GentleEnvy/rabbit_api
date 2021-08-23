@@ -4,6 +4,18 @@ from rest_framework.test import APITestCase
 from api.tests.factories import *
 
 
+class RabbitGeneralView(APITestCase):
+    def setUp(self):
+        m = MotherRabbitFactory()
+        p = FatherRabbitFactory()
+        BunnyFactory(mother=m, father=p)
+        FatteningRabbitFactory(mother=m, father=p)
+    
+    def test(self):
+        resp = self.client.get('/api/rabbit/').data
+        self.assertEqual(resp['count'], 4)
+
+
 class RabbitGeneralView_Plan(APITestCase):
     def setUp(self):
         m = MotherRabbitFactory()
