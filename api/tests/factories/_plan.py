@@ -8,5 +8,5 @@ __all__ = ['PlanFactory']
 class PlanFactory(DjangoModelFactory):
     class Meta:
         model = Plan
-
+    
     quantity = 1
