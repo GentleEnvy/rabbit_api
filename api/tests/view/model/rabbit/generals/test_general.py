@@ -1,6 +1,9 @@
+import itertools
+
 from parameterized import parameterized
 from rest_framework.test import APITestCase
 
+from api.models import *
 from api.tests.factories import *
 
 
@@ -46,3 +49,33 @@ class RabbitGeneralView_IsMale(APITestCase):
         resp = self.client.get('/api/rabbit/', data={'is_male': is_male}).data
         self.assertEqual(resp['count'], 1)
         self.assertEqual(resp['results'][0]['is_male'], is_male)
+
+
+class RabbitGeneralView_Type(APITestCase):
+    def setUp(self):
+        m = MotherRabbitFactory()
+        p = FatherRabbitFactory()
+        BunnyFactory(mother=m, father=p)
+        FatteningRabbitFactory(mother=m, father=p)
+    
+    @parameterized.expand(
+        sum(
+            map(
+                lambda i: list(
+                    map(
+                        lambda t: [t],
+                        itertools.permutations(
+                            [
+                                MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE,
+                                FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE
+                            ], i
+                        )
+                    )
+                ), range(1, 5)
+            ), start=[]
+        )
+    )
+    def test_mother(self, type_):
+        resp = self.client.get('/api/rabbit/', data={'type': ','.join(type_)}).data
+        self.assertEqual(resp['count'], len(type_))
+        self.assertIn(resp['results'][0]['current_type'], type_)
