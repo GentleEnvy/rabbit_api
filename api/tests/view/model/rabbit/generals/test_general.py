@@ -73,6 +73,10 @@ class RabbitGeneralView_Type(APITestCase):
         self.assertEqual(resp['count'], len(type_))
         for rabbit in resp['results']:
             self.assertIn(rabbit['current_type'], type_)
+    
+    def test_not_exist(self):
+        resp = self.client.get('/api/rabbit/', data={'type': 'not_exist'}).data
+        self.assertEqual(resp['count'], 0)
 
 
 class RabbitGeneralView_Breed(APITestCase):
@@ -82,7 +86,6 @@ class RabbitGeneralView_Breed(APITestCase):
     
     @parameterized.expand(permutations([-1, -2]))
     def test(self, breed):
-        print(Rabbit.objects.values('id', 'breed'))
         resp = self.client.get(
             '/api/rabbit/', data={'breed': ','.join(map(str, breed))}
         ).data
@@ -91,3 +94,7 @@ class RabbitGeneralView_Breed(APITestCase):
             self.assertIn(
                 rabbit['breed'], [b.title for b in Breed.objects.filter(id__in=breed)]
             )
+    
+    def test_not_exist(self):
+        resp = self.client.get('/api/rabbit/', data={'breed': -10 ** 10}).data
+        self.assertEqual(resp['count'], 0)

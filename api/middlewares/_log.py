@@ -40,7 +40,7 @@ class RequestLogMiddleware(MiddlewareMixin):
             'run_time': time.time() - request.start_time
         }
         if settings.TEST:
-            log_data['url'] = request.path
+            log_data['url'] = str(request)[14:-1]
         
         if request.method in ['PUT', 'POST', 'PATCH']:
             content_type = _get_content_type(response)
