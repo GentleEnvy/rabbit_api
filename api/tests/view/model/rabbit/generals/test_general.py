@@ -1,10 +1,9 @@
-import itertools
-
 from parameterized import parameterized
 from rest_framework.test import APITestCase
 
 from api.models import *
 from api.tests.factories import *
+from api.tests.utils.functions import permutations
 
 
 class RabbitGeneralView(APITestCase):
@@ -13,10 +12,13 @@ class RabbitGeneralView(APITestCase):
         p = FatherRabbitFactory()
         BunnyFactory(mother=m, father=p)
         FatteningRabbitFactory(mother=m, father=p)
+        FatteningRabbitFactory(
+            mother=m, father=p, breed=BreedFactory(title='other_breed')
+        )
     
     def test(self):
         resp = self.client.get('/api/rabbit/').data
-        self.assertEqual(resp['count'], 4)
+        self.assertEqual(resp['count'], 5)
 
 
 class RabbitGeneralView_Plan(APITestCase):
@@ -59,23 +61,33 @@ class RabbitGeneralView_Type(APITestCase):
         FatteningRabbitFactory(mother=m, father=p)
     
     @parameterized.expand(
-        sum(
-            map(
-                lambda i: list(
-                    map(
-                        lambda t: [t],
-                        itertools.permutations(
-                            [
-                                MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE,
-                                FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE
-                            ], i
-                        )
-                    )
-                ), range(1, 5)
-            ), start=[]
+        permutations(
+            [
+                MotherRabbit.CHAR_TYPE, FatherRabbit.CHAR_TYPE,
+                FatteningRabbit.CHAR_TYPE, Bunny.CHAR_TYPE
+            ]
         )
     )
-    def test_mother(self, type_):
+    def test(self, type_):
         resp = self.client.get('/api/rabbit/', data={'type': ','.join(type_)}).data
         self.assertEqual(resp['count'], len(type_))
-        self.assertIn(resp['results'][0]['current_type'], type_)
+        for rabbit in resp['results']:
+            self.assertIn(rabbit['current_type'], type_)
+
+
+class RabbitGeneralView_Breed(APITestCase):
+    def setUp(self):
+        MotherRabbitFactory(breed=BreedFactory(id=-1, title='breed_1'))
+        MotherRabbitFactory(breed=BreedFactory(id=-2, title='breed_2'))
+    
+    @parameterized.expand(permutations([-1, -2]))
+    def test(self, breed):
+        print(Rabbit.objects.values('id', 'breed'))
+        resp = self.client.get(
+            '/api/rabbit/', data={'breed': ','.join(map(str, breed))}
+        ).data
+        self.assertEqual(resp['count'], len(breed))
+        for rabbit in resp['results']:
+            self.assertIn(
+                rabbit['breed'], [b.title for b in Breed.objects.filter(id__in=breed)]
+            )
