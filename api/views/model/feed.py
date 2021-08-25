@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from api.models import *
 from api.serializers.model.feed import *
-from api.services.model.feed.base import FeedingService
+from api.services.model.feed.base import BaseFeedingService
 from api.services.model.feed import *
 from api.views.model.base import BaseGeneralView
 
@@ -15,7 +15,7 @@ __all__ = ['FatteningFeedsView', 'MotherFeedsView']
 
 class _BaseFeedsView(BaseGeneralView):
     model: Type[Feeds]
-    _feeding_service_class: Type[FeedingService]
+    _feeding_service_class: Type[BaseFeedingService]
     
     def get(self, request, **_):
         aggregator = self.model.objects.aggregate(

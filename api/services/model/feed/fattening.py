@@ -6,7 +6,7 @@ from datetime import datetime
 __all__ = ['FatteningFeedingService']
 
 
-class FatteningFeedingService(FeedingService):
+class FatteningFeedingService(BaseFeedingService):
     _feeds_model = FatteningFeeds
     
     def _rabbits_with_prognosis(self, days: int):
