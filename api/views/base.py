@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db.models import Model
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 from rest_framework.views import set_rollback
 
 from api.exceptions import *
@@ -12,6 +13,8 @@ __all__ = ['BaseView']
 def _exception_handler(exception):
     try:
         set_rollback()
+        if settings.DEBUG and isinstance(exception, MethodNotAllowed):
+            return Response(str(exception))
         try:
             raise exception
         except APIWarning as e:

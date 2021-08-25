@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Final, Union, Type, Callable, Any
+from typing import Final, Type, Callable, Any
 
 from rest_framework.response import Response
 
-__all__ = ['APIException', 'CastSupportsError']
+from api.logs import error
 
-from api.logs import error, logger
+__all__ = ['APIException', 'CastSupportsError']
 
 
 class APIException(Exception):
