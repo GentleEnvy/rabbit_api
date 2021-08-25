@@ -5,7 +5,7 @@ from api.services.model.feed.base import *
 __all__ = ['MotherFeedingService']
 
 
-class MotherFeedingService(FeedingService):
+class MotherFeedingService(BaseFeedingService):
     _feeds_model = MotherFeeds
     
     def _rabbits_with_prognosis(self, days: int):

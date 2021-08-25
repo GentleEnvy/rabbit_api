@@ -12,33 +12,42 @@ __all__ = ['PredictionRabbitService']
 
 def _get_initial_condition() -> PredictionCondition:
     predict_condition = PredictionCondition(datetime.utcnow().date())
-    for bunny in Bunny.objects.all():
-        predict_condition.add_bunny(
-            BunnyFuture(status=bunny.manager.status, **model_to_dict(bunny))
-        )
-    for fattening_rabbit in FatteningRabbit.objects.all():
-        predict_condition.add_fattening_rabbit(
-            FatteningRabbitFuture(
-                status=fattening_rabbit.manager.status, **model_to_dict(fattening_rabbit)
+    rabbits = MotherRabbit.Manager.prefetch_children(
+        MotherRabbit.Manager.prefetch_matings(
+            Rabbit.live.select_subclasses().select_related(
+                'breed', 'bunny__cage', 'fatteningrabbit__cage',
+                'motherrabbit__cage', 'fatherrabbit__cage'
             )
         )
-    for mother_rabbit in MotherRabbit.objects.all():
-        if (last_fertilization := mother_rabbit.manager.last_fertilization) is not None:
-            last_fertilization = last_fertilization.date()
-        predict_condition.add_mother_rabbit(
-            MotherRabbitFuture(
-                status=mother_rabbit.manager.status,
-                last_fertilization=last_fertilization,
-                last_births=mother_rabbit.manager.last_births,
-                **model_to_dict(mother_rabbit)
+    )
+    for rabbit in rabbits:
+        if isinstance(rabbit, Bunny):
+            predict_condition.add_bunny(
+                BunnyFuture(status=rabbit.manager.status, **model_to_dict(rabbit))
             )
-        )
-    for father_rabbit in FatherRabbit.objects.all():
-        predict_condition.add_father_rabbit(
-            FatherRabbitFuture(
-                status=father_rabbit.manager.status, **model_to_dict(father_rabbit)
+        elif isinstance(rabbit, FatteningRabbit):
+            predict_condition.add_fattening_rabbit(
+                FatteningRabbitFuture(
+                    status=rabbit.manager.status, **model_to_dict(rabbit)
+                )
             )
-        )
+        elif isinstance(rabbit, MotherRabbit):
+            if (last_fertilization := rabbit.manager.last_fertilization) is not None:
+                last_fertilization = last_fertilization.date()
+            predict_condition.add_mother_rabbit(
+                MotherRabbitFuture(
+                    status=rabbit.manager.status,
+                    last_fertilization=last_fertilization,
+                    last_births=rabbit.manager.last_births,
+                    **model_to_dict(rabbit)
+                )
+            )
+        elif isinstance(rabbit, FatherRabbit):
+            predict_condition.add_father_rabbit(
+                FatherRabbitFuture(
+                    status=rabbit.manager.status, **model_to_dict(rabbit)
+                )
+            )
     return predict_condition
 
 

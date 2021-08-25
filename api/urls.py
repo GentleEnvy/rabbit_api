@@ -174,8 +174,5 @@ urlpatterns = [
         ]
     ],
     # feeds
-    *[
-        path('feeds/fattening/', FatteningFeedsView.as_view()),
-        path('feeds/mother/', MotherFeedsView.as_view())
-    ]
+    path('feeds/', FatteningFeedsView.as_view()),
 ]
