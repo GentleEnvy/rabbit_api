@@ -1,7 +1,10 @@
+from unittest import mock
+
 import factory
 from factory.django import DjangoModelFactory
 
 from api.models import *
+from api.tests.factories._plan import PlanFactory
 from api.tests.factories._breed import BreedFactory
 from api.tests.factories._cage import MotherCageFactory, FatteningCageFactory
 
@@ -43,6 +46,13 @@ class BunnyFactory(DjangoModelFactory):
 class FatteningRabbitFactory(DjangoModelFactory):
     class Meta:
         model = FatteningRabbit
+    
+    @classmethod
+    def mock_status(cls, status=(FatteningRabbit.Manager.STATUS_READY_TO_SLAUGHTER,)):
+        return mock.patch(
+            'api.services.model.rabbit.managers._manager.FatteningRabbitManager.status',
+            mock.PropertyMock(return_value=set(status))
+        )
     
     breed = factory.SubFactory(BreedFactory)
     cage = factory.SubFactory(FatteningCageFactory)
