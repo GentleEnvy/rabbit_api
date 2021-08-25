@@ -52,30 +52,25 @@ class StatisticService:
         return Mating.objects.filter(self._filter('time')).count()
     
     def rabbits(self):
-        return sum(
-            [self._population(model) for model in (
-                Bunny, FatteningRabbit, MotherRabbit, FatherRabbit
-            )]
-        )
+        return self.fattenings() + self.mothers() + self.fathers() + self.bunnies()
     
-    def males(self):
-        return self._population(FatherRabbit) + self._population(
-            FatteningRabbit, filters={'is_male': True}
-        )
+    def fattenings(self):
+        return self._population(FatteningRabbit)
     
-    def females(self):
-        return self._population(MotherRabbit) + self._population(
-            FatteningRabbit, filters={'is_male': False}
-        )
+    def mothers(self):
+        return self._population(MotherRabbit)
+    
+    def fathers(self):
+        return self._population(FatherRabbit)
     
     def bunnies(self):
         return self._population(Bunny)
     
-    def _population(self, model, filters=None):
+    def _population(self, model):
         assert self.time_to == self.time_from
         time = self.time_to
         return model.history.filter(
-            history_type='+', history_date__lte=time, **(filters or {})
+            history_type='+', history_date__lte=time
         ).annotate(
             death_time=Subquery(
                 DeadRabbit.objects.filter(id=OuterRef('id')).values('death_day')
