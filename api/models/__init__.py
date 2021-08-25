@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from api.models._breeds import *
 from api.models._cages import *
 from api.models._plans import *
