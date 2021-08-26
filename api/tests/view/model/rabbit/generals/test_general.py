@@ -1,9 +1,12 @@
+from datetime import *
+
 from parameterized import parameterized
 from rest_framework.test import APITestCase
 
 from api.models import *
 from api.tests.factories import *
 from api.tests.utils.functions import permutations
+from api.utils.functions import to_datetime
 
 
 class RabbitGeneralView(APITestCase):
@@ -98,3 +101,34 @@ class RabbitGeneralView_Breed(APITestCase):
     def test_not_exist(self):
         resp = self.client.get('/api/rabbit/', data={'breed': -10 ** 10}).data
         self.assertEqual(resp['count'], 0)
+
+
+class RabbitGeneralView_Age(APITestCase):
+    def setUp(self):
+        MotherRabbitFactory(birthday=datetime.utcnow() - timedelta(100))  # 100 days
+        MotherRabbitFactory(birthday=datetime.utcnow() - timedelta(50))  # 50 days
+    
+    @parameterized.expand(
+        [
+            [49, 101, 2], [None, 101, 2], [49, None, 2],
+            [49, 99, 1], [51, 101, 1], [None, 99, 1], [51, None, 1],
+            [51, 99, 0], [None, 49, 0], [101, None, 0]
+        ]
+    )
+    def test(self, age_from, age_to, count):
+        filters = {} if age_from is None else {'age_from': age_from}
+        filters |= {} if age_to is None else {'age_to': age_to}
+        resp = self.client.get(
+            '/api/rabbit/', data=filters
+        ).data
+        self.assertEqual(resp['count'], count)
+        for rabbit in resp['results']:
+            if age_from is not None:
+                self.assertGreaterEqual(
+                    datetime.utcnow() - timedelta(age_from),
+                    to_datetime(rabbit['birthday'])
+                )
+            if age_to is not None:
+                self.assertGreaterEqual(
+                    to_datetime(rabbit['birthday']), datetime.utcnow() - timedelta(age_to)
+                )
