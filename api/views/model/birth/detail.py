@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.db.models import Prefetch
+
 from api.serializers.birth.detail import *
 from api.services.model.rabbit.filterer import RabbitFilterer
 from api.services.model.rabbit.managers import MotherRabbitManager
@@ -10,7 +12,20 @@ __all__ = ['BirthUnconfirmedDetailView', 'BirthConfirmedDetailView']
 
 
 class _BaseBirthDetailView(BaseDetailView):
-    queryset = MotherRabbit.objects.all()
+    queryset = MotherRabbit.Manager.prefetch_children(
+        MotherRabbit.Manager.prefetch_matings(
+            MotherRabbit.objects.select_related(
+                'cage'
+            ).prefetch_related(
+                Prefetch('cage__bunny_set', to_attr='bunnies'),
+                Prefetch(
+                    'pregnancyinspection_set',
+                    queryset=PregnancyInspection.objects.order_by('time'),
+                    to_attr='pregnancy_inspections'
+                )
+            )
+        )
+    )
     lookup_url_kwarg = 'id'
     filter_status: str
     

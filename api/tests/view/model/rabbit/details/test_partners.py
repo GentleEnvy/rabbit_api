@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import *
 from unittest import mock
 
 from rest_framework.test import APITestCase
@@ -35,7 +35,7 @@ class MotherRabbitPartnersView(APITestCase):
             farm_number=mother_cage.farm_number, number=mother_cage.number,
             letter=chr(ord(mother_cage.letter) + 1)
         )
-        mother_cage.has_right_womb = True
+        mother_cage.womb = womb_cage
         mother_cage.save()
         BunnyFactory(cage=womb_cage)
         

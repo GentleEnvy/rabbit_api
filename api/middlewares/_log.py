@@ -6,9 +6,11 @@ Uses a logger_config configured by the name of django.request
 to log all requests and responses according to configuration
 specified for django.request.
 """
+
 import json
 import time
 
+from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 
 from api.logs import debug, info
@@ -37,6 +39,9 @@ class RequestLogMiddleware(MiddlewareMixin):
         log_data = {
             'run_time': time.time() - request.start_time
         }
+        if settings.TEST:
+            log_data['url'] = str(request)[14:-1]
+        
         if request.method in ['PUT', 'POST', 'PATCH']:
             content_type = _get_content_type(response)
             if 'application/json' in content_type:
@@ -51,7 +56,9 @@ class RequestLogMiddleware(MiddlewareMixin):
                 log_data['request'] = request.req_body
         if response:
             content_type = _get_content_type(response)
-            if 'text/html' in content_type and len(response.content) > 100:
+            if request.path.startswith('/__debug__'):
+                log_data['response'] = '<<<DEBUG TOOLBAR>>>'
+            elif 'text/html' in content_type and len(response.content) > 100:
                 log_data['response'] = '<<<HTML>>>'
             elif 'application/json' in content_type:
                 try:

@@ -5,7 +5,7 @@ from typing import Final, Any, Type
 
 from django.db import models
 from django.urls import reverse
-from model_utils.managers import QueryManager, InheritanceManager
+from model_utils.managers import InheritanceManager, QueryManagerMixin
 from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords
 
@@ -23,15 +23,11 @@ __all__ = [
 _is_valid_cage = {'status': []}
 
 
+class _InheritanceQueryManager(QueryManagerMixin, InheritanceManager):
+    pass
+
+
 class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
-    @classmethod
-    def get_subclasses(cls) -> tuple[Type[Rabbit], ...]:
-        return DeadRabbit, Bunny, FatteningRabbit, FatherRabbit, MotherRabbit
-    
-    CHAR_TYPE: str = None
-    objects = InheritanceManager()
-    live = QueryManager(deadrabbit=None)
-    
     birthday = models.DateTimeField(default=datetime.utcnow)
     mother = models.ForeignKey(
         'MotherRabbit', on_delete=models.SET_NULL, null=True, blank=True
@@ -52,6 +48,14 @@ class Rabbit(RabbitCleanerMixin, RabbitManagerMixin, BaseModel):
         ),
         blank=True, default='', max_choices=3
     )
+    
+    CHAR_TYPE: str = None
+    objects = InheritanceManager()
+    live = _InheritanceQueryManager(deadrabbit=None)
+    
+    @classmethod
+    def get_subclasses(cls) -> tuple[Type[Rabbit], ...]:
+        return DeadRabbit, Bunny, FatteningRabbit, FatherRabbit, MotherRabbit
     
     @classmethod
     def recast(cls, rabbit: Rabbit):

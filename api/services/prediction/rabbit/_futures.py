@@ -27,7 +27,7 @@ class BaseRabbitFuture(ABC):
 
 
 class BunnyFuture(BaseRabbitFuture):
-    DEFAULT_DEATH_PROBABILITY: Final[float] = 0.07
+    DEFAULT_DEATH_PROBABILITY: Final[float] = 0.07 / 45
     
     def tomorrow_state(
         self, condition, death_probability=DEFAULT_DEATH_PROBABILITY

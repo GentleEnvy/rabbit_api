@@ -71,9 +71,21 @@ urlpatterns = [
     ],
     # statistic
     *[
-        path('statistic/', StatisticView.as_view()),
-        # INPROGRESS: branch: feature-static-(envy):
-        #   path('statistic/.../', )
+        # period
+        *[
+            path('statistic/slaughters/', SlaughtersStatisticView.as_view()),
+            path('statistic/deaths/', DeathsStatisticView.as_view()),
+            path('statistic/bunny_jigs/', BunnyJigsStatisticView.as_view()),
+            path('statistic/matings/', MatingsStatisticView.as_view())
+        ],
+        # time
+        *[
+            path('statistic/rabbits/', RabbitsStatisticView.as_view()),
+            path('statistic/fattenings/', FatteningsStatisticView.as_view()),
+            path('statistic/mothers/', MothersStatisticView.as_view()),
+            path('statistic/fathers/', FathersStatisticView.as_view()),
+            path('statistic/bunnies/', BunniesStatisticView.as_view()),
+        ]
     ],
     # operation
     path('operation/', OperationGeneralView.as_view()),
@@ -162,8 +174,5 @@ urlpatterns = [
         ]
     ],
     # feeds
-    *[
-        path('feeds/fattening/', FatteningFeedsView.as_view()),
-        path('feeds/mother/', MotherFeedsView.as_view())
-    ]
+    path('feeds/', FatteningFeedsView.as_view()),
 ]
