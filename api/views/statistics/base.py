@@ -12,12 +12,13 @@ __all__ = ['BasePeriodStatisticView', 'BaseTimeStatisticView']
 
 class BasePeriodStatisticView(BaseView):
     def get(self, request):
+        params = request.query_params
         try:
-            time_from = to_datetime(request.params['time_from'])
+            time_from = to_datetime(params['time_from'])
         except KeyError:
             raise ClientError('Missing required parameter `time_from`')
         try:
-            time_to = to_datetime(request.params['time_to'])
+            time_to = to_datetime(params['time_to'])
         except KeyError:
             time_to = datetime.utcnow()
         return Response(self._get(StatisticService(time_from, time_to)))
@@ -29,7 +30,7 @@ class BasePeriodStatisticView(BaseView):
 class BaseTimeStatisticView(BaseView):
     def get(self, request):
         try:
-            time = to_datetime(request.params['time'])
+            time = to_datetime(request.query_params['time'])
         except KeyError:
             time = datetime.utcnow()
         return Response(self._get(StatisticService(time, time)))
