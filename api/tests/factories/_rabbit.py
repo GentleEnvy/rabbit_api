@@ -4,7 +4,6 @@ import factory
 from factory.django import DjangoModelFactory
 
 from api.models import *
-from api.tests.factories._plan import PlanFactory
 from api.tests.factories._breed import BreedFactory
 from api.tests.factories._cage import MotherCageFactory, FatteningCageFactory
 
@@ -17,6 +16,13 @@ class MotherRabbitFactory(DjangoModelFactory):
     class Meta:
         model = MotherRabbit
     
+    @classmethod
+    def mock_status(cls, *status: str):
+        return mock.patch(
+            'api.services.model.rabbit.managers._manager.MotherRabbitManager.status',
+            mock.PropertyMock(return_value=set(status))
+        )
+    
     breed = factory.SubFactory(BreedFactory)
     cage = factory.SubFactory(MotherCageFactory)
     is_male = False
@@ -27,6 +33,13 @@ class FatherRabbitFactory(DjangoModelFactory):
     class Meta:
         model = FatherRabbit
     
+    @classmethod
+    def mock_status(cls, *status: str):
+        return mock.patch(
+            'api.services.model.rabbit.managers._manager.FatherRabbitManager.status',
+            mock.PropertyMock(return_value=set(status))
+        )
+    
     breed = factory.SubFactory(BreedFactory)
     cage = factory.SubFactory(FatteningCageFactory)
     is_male = True
@@ -36,6 +49,13 @@ class FatherRabbitFactory(DjangoModelFactory):
 class BunnyFactory(DjangoModelFactory):
     class Meta:
         model = Bunny
+
+    @classmethod
+    def mock_status(cls, *status: str):
+        return mock.patch(
+            'api.services.model.rabbit.managers._manager.BunnyManager.status',
+            mock.PropertyMock(return_value=set(status))
+        )
     
     breed = factory.SubFactory(BreedFactory)
     cage = factory.SubFactory(MotherCageFactory)
@@ -48,7 +68,7 @@ class FatteningRabbitFactory(DjangoModelFactory):
         model = FatteningRabbit
     
     @classmethod
-    def mock_status(cls, status=(FatteningRabbit.Manager.STATUS_READY_TO_SLAUGHTER,)):
+    def mock_status(cls, *status: str):
         return mock.patch(
             'api.services.model.rabbit.managers._manager.FatteningRabbitManager.status',
             mock.PropertyMock(return_value=set(status))

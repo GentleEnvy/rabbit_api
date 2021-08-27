@@ -30,7 +30,9 @@ class RabbitGeneralView_Plan(APITestCase):
         p = FatherRabbitFactory()
         FatteningRabbitFactory(mother=m, father=p)
         self.plan = PlanFactory()
-        with FatteningRabbitFactory.mock_status():
+        with FatteningRabbitFactory.mock_status(
+            FatteningRabbit.Manager.STATUS_READY_TO_SLAUGHTER
+        ):
             FatteningRabbitFactory(mother=m, father=p, plan=self.plan)
     
     def test_with_plan(self):
@@ -206,4 +208,62 @@ class RabbitGeneralView_FarmNumber(APITestCase):
     @parameterized.expand(permutations([1, 5]))
     def test_not_exist(self, farm_number):
         resp = self.client.get('/api/rabbit/', data={'farm_number': farm_number}).data
+        self.assertEqual(resp['count'], 0)
+
+
+class RabbitGeneralView_Status(APITestCase):
+    def setUp(self):
+        m = MotherRabbitFactory()
+        p = FatherRabbitFactory()
+        BunnyFactory(mother=m, father=p)
+        FatteningRabbitFactory(mother=m, father=p)
+    
+    def _check_status(self, factory, status):
+        with factory.mock_status(status):
+            resp = self.client.get('/api/rabbit/', data={'status': status}).data
+        self.assertEqual(resp['count'], 1)
+        for rabbit in resp['results']:
+            self.assertIn(status, rabbit['status'])
+    
+    @parameterized.expand(
+        [
+            [MotherRabbit.Manager.STATUS_FEEDS_BUNNY],
+            [MotherRabbit.Manager.STATUS_CONFIRMED_PREGNANT],
+            [MotherRabbit.Manager.STATUS_UNCONFIRMED_PREGNANT],
+            [MotherRabbit.Manager.STATUS_READY_FOR_FERTILIZATION]
+        ]
+    )
+    def test_mother(self, status):
+        self._check_status(MotherRabbitFactory, status)
+    
+    def test_father(self):
+        self._check_status(
+            FatherRabbitFactory, FatherRabbit.Manager.STATUS_READY_FOR_FERTILIZATION
+        )
+    
+    @parameterized.expand(
+        [
+            [FatteningRabbit.Manager.STATUS_READY_TO_SLAUGHTER],
+            [FatteningRabbit.Manager.STATUS_NEED_INSPECTION],
+            [FatteningRabbit.Manager.STATUS_NEED_VACCINATION]
+        ]
+    )
+    def test_fattening(self, status):
+        self._check_status(FatteningRabbitFactory, status)
+    
+    def test_bunny(self):
+        self._check_status(BunnyFactory, Bunny.Manager.STATUS_NEED_JIGGING)
+    
+    def test_empty(self):
+        with (
+            MotherRabbitFactory.mock_status(), FatherRabbitFactory.mock_status(),
+            FatteningRabbitFactory.mock_status(), BunnyFactory.mock_status()
+        ):
+            resp = self.client.get('/api/rabbit/', data={'status': ''}).data
+        self.assertEqual(resp['count'], 4)
+        for rabbit in resp['results']:
+            self.assertEqual(len(rabbit['status']), 0)
+    
+    def test_not_exist(self):
+        resp = self.client.get('/api/rabbit/', data={'status': 'not_exist'}).data
         self.assertEqual(resp['count'], 0)
