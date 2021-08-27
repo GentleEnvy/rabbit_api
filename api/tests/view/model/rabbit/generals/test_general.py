@@ -186,3 +186,24 @@ class RabbitGeneralView_CageNumber(APITestCase):
                 self.assertGreaterEqual(int(rabbit['cage']['number']), cage_number_from)
             if cage_number_to is not None:
                 self.assertGreaterEqual(cage_number_to, int(rabbit['cage']['number']))
+
+
+class RabbitGeneralView_FarmNumber(APITestCase):
+    def setUp(self):
+        MotherRabbitFactory(cage=MotherCageFactory(farm_number=2))
+        MotherRabbitFactory(cage=MotherCageFactory(farm_number=3))
+        MotherRabbitFactory(cage=MotherCageFactory(farm_number=4))
+    
+    @parameterized.expand(permutations(range(2, 5)))
+    def test(self, farm_number):
+        resp = self.client.get(
+            '/api/rabbit/', data={'farm_number': ','.join(map(str, farm_number))}
+        ).data
+        self.assertEqual(resp['count'], len(farm_number))
+        for rabbit in resp['results']:
+            self.assertIn(int(rabbit['cage']['farm_number']), farm_number)
+    
+    @parameterized.expand(permutations([1, 5]))
+    def test_not_exist(self, farm_number):
+        resp = self.client.get('/api/rabbit/', data={'farm_number': farm_number}).data
+        self.assertEqual(resp['count'], 0)
