@@ -132,3 +132,57 @@ class RabbitGeneralView_Age(APITestCase):
                 self.assertGreaterEqual(
                     to_datetime(rabbit['birthday']), datetime.utcnow() - timedelta(age_to)
                 )
+
+
+class RabbitGeneralView_Weight(APITestCase):
+    def setUp(self):
+        MotherRabbitFactory(weight=2)
+        MotherRabbitFactory(weight=5)
+    
+    @parameterized.expand(
+        [
+            [2, 5, 2], [None, 5, 2], [2, None, 2],
+            [2, 3, 1], [3, 5, 1], [None, 2, 1], [5, None, 1],
+            [3, 4, 0], [None, 1, 0], [6, None, 0]
+        ]
+    )
+    def test(self, weight_from, weight_to, count):
+        filters = {} if weight_from is None else {'weight_from': weight_from}
+        filters |= {} if weight_to is None else {'weight_to': weight_to}
+        resp = self.client.get(
+            '/api/rabbit/', data=filters
+        ).data
+        self.assertEqual(resp['count'], count)
+        for rabbit in resp['results']:
+            if weight_from is not None:
+                self.assertGreaterEqual(float(rabbit['weight']), weight_from)
+            if weight_to is not None:
+                self.assertGreaterEqual(weight_to, float(rabbit['weight']))
+
+
+class RabbitGeneralView_CageNumber(APITestCase):
+    def setUp(self):
+        MotherRabbitFactory(cage=MotherCageFactory(farm_number=3, number=2))
+        MotherRabbitFactory(cage=MotherCageFactory(farm_number=3, number=5))
+    
+    @parameterized.expand(
+        [
+            [2, 5, 2], [None, 5, 2], [2, None, 2],
+            [2, 3, 1], [3, 5, 1], [None, 2, 1], [5, None, 1],
+            [3, 4, 0], [None, 1, 0], [6, None, 0]
+        ]
+    )
+    def test(self, cage_number_from, cage_number_to, count):
+        filters = {} if cage_number_from is None else {
+            'cage_number_from': cage_number_from
+        }
+        filters |= {} if cage_number_to is None else {'cage_number_to': cage_number_to}
+        resp = self.client.get(
+            '/api/rabbit/', data=filters
+        ).data
+        self.assertEqual(resp['count'], count)
+        for rabbit in resp['results']:
+            if cage_number_from is not None:
+                self.assertGreaterEqual(int(rabbit['cage']['number']), cage_number_from)
+            if cage_number_to is not None:
+                self.assertGreaterEqual(cage_number_to, int(rabbit['cage']['number']))
