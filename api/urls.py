@@ -1,8 +1,10 @@
 from django.urls import path
+from django.conf import settings
 
 from api.views import *
 
 urlpatterns = [
+    path('', settings.DOCS),
     # model_views
     *[
         # rabbit

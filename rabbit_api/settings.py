@@ -1,6 +1,11 @@
 import json
 from pathlib import Path
 import os
+from typing import Any, Callable
+
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 
 from api.logs.configs import LogConfig
 from api.logs.configs.handlers import *
@@ -32,6 +37,7 @@ INSTALLED_APPS = [
     'model_utils',
     'simple_history',
     'debug_toolbar',
+    'drf_yasg',
     
     'api.apps.ApiConfig'
 ]
@@ -42,7 +48,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -134,7 +141,16 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 # Custom
 
 TEST = False if (_test := os.getenv('DJANGO_TEST')) is None else bool(int(_test))
+
 YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
+
+get_schema_view: Callable[..., Any]
+DOCS = get_schema_view(
+    openapi.Info(
+        title='Rabbit API',
+        default_version='1'
+    ), permission_classes=(permissions.AllowAny,)
+).with_ui(cache_timeout=60 * 60)
 
 # Custom
 ###
