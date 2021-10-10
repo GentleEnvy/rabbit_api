@@ -1,11 +1,6 @@
 import json
 from pathlib import Path
 import os
-from typing import Any, Callable
-
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from rest_framework import permissions
 
 from api.logs.configs import LogConfig
 from api.logs.configs.handlers import *
@@ -38,6 +33,7 @@ INSTALLED_APPS = [
     'simple_history',
     'debug_toolbar',
     'drf_yasg',
+    'cacheops',
     
     'api.apps.ApiConfig'
 ]
@@ -138,19 +134,35 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 ###
+# cacheops
+
+CACHEOPS_REDIS = {
+    'host': os.getenv('REDIS_HOST', 'localhost'),
+    'port': os.getenv('REDIS_PORT', 6379),
+    'password': os.getenv('REDIS_PASSWORD', None),
+    'socket_timeout': 300
+}
+_cacheops_settings = {
+    'timeout': 60 * 10, 'cache_on_save': True, 'ops': 'all'
+}
+CACHEOPS = {
+    'auth.user': {'timeout': 60 * 10, 'cache_on_save': 'username', 'ops': 'all'},
+    'api.*': _cacheops_settings,
+    'auth.*': _cacheops_settings,
+    'authtoken.*': _cacheops_settings,
+    'admin.*': _cacheops_settings,
+    'sessions.*': _cacheops_settings,
+    'contenttypes.*': _cacheops_settings
+}
+
+# cacheops
+###
+
+###
 # Custom
 
 TEST = False if (_test := os.getenv('DJANGO_TEST')) is None else bool(int(_test))
-
 YANDEX_DISK_TOKEN = os.getenv('YANDEX_DISK_TOKEN')
-
-get_schema_view: Callable[..., Any]
-DOCS = get_schema_view(
-    openapi.Info(
-        title='Rabbit API',
-        default_version='1'
-    ), permission_classes=(permissions.AllowAny,)
-).with_ui(cache_timeout=60 * 60)
 
 # Custom
 ###
