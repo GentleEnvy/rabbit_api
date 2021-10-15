@@ -150,7 +150,7 @@ class MotherRabbitManager(RabbitManager):
         if self.age.days < self.__READY_FOR_FERTILIZATION_AGE:
             return statuses
         
-        # age >= 150
+        # age >= __READY_FOR_FERTILIZATION_AGE
         last_births = self.last_births
         last_fertilization = self.last_fertilization
         if last_fertilization is None or diff_time(
@@ -158,7 +158,7 @@ class MotherRabbitManager(RabbitManager):
         ).days >= 40:
             if last_births is None or to_datetime(
                 last_births + timedelta(3)
-            ) > datetime.utcnow():
+            ) < datetime.utcnow():
                 statuses.add(self.STATUS_READY_FOR_FERTILIZATION)
             return statuses
         # last_fertilization is not None and isn't overdue
