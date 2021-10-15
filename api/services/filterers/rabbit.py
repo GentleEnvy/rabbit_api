@@ -73,6 +73,11 @@ class RabbitFilterer(BaseFilterer):
             return sorted(
                 queryset, key=lambda r: [r.cast.cage.number, r.cast.cage.letter]
             )
+        if order == '-cage_number':
+            return sorted(
+                queryset, key=lambda r: [r.cast.cage.number, r.cast.cage.letter],
+                reverse=True
+            )
         if order == 'type':
             return sum(
                 (
@@ -89,7 +94,7 @@ class RabbitFilterer(BaseFilterer):
                     iter(status)
                 ), reverse=True
             )
-        return queryset
+        return queryset.order_by(order)
     
     def order_by_plan(self, plan: Plan) -> list:
         selected_rabbits = list(plan.fatteningrabbit_set.all())

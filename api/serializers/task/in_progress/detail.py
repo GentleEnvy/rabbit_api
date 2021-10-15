@@ -24,10 +24,9 @@ class InProgressTaskUpdateSerializer(serializers.ModelSerializer):
 class InProgressBunnyJiggingTaskUpdateSerializer(InProgressTaskUpdateSerializer):
     class Meta(InProgressTaskUpdateSerializer.Meta):
         model = BunnyJiggingTask
-        fields = InProgressTaskUpdateSerializer.Meta.fields + ['males', 'females']
+        fields = InProgressTaskUpdateSerializer.Meta.fields + ['males']
         extra_kwargs = InProgressTaskUpdateSerializer.Meta.extra_kwargs | {
-            'males': {'required': True, 'allow_null': False},
-            'females': {'required': True, 'allow_null': False}
+            'males': {'required': True, 'allow_null': False}
         }
 
 
