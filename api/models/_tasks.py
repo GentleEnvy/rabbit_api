@@ -200,7 +200,7 @@ class SlaughterInspectionTask(Task):
     
     cage = models.ForeignKey(FatteningCage, on_delete=models.CASCADE)
     # in progress
-    weights: list[float] = ArrayField(models.FloatField())
+    weights: list[float] = ArrayField(models.FloatField(), null=True, blank=True)
     
     def clean(self):
         super().clean()
