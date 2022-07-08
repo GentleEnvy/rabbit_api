@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     'model_utils',
     'simple_history',
     # 'debug_toolbar',
+    'drf_yasg',
+    'cacheops',
     
     'api.apps.ApiConfig'
 ]
@@ -40,7 +42,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -116,6 +119,31 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+###
+# cacheops
+
+CACHEOPS_REDIS = {
+    'host': os.getenv('REDIS_HOST', 'localhost'),
+    'port': os.getenv('REDIS_PORT', 6379),
+    'password': os.getenv('REDIS_PASSWORD', None),
+    'socket_timeout': 300
+}
+_cacheops_settings = {
+    'timeout': 60 * 10, 'cache_on_save': True, 'ops': 'all'
+}
+CACHEOPS = {
+    'auth.user': {'timeout': 60 * 10, 'cache_on_save': 'username', 'ops': 'all'},
+    'api.*': _cacheops_settings,
+    'auth.*': _cacheops_settings,
+    'authtoken.*': _cacheops_settings,
+    'admin.*': _cacheops_settings,
+    'sessions.*': _cacheops_settings,
+    'contenttypes.*': _cacheops_settings
+}
+
+# cacheops
+###
 
 ###
 # Custom
